@@ -17,9 +17,8 @@
 | --- | --- |
 | [Encore 调度模块](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.2.3-android17/Encore-Pixel-10-Android17-v0.2.3-generic.zip) | 先安装此模块 |
 | [自动温控模块](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.2.3-android17/pixel10proxl-game-thermal-CP41-v1.6.0-auto-config.zip) | 可与调度模块同时启用 |
-| [温控源码包](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.2.3-android17/pixel10proxl-game-thermal-source-v1.6.0-auto-config.zip) | 自动温控源码 |
 
-ZIP 附件旁提供对应的 SHA256 校验文件。
+源码请查看仓库中的 `src/` 目录；发布页只提供两个可安装模块 ZIP。
 
 ## 兼容范围
 
@@ -35,7 +34,7 @@ ZIP 附件旁提供对应的 SHA256 校验文件。
 
 - `src/encore-fas/`：调度器源码、模块目录和打包脚本。
 - `src/thermal-auto/`：RapidJSON 温控配置生成器、模块目录和构建脚本。
-- `release/`：与 Release 附件对应的版本化发布包和校验文件。
+- `release/`：两个可安装模块 ZIP 的版本化发布目录。
 - `docs/`：兼容性、安装和回滚说明。
 
 ## 安装前须知
