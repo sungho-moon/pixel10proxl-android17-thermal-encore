@@ -1,0 +1,9 @@
+# Pixel Game Thermal 1.6.0 — automatic configuration discovery
+
+This module is for Pixel 10 Pro XL (`mustang`) on Android 17. At installation it scans the available `thermal_info_config*.json` files and selects the single file whose Thermal schema contains the expected Pixel virtual-skin sensors and cooling devices. It does not rely on a fixed filename or a hard-coded SHA-256 of the stock file.
+
+The selected stock file is cached in `profiles/stock.json`. A native RapidJSON builder creates `profiles/game.json` by changing only 40 approved fields: game polling intervals, virtual-skin thresholds, and the CPU/GPU/uclamp ceiling slots used by the tested profile. Duplicate sensors, missing cooling devices, malformed JSON, unsupported target frequencies, or more than one matching file cause installation or boot validation to fail closed.
+
+The module still uses the existing Game/Stock selection for the next reboot. The selected file name and profile hashes are stored in `state/config.env`, and runtime checks verify that the mounted vendor file matches the generated profile and that the Thermal HAL is ready.
+
+This is schema-adaptive configuration discovery, not a general-purpose thermal tuner. A future firmware with a materially different Thermal schema is rejected until its targets are reviewed.

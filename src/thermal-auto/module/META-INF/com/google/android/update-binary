@@ -1,0 +1,15 @@
+#!/sbin/sh
+umask 022
+OUTFD=$2
+ZIPFILE=$3
+if [ -r /data/adb/magisk/util_functions.sh ]; then
+  . /data/adb/magisk/util_functions.sh
+elif [ -r /data/adb/ksu/util_functions.sh ]; then
+  . /data/adb/ksu/util_functions.sh
+elif [ -r /data/adb/ap/bin/util_functions.sh ]; then
+  . /data/adb/ap/bin/util_functions.sh
+else
+  echo 'Install this ZIP in a compatible root module manager.'
+  exit 1
+fi
+install_module

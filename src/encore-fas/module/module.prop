@@ -1,0 +1,6 @@
+id=encore_pixel_cp41
+name=Encore Pixel CP41
+version=0.2.3-android17-generic (Encore 5.2.1)
+versionCode=203
+author=Rem01Gaming (upstream), Pixel CP41 adaptation
+description=Pixel 10 Pro XL Android 17 single-writer controller; unknown libgui builds keep baseline control and disable only FAS probing.

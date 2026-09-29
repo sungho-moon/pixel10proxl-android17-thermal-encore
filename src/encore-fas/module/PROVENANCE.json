@@ -1,0 +1,25 @@
+{
+  "upstream": "https://github.com/Rem01Gaming/encore",
+  "version": "5.2.1",
+  "commit": "361ab0ef483f3a6a9d57b2aae0ac2284c2fe6d64",
+  "rapidjson": "24b5e7a8b27f42fa16b96fc70aade9106cf7102f",
+  "spdlog": "1685e694c5cd8328280c48f8b94b1281c17c6fee",
+  "ndk": "r30 / 30.0.16248370",
+  "binder_resolver_apk": "unmodified official release 5.2.1 binary",
+  "binder_resolver_apk_sha256": "beb99604cf31649102ebc9174e35250087f44296dfca1622846e5c5cefc8c20c",
+  "binaries": {
+    "encored": "174e00ca15bffd150673177bbc8a56dc709ea3e4874b58b7c02e1266bdaf37d9",
+    "pixel-control": "907a078639514584d90d9270d00d105e8731051a69b688cc2941207b5596ce9b"
+  },
+  "frame_feedback": {
+    "type": "Encore single-writer FAS with independently implemented fas-rs proportional adviser",
+    "fas_rs_repository": "https://github.com/shadow3aaa/fas-rs",
+    "fas_rs_version": "v4.9.1",
+    "fas_rs_source_commit": "eb883c534e92107f536ae8ebc343c99243f5ee4d",
+    "fas_rs_executable_included": false,
+    "pixel_frame_source": "hash-pinned libgui Surface::hook_queueBuffer tracefs uprobe",
+    "libgui_sha256": "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a",
+    "control": "aggressive profile: 90th percentile of 30-60 recent frame intervals, fas-rs kp equivalent, +1 OPP for advice 1-2 and +2 OPP for advice 3, bounded to Encore level 3",
+    "thermal_cap": "battery 40/41/42 C tiered extra-boost limit; whole-controller protection remains 43 C with 41 C recovery"
+  }
+}

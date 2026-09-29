@@ -1,0 +1,12 @@
+{
+  "preferences": {
+    "enforce_lite_mode": false,
+    "use_device_mitigation": false,
+    "disable_tweaks": false,
+    "log_level": 3
+  },
+  "cpu_governor": {
+    "balance": "sched_pixel",
+    "powersave": "sched_pixel"
+  }
+}

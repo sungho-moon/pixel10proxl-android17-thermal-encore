@@ -1,0 +1,3 @@
+# Read-only access for a system_file overlay; no HAL write/execute permission.
+allow hal_thermal_default system_file dir { getattr open read search };
+allow hal_thermal_default system_file file { getattr open read map };

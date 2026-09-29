@@ -1,0 +1,241 @@
+{
+  "folder": "work/pixel-game-thermal-shared-step/thermal-test-1790661233",
+  "samples": 74,
+  "elapsed_s": 190,
+  "status": {
+    "GAME": 74
+  },
+  "cpu5_max_khz": {
+    "3052000": 4,
+    "2937000": 3,
+    "2841000": 3,
+    "2688000": 2,
+    "2534000": 62
+  },
+  "cpu7_max_khz": {
+    "3782000": 4,
+    "3398000": 3,
+    "3168000": 5,
+    "2937000": 62
+  },
+  "shared_budget_uw": {
+    "5471000": 4,
+    "3798000": 3,
+    "3424000": 2,
+    "3277000": 3,
+    "2770000": 62
+  },
+  "nondefault_vote_samples": [],
+  "blocks_30s": [
+    {
+      "start_s": 0,
+      "samples": 12,
+      "battery_c": [
+        38.2,
+        38.4
+      ],
+      "median_window_fps": 88.36,
+      "fps_under_90_windows": 8,
+      "fps_windows": 12,
+      "cpu5_max_mhz_median": 2937,
+      "cpu7_max_mhz_median": 3398,
+      "shared_budget_mw_median": 3798,
+      "soc_severities": {
+        "SEVERE": 2
+      },
+      "soc_virtual_c": [
+        40.71,
+        41.9
+      ],
+      "hal_active_requests": {
+        "VIRTUAL-SKIN-SOC": 3,
+        "VIRTUAL-SKIN-CPU-LIGHT-ODPM": 1
+      },
+      "thermal_uclamp_5_max_state": 0,
+      "thermal_uclamp_7_max_state": 0,
+      "cpu_mid_severities": {
+        "NONE": 2
+      }
+    },
+    {
+      "start_s": 30,
+      "samples": 12,
+      "battery_c": [
+        38.5,
+        38.8
+      ],
+      "median_window_fps": 73.78,
+      "fps_under_90_windows": 12,
+      "fps_windows": 12,
+      "cpu5_max_mhz_median": 2534,
+      "cpu7_max_mhz_median": 2937,
+      "shared_budget_mw_median": 2770,
+      "soc_severities": {
+        "SEVERE": 1
+      },
+      "soc_virtual_c": [
+        42.99,
+        42.99
+      ],
+      "hal_active_requests": {
+        "VIRTUAL-SKIN-CPU-LIGHT-ODPM": 1,
+        "VIRTUAL-SKIN-SOC": 1
+      },
+      "thermal_uclamp_5_max_state": 4,
+      "thermal_uclamp_7_max_state": 4,
+      "cpu_mid_severities": {
+        "LIGHT": 1
+      }
+    },
+    {
+      "start_s": 60,
+      "samples": 12,
+      "battery_c": [
+        38.8,
+        39.2
+      ],
+      "median_window_fps": 84.08,
+      "fps_under_90_windows": 8,
+      "fps_windows": 12,
+      "cpu5_max_mhz_median": 2534,
+      "cpu7_max_mhz_median": 2937,
+      "shared_budget_mw_median": 2770,
+      "soc_severities": {
+        "SEVERE": 1
+      },
+      "soc_virtual_c": [
+        43.09,
+        43.09
+      ],
+      "hal_active_requests": {
+        "VIRTUAL-SKIN-CPU-LIGHT-ODPM": 1,
+        "VIRTUAL-SKIN-SOC": 1
+      },
+      "thermal_uclamp_5_max_state": 4,
+      "thermal_uclamp_7_max_state": 4,
+      "cpu_mid_severities": {
+        "LIGHT": 1
+      }
+    },
+    {
+      "start_s": 90,
+      "samples": 11,
+      "battery_c": [
+        39.2,
+        39.4
+      ],
+      "median_window_fps": 82.63,
+      "fps_under_90_windows": 11,
+      "fps_windows": 11,
+      "cpu5_max_mhz_median": 2534,
+      "cpu7_max_mhz_median": 2937,
+      "shared_budget_mw_median": 2770,
+      "soc_severities": {
+        "SEVERE": 1
+      },
+      "soc_virtual_c": [
+        43.05,
+        43.05
+      ],
+      "hal_active_requests": {
+        "VIRTUAL-SKIN-CPU-LIGHT-ODPM": 1,
+        "VIRTUAL-SKIN-SOC": 1
+      },
+      "thermal_uclamp_5_max_state": 4,
+      "thermal_uclamp_7_max_state": 4,
+      "cpu_mid_severities": {
+        "LIGHT": 1
+      }
+    },
+    {
+      "start_s": 120,
+      "samples": 11,
+      "battery_c": [
+        39.4,
+        39.6
+      ],
+      "median_window_fps": 85.48,
+      "fps_under_90_windows": 10,
+      "fps_windows": 11,
+      "cpu5_max_mhz_median": 2534,
+      "cpu7_max_mhz_median": 2937,
+      "shared_budget_mw_median": 2770,
+      "soc_severities": {
+        "SEVERE": 1
+      },
+      "soc_virtual_c": [
+        43.25,
+        43.25
+      ],
+      "hal_active_requests": {
+        "VIRTUAL-SKIN-CPU-LIGHT-ODPM": 1,
+        "VIRTUAL-SKIN-SOC": 1
+      },
+      "thermal_uclamp_5_max_state": 4,
+      "thermal_uclamp_7_max_state": 4,
+      "cpu_mid_severities": {
+        "LIGHT": 1
+      }
+    },
+    {
+      "start_s": 150,
+      "samples": 11,
+      "battery_c": [
+        39.6,
+        39.8
+      ],
+      "median_window_fps": 84.52,
+      "fps_under_90_windows": 8,
+      "fps_windows": 11,
+      "cpu5_max_mhz_median": 2534,
+      "cpu7_max_mhz_median": 2937,
+      "shared_budget_mw_median": 2770,
+      "soc_severities": {
+        "SEVERE": 1
+      },
+      "soc_virtual_c": [
+        43.28,
+        43.28
+      ],
+      "hal_active_requests": {
+        "VIRTUAL-SKIN-CPU-LIGHT-ODPM": 1,
+        "VIRTUAL-SKIN-SOC": 1
+      },
+      "thermal_uclamp_5_max_state": 4,
+      "thermal_uclamp_7_max_state": 4,
+      "cpu_mid_severities": {
+        "LIGHT": 1
+      }
+    },
+    {
+      "start_s": 180,
+      "samples": 5,
+      "battery_c": [
+        39.8,
+        39.9
+      ],
+      "median_window_fps": 88.55,
+      "fps_under_90_windows": 3,
+      "fps_windows": 5,
+      "cpu5_max_mhz_median": 2534,
+      "cpu7_max_mhz_median": 2937,
+      "shared_budget_mw_median": 2770,
+      "soc_severities": {
+        "SEVERE": 1
+      },
+      "soc_virtual_c": [
+        43.45,
+        43.45
+      ],
+      "hal_active_requests": {
+        "VIRTUAL-SKIN-CPU-LIGHT-ODPM": 1,
+        "VIRTUAL-SKIN-SOC": 1
+      },
+      "thermal_uclamp_5_max_state": 4,
+      "thermal_uclamp_7_max_state": 4,
+      "cpu_mid_severities": {
+        "LIGHT": 1
+      }
+    }
+  ]
+}
