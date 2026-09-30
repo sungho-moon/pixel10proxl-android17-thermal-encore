@@ -1,6 +1,6 @@
 #!/system/bin/sh
 SKIPUNZIP=0
-ui_print "Pixel 10 Pro XL Game Thermal 1.6.0 Auto Config"
+ui_print "Pixel 10 Pro XL Game Thermal 1.6.1 Auto Config"
 ui_print "Schema discovery will run after the complete module is extracted"
 [ "$(getprop ro.product.device)" = mustang ] || abort "Unsupported device"
 [ "$(getprop ro.build.version.sdk)" = 37 ] || abort "Unsupported Android SDK"

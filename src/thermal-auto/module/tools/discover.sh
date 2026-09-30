@@ -29,9 +29,20 @@ if [ -z "$source_file" ]; then
   done
 fi
 [ -n "$source_file" ] && [ -n "$config_name" ] || fail no_matching_thermal_config
-cp -fp "$source_file" "$MODDIR/profiles/stock.json" || fail stock_cache_failed
+stock_tmp="$MODDIR/profiles/stock.json.new"
+rm -f "$stock_tmp"
+copied=0
+for attempt in 1 2 3 4 5; do
+  if cp -fp "$source_file" "$stock_tmp" && [ -s "$stock_tmp" ]; then copied=1; break; fi
+  rm -f "$stock_tmp"
+  sleep 1
+done
+[ "$copied" = 1 ] || fail stock_cache_failed
+mv -f "$stock_tmp" "$MODDIR/profiles/stock.json" || fail stock_cache_promote_failed
 "$BUILDER" patch "$MODDIR/profiles/stock.json" "$MODDIR/profiles/game.json" >/dev/null 2>&1 || fail patch_rejected
-cp -fp "$MODDIR/profiles/game.json" "$MODDIR/system/vendor/etc/$config_name" || fail overlay_prepare_failed
+game_tmp="$MODDIR/system/vendor/etc/$config_name.new"
+rm -f "$game_tmp"
+cp -fp "$MODDIR/profiles/game.json" "$game_tmp" && chmod 0644 "$game_tmp" && mv -f "$game_tmp" "$MODDIR/system/vendor/etc/$config_name" || fail overlay_prepare_failed
 stock_sha=$(pgt_sha "$MODDIR/profiles/stock.json")
 game_sha=$(pgt_sha "$MODDIR/profiles/game.json")
 fingerprint=$(getprop ro.build.fingerprint)
@@ -46,5 +57,6 @@ EOF
 cp -fp "$MODDIR/state/config.env" "$MODDIR/expected.env"
 printf '%s\n' "$config_name" > "$MODDIR/config-name"
 printf '%s\n' discovered > "$MODDIR/state/discovery"
+rm -f "$MODDIR/state/blocked-reason" "$MODDIR/disable" "$MODDIR/skip_mount"
 chmod 0600 "$MODDIR/state/config.env" "$MODDIR/expected.env"
 pgt_log "$MODDIR" "discovered_config=$config_name changes=40 fingerprint=$fingerprint"

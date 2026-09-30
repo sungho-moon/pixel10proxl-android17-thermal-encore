@@ -4,9 +4,9 @@ import hashlib, json, shutil, zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-MODULE = ROOT / "pixel-game-thermal-auto"
-OUTPUT = ROOT.parent / "outputs"
-VERSION = "1.6.0-auto-config"
+MODULE = ROOT / "module"
+OUTPUT = ROOT / "dist"
+VERSION = "1.6.1-auto-config"
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -32,14 +32,14 @@ def archive(path: Path, root: Path, prefix: str = "") -> None:
 
 def main() -> None:
     MODULE.mkdir(parents=True, exist_ok=True)
-    binary = ROOT / "pixel-game-thermal-auto/bin/thermal-profile-builder"
+    binary = MODULE / "bin/thermal-profile-builder"
     assert binary.is_file()
     destination = MODULE / "bin/thermal-profile-builder"
     if binary.resolve() != destination.resolve(): shutil.copy2(binary, destination)
     prop = "\n".join([
         "id=pixel_game_thermal_cp41",
         "name=Pixel 10 Pro XL Game Thermal Auto Config",
-        f"version={VERSION}", "versionCode=16000",
+        f"version={VERSION}", "versionCode=16100",
         "author=Local device adaptation",
         "description=CP41 schema-matched Thermal JSON discovery and game profile patch; ambiguous configurations fail closed.", "",
     ])
@@ -53,13 +53,15 @@ def main() -> None:
     with zipfile.ZipFile(source, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
         for p in sorted(MODULE.rglob("*")):
             if p.is_file(): z.writestr("module/" + p.relative_to(MODULE).as_posix(), p.read_bytes())
-        z.writestr("src/thermal-profile-builder.cpp", (ROOT / "pixel-game-thermal-auto-src/thermal-profile-builder.cpp").read_bytes())
+        z.writestr("src/thermal-profile-builder.cpp", (ROOT / "thermal-profile-builder.cpp").read_bytes())
         z.writestr("build_game_thermal_auto.py", Path(__file__).read_bytes())
     report = {
         "version": VERSION, "package_sha256": sha(package), "source_sha256": sha(source),
         "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
         "changes": 40, "discovery": "native RapidJSON probe across thermal_info_config*.json",
         "fail_closed": ["malformed JSON", "duplicate target sensors/cdevs", "ambiguous matching files", "unsupported target frequencies"],
+        "fingerprint_keyed_cache": True,
+        "atomic_stock_and_overlay_promotion": True,
         "installed": False,
     }
     (OUTPUT / "pixel-game-thermal-auto-validation.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

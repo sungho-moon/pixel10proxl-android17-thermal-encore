@@ -11,12 +11,12 @@
 
 ## 最新发布
 
-[下载 v0.2.3 Android 17 Release](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/tag/v0.2.3-android17)
+[下载 v0.2.4 Android 17 Release](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/tag/v0.2.4-android17)
 
 | 文件 | 说明 |
 | --- | --- |
-| [Encore 调度模块](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.2.3-android17/Encore-Pixel-10-Android17-v0.2.3-generic.zip) | 先安装此模块 |
-| [自动温控模块](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.2.3-android17/pixel10proxl-game-thermal-CP41-v1.6.0-auto-config.zip) | 可与调度模块同时启用 |
+| [Encore 调度模块](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.2.4-android17/Encore-Pixel-10-Android17-v0.2.3-generic.zip) | 先安装此模块 |
+| [自动温控模块 v1.6.1](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.2.4-android17/pixel10proxl-game-thermal-CP41-v1.6.1-auto-config.zip) | 可与调度模块同时启用 |
 
 源码请查看仓库中的 `src/` 目录；发布页只提供两个可安装模块 ZIP。
 
@@ -28,7 +28,7 @@
 2. Android SDK 必须是 `37`；
 3. CPU、GPU、DSU、IRM 频率节点必须通过预检。
 
-温控模块会自动发现唯一的 `thermal_info_config*.json`，并校验虚拟皮肤传感器、冷却设备和目标频率。不同 Android 17 QPR/测试版如果改变频率表或 Thermal JSON 结构，模块会安全停止，不覆盖系统原配置。
+温控模块 v1.6.1 会按完整系统指纹重新建立 stock 缓存，自动发现唯一的 `thermal_info_config*.json`，并校验虚拟皮肤传感器、冷却设备和目标频率。不同 Android 17 QPR/测试版如果改变频率表或 Thermal JSON 结构，模块会安全停止，不覆盖系统原配置。
 
 ## 目录结构
 
@@ -41,7 +41,7 @@
 
 请先停用其他会写入相同 `debug_min_freq`、uclamp 或温控 JSON 的模块。Encore 作为唯一频率投票写入者运行；自动温控模块可以与 Encore 同时启用。
 
-当前验证设备为 Pixel 10 Pro XL `mustang`、Android 17 SDK 37、构建 `CP41.260831.007`。升级到其他 Android 17 QPR 后，基础调度按设备、SDK 和频率节点预检；未知 `libgui.so` 版本只停用 FAS 帧探针。
+当前验证设备为 Pixel 10 Pro XL `mustang`、Android 17 SDK 37、构建 `CP41.260831.007.A3`。升级到其他 Android 17 QPR 后，基础调度按设备、SDK 和频率节点预检；温控模块按完整指纹重建缓存；未知 `libgui.so` 版本只停用 FAS 帧探针。
 
 详细步骤见 [兼容性与安装说明](docs/兼容性与安装.md)。
 

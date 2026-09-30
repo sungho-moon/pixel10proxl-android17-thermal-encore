@@ -24,6 +24,7 @@ pgt_conflicts() {
 pgt_config() {
   [ -r "$1/state/config.env" ] || { pgt_reason config_state_missing; return 1; }
   . "$1/state/config.env"
+  [ "${BUILD_FINGERPRINT:-}" = "$(getprop ro.build.fingerprint)" ] || { pgt_reason build_fingerprint_mismatch; return 1; }
   [ -n "${CONFIG_NAME:-}" ] || { pgt_reason config_name_missing; return 1; }
   [ -r "$1/profiles/stock.json" ] && [ -r "$1/profiles/game.json" ] || { pgt_reason profiles_missing; return 1; }
   [ "$(pgt_sha "$1/profiles/stock.json")" = "${STOCK_SHA:-invalid}" ] || { pgt_reason stock_profile_hash; return 1; }
