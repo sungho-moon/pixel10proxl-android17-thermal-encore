@@ -1,0 +1,17 @@
+{
+  "version": "1.6.1-auto-config",
+  "package_sha256": "3422b6dd452ec4f2b4306082cfb265c18f77a51e600fc7e270fc8f6d3695204b",
+  "source_sha256": "4b55c902f3476caa168110a334499be76b9eeeaaebe71cb12c5608f84a918853",
+  "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
+  "changes": 40,
+  "discovery": "native RapidJSON probe across thermal_info_config*.json",
+  "fail_closed": [
+    "malformed JSON",
+    "duplicate target sensors/cdevs",
+    "ambiguous matching files",
+    "unsupported target frequencies"
+  ],
+  "fingerprint_keyed_cache": true,
+  "atomic_stock_and_overlay_promotion": true,
+  "installed": false
+}

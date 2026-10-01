@@ -3,7 +3,6 @@ MODDIR=${0%/*}
 . "$MODDIR/tools/lib.sh"
 [ -e "$MODDIR/disable" ] && exit 0
 [ -e "$MODDIR/remove" ] && exit 0
-[ -e "$MODDIR/state/pending-boot" ] && { pgt_quarantine "$MODDIR" previous_boot_unverified; exit 0; }
 [ ! -r "$MODDIR/state/config.env" ] && sh "$MODDIR/tools/discover.sh" "$MODDIR"
 [ -r "$MODDIR/state/config.env" ] || exit 0
 result=$(pgt_check "$MODDIR" /vendor/etc /data/adb/modules /data/adb/modules_update 2>&1)

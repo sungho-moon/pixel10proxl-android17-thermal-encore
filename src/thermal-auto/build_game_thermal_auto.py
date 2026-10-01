@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 MODULE = ROOT / "module"
 OUTPUT = ROOT / "dist"
-VERSION = "1.6.4-stock-safe"
+VERSION = "1.6.1-auto-config"
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -39,7 +39,7 @@ def main() -> None:
     prop = "\n".join([
         "id=pixel_game_thermal_cp41",
         "name=Pixel 10 Pro XL Game Thermal Auto Config",
-        f"version={VERSION}", "versionCode=16300",
+        f"version={VERSION}", "versionCode=16100",
         "author=Local device adaptation",
         "description=CP41 schema-matched Thermal JSON discovery and game profile patch; ambiguous configurations fail closed.", "",
     ])
@@ -58,7 +58,7 @@ def main() -> None:
     report = {
         "version": VERSION, "package_sha256": sha(package), "source_sha256": sha(source),
         "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
-        "changes": 0, "discovery": "native RapidJSON probe across thermal_info_config*.json",
+        "changes": 40, "discovery": "native RapidJSON probe across thermal_info_config*.json",
         "fail_closed": ["malformed JSON", "duplicate target sensors/cdevs", "ambiguous matching files", "unsupported target frequencies"],
         "fingerprint_keyed_cache": True,
         "atomic_stock_and_overlay_promotion": True,
