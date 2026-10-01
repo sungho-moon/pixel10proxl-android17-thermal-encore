@@ -33,15 +33,15 @@ active, create `/data/adb/.config/encore_pixel_cp41/disable-fas-rs-advisor`.
 Remove it to re-enable the adviser; the controller reads it each loop.
 
 Targets are configured in
-`/data/adb/.config/encore_pixel_cp41/fas-targets.conf`, one line per game:
+The WebUI game page stores `target_fps` in
+`/data/adb/.config/encore_pixel_cp41/gamelist.json` for each enabled game:
 
     com.tencent.tmgp.pubgmhd 120
     com.tencent.tmgp.dfm 120
 
 The installer creates these two entries only when the file does not exist.
-They reflect the 120 FPS settings verified on this device. To change a game's
-target, edit its number to 24–240 FPS and restart the controller or the
-phone. Other registered games infer a target from two consecutive frame-rate
+Choose a value from 24–240 FPS in WebUI, or choose Auto (0). Auto targets are
+inferred from two consecutive frame-rate
 windows, using 24/30/40/45/60/75/90/120/144 FPS tiers. A confirmed target
 is latched for the session and can only rise; falling performance cannot
 automatically downgrade it. Auto inference still cannot read an in-game

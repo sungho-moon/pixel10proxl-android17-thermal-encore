@@ -25,13 +25,13 @@ sample_dynamic_threads() {
   : > "$STATE/dynamic-a"
   for t in /proc/$pid/task/*; do
     tid=${t##*/}; [ -r "$t/stat" ] || continue
-    awk -v id="$tid" '{sub(/^[0-9]+ \\([^)]*\\) /, ""); print id, $11+$12}' "$t/stat" >> "$STATE/dynamic-a"
+    awk -v id="$tid" '{sub(/^[0-9]+ \\([^)]*\\) /, ""); print id, $12+$13}' "$t/stat" >> "$STATE/dynamic-a"
   done
   sleep .25
   : > "$STATE/dynamic-b"
   for t in /proc/$pid/task/*; do
     tid=${t##*/}; [ -r "$t/stat" ] || continue
-    awk -v id="$tid" '{sub(/^[0-9]+ \\([^)]*\\) /, ""); print id, $11+$12}' "$t/stat" >> "$STATE/dynamic-b"
+    awk -v id="$tid" '{sub(/^[0-9]+ \\([^)]*\\) /, ""); print id, $12+$13}' "$t/stat" >> "$STATE/dynamic-b"
   done
   awk 'NR==FNR{a[$1]=$2;next}{d=$2-a[$1];if(d>0)print $1,d}' "$STATE/dynamic-a" "$STATE/dynamic-b" |
     sort -k2,2nr | head -n 4 | awk '{print $1}' > "$out.new"
@@ -55,8 +55,8 @@ while ! stopped; do
   case "$pid" in ''|*[!0-9]*) sleep 2; continue;; esac
   sample_dynamic_threads "$pid"
   pkg=$(foreground_package)
-  fps=$(awk -v p="$pkg" '$1=="default"{d=$2} $1==p{v=$2} END{print v?v:d}' "$MODDIR/targets.conf")
-  case "$fps" in 30|60|90|120|144) ;; *) fps=120;; esac
+  fps=$("$MODDIR/../bin/pixel-control" target-fps "$pkg")
+  case "$fps" in ''|*[!0-9]*) fps=0;; esac
   "$MODDIR/bin/guardian" "$pid" "$MODDIR/bin/sampler" "$MODDIR" 300 "$fps" > "$STATE/frames.log" 2>&1
   result=$?
   "$MODDIR/bin/guardian" --restore "$STATE" >> "$STATE/recovery.log" 2>&1

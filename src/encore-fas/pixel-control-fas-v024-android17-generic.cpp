@@ -34,6 +34,14 @@ static long monotime() { timespec t{}; clock_gettime(CLOCK_MONOTONIC, &t); retur
 static std::string readstr(const std::string& p) {
     std::ifstream f(p); std::ostringstream s; s << f.rdbuf(); return s.str();
 }
+static int configured_target(const std::string& package) {
+    const std::string games = readstr(cfg + "/gamelist.json");
+    const std::regex entry("\\\"" + package + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)");
+    std::smatch match;
+    if (!std::regex_search(games, match, entry) || match.size() < 2) return 0;
+    const int rate = std::atoi(match[1].str().c_str());
+    return rate >= 24 && rate <= 240 ? rate : 0;
+}
 static long number(const std::string& p) {
     std::istringstream s(readstr(p)); long n = -1; s >> n; return n;
 }
@@ -428,6 +436,7 @@ class FrameObserver {
     int pipefd = -1, game_pid = 0, render_tid = 0, warm = 0, good = 0, quiet = 0;
     int target_fps = 0, candidate_tier = 0, candidate_windows = 0, last_advice = 0;
     bool fixed_target = false;
+    int user_target = 0;
     bool owned = false, blocked = false, armed = false, boosted = false, degraded = false, verbose = false;
     int boost_level = 0;
     double last = 0, last_frame = 0, pressure = 0, filtered_fps = 0;
@@ -493,15 +502,7 @@ class FrameObserver {
         game_pid = pid; last = nowsec();
         // The WebUI stores the per-game target in gamelist.json. Missing or
         // zero means automatic inference; there is no module-wide fallback.
-        const std::string games = readstr(cfg + "/gamelist.json");
-        if (!games.empty()) {
-            const std::regex entry("\\\"" + package + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)");
-            std::smatch match;
-            if (std::regex_search(games, match, entry) && match.size() > 1) {
-                const int rate = std::atoi(match[1].str().c_str());
-                if (rate >= 24 && rate <= 240) { target_fps = rate; fixed_target = true; }
-            }
-        }
+        user_target = target_fps = configured_target(package); fixed_target = target_fps > 0;
         log("FAS observer attached pid=" + std::to_string(pid)); return true;
     }
     int drain(const std::unordered_set<int>& tids, std::unordered_map<int, std::vector<double>>& streams) {
@@ -547,7 +548,7 @@ public:
     void stop() { clean(); blocked = false; }
     int sample(int pid, bool eligible, const std::string& package = "", long cpu_span_khz = 0) {
         if (!eligible || pid <= 0) { stop(); return 0; }
-        if (game_pid != 0 && game_pid != pid) stop();
+        if (game_pid != 0 && (game_pid != pid || user_target != configured_target(package))) stop();
         if (!owned && !start(pid, package)) return 0;
         auto tids = threads(pid);
         if (tids.empty()) { log("FAS observer game threads missing"); stop(); return 0; }
@@ -747,6 +748,7 @@ int main(int argc, char** argv) {
     if (command == "selftest") return selftest();
     Requests requests(make_nodes(), cfg + "/journal", readstr("/proc/sys/kernel/random/boot_id"));
     requests.boot.erase(std::remove(requests.boot.begin(), requests.boot.end(), '\n'), requests.boot.end());
+    if (argc == 3 && std::string(argv[1]) == "target-fps") { printf("%d\n", configured_target(argv[2])); return 0; }
     DeviceFramePolicyIO fps_io;
     FramePolicy frame_policy(fps_io, cfg + "/frame-policy-journal", requests.boot);
     // Installation uses a read-only probe while the previous controller may run.
@@ -852,3 +854,4 @@ int main(int argc, char** argv) {
     unlink((cfg + "/controller.pid").c_str()); unlink((cfg + "/brain.pid").c_str());
     return ok ? 0 : 8;
 }
+
