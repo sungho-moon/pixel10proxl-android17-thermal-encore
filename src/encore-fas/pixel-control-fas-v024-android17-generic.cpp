@@ -111,9 +111,11 @@ static std::vector<Node> make_nodes() {
             table_fraction(p + "scaling_available_frequencies", .70, boost[i])});
     }
     const char* dev[] = {"34f00000.gpu0", "200c0780.dsufreq", "irm_gmc_freq"};
-    long df[] = {512000000, 691000000, 844000000};
-    long dl[] = {448000000, 537000000, 672000000};
-    long db[] = {691000000, 691000000, 844000000};
+    // Raise only the userspace floor request. Thermal HAL remains authoritative
+    // for the actual ceiling; this cannot bypass hardware thermal protection.
+    long df[] = {691000000, 691000000, 844000000};
+    long dl[] = {512000000, 537000000, 672000000};
+    long db[] = {806000000, 806000000, 921000000};
     for (int i = 0; i < 3; ++i) {
         std::string p = "/sys/class/devfreq/" + std::string(dev[i]) + "/";
         n.push_back({p + "vote_manager/debug_min_freq", p + "available_frequencies", p + "max_freq",
