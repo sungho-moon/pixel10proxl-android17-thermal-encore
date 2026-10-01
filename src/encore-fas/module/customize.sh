@@ -16,10 +16,10 @@ for f in config.json device_mitigation.json default_cpu_gov; do
  [ -f "$C/$f" ] || cp "$MODPATH/defaults/$f" "$C/$f"
 done
 if [ ! -f "$C/fas-targets.conf" ]; then
- printf 'com.tencent.tmgp.pubgmhd 120\ncom.tencent.tmgp.dfm 120\ncom.netease.sky 60\n' > "$C/fas-targets.conf"
+ printf 'com.tencent.tmgp.pubgmhd 120\ncom.tencent.tmgp.dfm 120\ncom.netease.sky 120\n' > "$C/fas-targets.conf"
  chmod 600 "$C/fas-targets.conf"
 elif ! grep -q '^com.netease.sky[[:space:]]' "$C/fas-targets.conf"; then
- printf '\ncom.netease.sky 60\n' >> "$C/fas-targets.conf"
+ printf '\ncom.netease.sky 120\n' >> "$C/fas-targets.conf"
 fi
 [ -f "$C/gamelist.json" ] || "$MODPATH/bin/encored" setup_gamelist "$MODPATH/gamelist.txt" || abort "Game list setup failed"
 "$MODPATH/bin/encored" check_gamelist || abort "Invalid game list"
