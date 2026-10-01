@@ -24,10 +24,17 @@ fi
 # A separate shell waits for the controller and recovers its journal if it crashes.
 "$MODPATH/bin/pixel-control" run >> "$C/service.log" 2>&1 &
 PID=$!
-trap 'kill -TERM "$PID" 2>/dev/null; wait "$PID" 2>/dev/null; "$MODPATH/bin/pixel-control" restore >> "$C/service.log" 2>&1' EXIT INT TERM
+THREAD_PID=
+if [ -x "$MODPATH/thread/service.sh" ]; then
+  "$MODPATH/thread/service.sh" >> "$C/thread-service.log" 2>&1 &
+  THREAD_PID=$!
+fi
+trap 'kill -TERM "$PID" 2>/dev/null; [ -n "$THREAD_PID" ] && kill -TERM "$THREAD_PID" 2>/dev/null; wait "$PID" 2>/dev/null; [ -n "$THREAD_PID" ] && wait "$THREAD_PID" 2>/dev/null; "$MODPATH/bin/pixel-control" restore >> "$C/service.log" 2>&1' EXIT INT TERM
 wait "$PID"
 RESULT=$?
 trap - EXIT INT TERM
+[ -n "$THREAD_PID" ] && kill -TERM "$THREAD_PID" 2>/dev/null
+[ -n "$THREAD_PID" ] && wait "$THREAD_PID" 2>/dev/null
 "$MODPATH/bin/pixel-control" restore >> "$C/service.log" 2>&1
 echo "controller_exit=$RESULT" >> "$C/service.log"
 # No restart loop: a failing backend stays off until manually resumed/rebooted.

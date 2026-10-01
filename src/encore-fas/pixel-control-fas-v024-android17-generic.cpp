@@ -63,11 +63,38 @@ static void log(const std::string& s) {
     if (f) { fprintf(f, "%ld %s\n", monotime(), s.c_str()); fclose(f); }
     fprintf(stderr, "%s\n", s.c_str());
 }
+static int smooth_thermal_cap(int current, long temp) {
+    if (current < 0 || current > 3) current = 3;
+    // Temperature is reported in deci-degrees Celsius. Escalation is
+    // aggressive; recovery requires a 1 C margin to prevent oscillation.
+    if (temp >= 430) return 0;
+    if (temp >= 420) return std::min(current, 0);
+    if (temp >= 410) return std::min(current, 1);
+    if (temp >= 400) return std::min(current, 2);
+    if (current == 0 && temp <= 410) return 1;
+    if (current <= 1 && temp <= 400) return 2;
+    if (current <= 2 && temp <= 390) return 3;
+    return current;
+}
 struct Node {
     std::string path, table, maximum;
     long full, lite, boost = 0, original = -1, last = -1, prior = -1;
     bool active = false, blocked = false;
 };
+static std::vector<long> frequencies(const std::string& path) {
+    std::vector<long> out; std::istringstream s(readstr(path)); long v;
+    while (s >> v) if (v > 0) out.push_back(v);
+    std::sort(out.begin(), out.end());
+    out.erase(std::unique(out.begin(), out.end()), out.end());
+    return out;
+}
+static long table_fraction(const std::string& path, double fraction, long fallback) {
+    auto values = frequencies(path);
+    if (values.empty()) return fallback;
+    fraction = std::max(0.0, std::min(1.0, fraction));
+    size_t index = static_cast<size_t>(std::llround(fraction * (values.size() - 1)));
+    return values[index];
+}
 static std::vector<Node> make_nodes() {
     std::vector<Node> n;
     int ids[] = {0, 2, 5, 7};
@@ -76,7 +103,12 @@ static std::vector<Node> make_nodes() {
     long boost[] = {1036000, 1785000, 1785000, 1766000};
     for (int i = 0; i < 4; ++i) {
         std::string p = "/sys/devices/system/cpu/cpufreq/policy" + std::to_string(ids[i]) + "/";
-        n.push_back({p + "vote_manager/debug_min_freq", p + "scaling_available_frequencies", p + "scaling_max_freq", full[i], lite[i], boost[i]});
+        // Select from the live table. The fallback preserves the known-good
+        // CP41 values when the node is temporarily unavailable during boot.
+        n.push_back({p + "vote_manager/debug_min_freq", p + "scaling_available_frequencies", p + "scaling_max_freq",
+            table_fraction(p + "scaling_available_frequencies", .42, full[i]),
+            table_fraction(p + "scaling_available_frequencies", .32, lite[i]),
+            table_fraction(p + "scaling_available_frequencies", .70, boost[i])});
     }
     const char* dev[] = {"34f00000.gpu0", "200c0780.dsufreq", "irm_gmc_freq"};
     long df[] = {512000000, 691000000, 844000000};
@@ -84,7 +116,10 @@ static std::vector<Node> make_nodes() {
     long db[] = {691000000, 691000000, 844000000};
     for (int i = 0; i < 3; ++i) {
         std::string p = "/sys/class/devfreq/" + std::string(dev[i]) + "/";
-        n.push_back({p + "vote_manager/debug_min_freq", p + "available_frequencies", p + "max_freq", df[i], dl[i], db[i]});
+        n.push_back({p + "vote_manager/debug_min_freq", p + "available_frequencies", p + "max_freq",
+            table_fraction(p + "available_frequencies", .42, df[i]),
+            table_fraction(p + "available_frequencies", .32, dl[i]),
+            table_fraction(p + "available_frequencies", .70, db[i])});
     }
     return n;
 }
@@ -756,7 +791,7 @@ int main(int argc, char** argv) {
     }
     if (brain < 0) return 7;
     atomicfile(cfg + "/brain.pid", std::to_string(brain) + "\n");
-    bool hot = false; std::string previous;
+    bool hot = false; int thermal_cap_state = 3; std::string previous;
     while (!stopping && getppid() == parent && access((cfg + "/pause").c_str(), F_OK) != 0 && (observe || access((mod + "/disable").c_str(), F_OK) != 0) && access((mod + "/remove").c_str(), F_OK) != 0 && access((mod + "/update").c_str(), F_OK) != 0) {
         int status; if (waitpid(brain, &status, WNOHANG) == brain) { log("Brain exited; restoring"); brain = -1; break; }
         Scene sc = scene();
@@ -772,7 +807,8 @@ int main(int argc, char** argv) {
         bool fas_eligible = !observe && game && !reduced && temp < 420 && capacity >= 20
             && access((cfg + "/disable-fas").c_str(), F_OK) != 0;
         int frame_level = frame_observer.sample(sc.pid, fas_eligible, sc.package, requests.cpu_boost_span_khz());
-        int thermal_cap = temp < 400 ? 3 : temp < 410 ? 2 : temp < 420 ? 1 : 0;
+        thermal_cap_state = smooth_thermal_cap(thermal_cap_state, temp);
+        int thermal_cap = thermal_cap_state;
         int frame_boost = std::min(frame_level, thermal_cap);
         std::string state = observe ? "OBSERVE" : "RESTORED";
         if (game) state = observe ? (reduced ? "OBSERVE_LITE" : "OBSERVE_GAME") : (reduced ? "GAME_LITE" : "GAME");
