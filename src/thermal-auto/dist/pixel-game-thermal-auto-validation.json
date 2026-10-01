@@ -1,9 +1,9 @@
 {
-  "version": "1.6.1-auto-config",
-  "package_sha256": "3422b6dd452ec4f2b4306082cfb265c18f77a51e600fc7e270fc8f6d3695204b",
-  "source_sha256": "4b55c902f3476caa168110a334499be76b9eeeaaebe71cb12c5608f84a918853",
+  "version": "1.7.0-dynamic-tensor",
+  "package_sha256": "b5060b8a7b457515b39ef20c0823c3f28e15b12624c9099594afc80380698f11",
+  "source_sha256": "acd337f050c1dea139c208ae7ac6820d1103fb4499fdc1cac85d3eeeed3dbe0f",
   "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
-  "changes": 40,
+  "changes": 44,
   "discovery": "native RapidJSON probe across thermal_info_config*.json",
   "fail_closed": [
     "malformed JSON",
