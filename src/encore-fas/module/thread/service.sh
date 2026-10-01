@@ -15,7 +15,7 @@ has_game_threads() {
   for task in /proc/$pid/task/*; do
     tid=${task##*/}; [ -r "$task/comm" ] || continue
     name=$(cat "$task/comm")
-    case "$name" in RenderThread\ *|RHIThread|GameThread|MainThread-UE4|UnityMain|UnityPreload*|UnityGfxDeviceW*|UnityMultiRende*|UnityChoreograp*|GfxDeviceWorker|Cocos2dxGLThread|GLThread|NativeThread|SDLThread|TaskGraphNP\ *|Worker\ Thread*|CoreThread*|Job.Worker\ *|JobSystem\ *) return 0;; esac
+    case "$name" in RenderThread|RenderThread\ *|RHIThread|GameThread|MainThread-UE4|UnityMain|UnityPreload*|UnityGfxDeviceW*|UnityMultiRende*|UnityChoreograp*|GfxDeviceWorker|Cocos2dxGLThread|GLThread|NativeThread|SDLThread|TaskGraphNP\ *|Worker\ Thread*|CoreThread*|Job.Worker\ *|JobSystem\ *) return 0;; esac
   done
   return 1
 }
