@@ -104,6 +104,14 @@ static void levels(Value& sensor, const char* request, const char* key,
 }
 
 static int apply_profile(Document& doc) {
+    // Safe baseline for CP41. The vendor Thermal HAL rejects modified
+    // component graphs on some Beta builds with an empty "invalid components"
+    // diagnostic. Keep discovery and fingerprint validation, but ship the
+    // exact stock graph until each component can be validated independently.
+    (void)doc;
+    return 0;
+
+#if 0
     Value& hint = one_sensor(doc, "VIRTUAL-SKIN-HINT");
     Value& light = one_sensor(doc, "VIRTUAL-SKIN-CPU-LIGHT-ODPM");
     Value& mid = one_sensor(doc, "VIRTUAL-SKIN-CPU-MID");
@@ -141,6 +149,7 @@ static int apply_profile(Document& doc) {
     levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
     levels(soc, "gpu", "CdevCeilingFrequency", {1, 2}, 633000000);
     return 44;
+#endif
 }
 
 static void validate_thresholds(Document& doc) {

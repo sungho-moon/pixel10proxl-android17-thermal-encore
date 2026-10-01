@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 MODULE = ROOT / "module"
 OUTPUT = ROOT / "dist"
-VERSION = "1.6.3-soc-fix"
+VERSION = "1.6.4-stock-safe"
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -58,7 +58,7 @@ def main() -> None:
     report = {
         "version": VERSION, "package_sha256": sha(package), "source_sha256": sha(source),
         "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
-        "changes": 44, "discovery": "native RapidJSON probe across thermal_info_config*.json",
+        "changes": 0, "discovery": "native RapidJSON probe across thermal_info_config*.json",
         "fail_closed": ["malformed JSON", "duplicate target sensors/cdevs", "ambiguous matching files", "unsupported target frequencies"],
         "fingerprint_keyed_cache": True,
         "atomic_stock_and_overlay_promotion": True,

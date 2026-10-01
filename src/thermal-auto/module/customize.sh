@@ -1,13 +1,13 @@
 #!/system/bin/sh
 SKIPUNZIP=0
-ui_print "Pixel 10 Pro XL Game Thermal 1.6.3 SOC Fix"
+ui_print "Pixel 10 Pro XL Game Thermal 1.6.4 Stock Safe"
 ui_print "Schema discovery will run after the complete module is extracted"
 [ "$(getprop ro.product.device)" = mustang ] || abort "Unsupported device"
 [ "$(getprop ro.build.version.sdk)" = 37 ] || abort "Unsupported Android SDK"
 capacity=$(cat /sys/class/power_supply/battery/capacity 2>/dev/null || echo 0)
 [ "$capacity" -ge 15 ] || abort "Charge battery to at least 15%"
 mkdir -p "$MODPATH/state" "$MODPATH/profiles" "$MODPATH/system/vendor/etc"
-rm -f "$MODPATH/disable" "$MODPATH/skip_mount" "$MODPATH/state/blocked-reason" "$MODPATH/state/config.env" "$MODPATH/state/runtime.env"
+rm -f "$MODPATH/disable" "$MODPATH/skip_mount" "$MODPATH/state/blocked-reason" "$MODPATH/state/config.env" "$MODPATH/state/runtime.env" "$MODPATH/state/pending-boot"
 printf '%s\n' game > "$MODPATH/requested-mode"
 printf '%s\n' pending > "$MODPATH/state/discovery"
 # No static thermal overlay is shipped. post-fs-data creates the file after
