@@ -23,8 +23,8 @@
 
 仓库内安装包：
 
-- [Encore 调度模块](release/Encore-Pixel-10-Android17-v0.4.0-per-game-fps.zip)
-- [自动温控模块 v1.6.4](release/pixel10proxl-game-thermal-CP41-v1.6.4-thermal-expanded.zip)
+- [Encore 调度模块](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.4.0-android17/Encore-Pixel-10-Android17-v0.4.0-per-game-fps.zip)
+- [自动温控模块 v1.6.4](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.4.0-android17/pixel10proxl-game-thermal-CP41-v1.6.4-thermal-expanded.zip)
 
 ## 兼容范围
 
@@ -54,6 +54,7 @@
 ## 许可证
 
 Encore 上游代码遵循其原许可证；FAS-rs 相关说明和许可证随源码保留。Pixel 适配部分为本项目的本地修改。
+
 
 
 
