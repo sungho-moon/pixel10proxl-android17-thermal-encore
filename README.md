@@ -21,6 +21,11 @@
 
 源码请查看仓库中的 `src/` 目录；发布页只提供可安装模块 ZIP，不放源码压缩包或 SHA256 文件。
 
+仓库内安装包：
+
+- [Encore 调度模块](release/Encore-Pixel-10-Android17-v0.4.0-per-game-fps.zip)
+- [自动温控模块 v1.6.4](release/pixel10proxl-game-thermal-CP41-v1.6.4-thermal-expanded.zip)
+
 ## 兼容范围
 
 基础调度检查以下条件：
@@ -49,5 +54,6 @@
 ## 许可证
 
 Encore 上游代码遵循其原许可证；FAS-rs 相关说明和许可证随源码保留。Pixel 适配部分为本项目的本地修改。
+
 
 
