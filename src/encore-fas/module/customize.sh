@@ -8,6 +8,8 @@ mkdir -p "$C"
 chmod 700 "$C"
 set_perm_recursive "$MODPATH" 0 0 0755 0644
 set_perm_recursive "$MODPATH/bin" 0 0 0755 0755
+set_perm_recursive "$MODPATH/thread/bin" 0 0 0755 0755
+set_perm "$MODPATH/thread/service.sh" 0 0 0755
 for s in service.sh action.sh uninstall.sh ui-state.sh ui-write.sh; do set_perm "$MODPATH/$s" 0 0 0755; done
 (cd "$MODPATH" && sha256sum -c INSTALL_SHA256SUMS) || abort "Install payload checksum failed"
 for f in config.json device_mitigation.json default_cpu_gov; do
