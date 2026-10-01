@@ -14,7 +14,6 @@
 当前构建包含：
 
 - Encore 目标帧率按游戏配置：WebUI 可选自动判断、30、60、120 FPS。
-- WebUI 游戏页使用纵向展开菜单；主页路径已适配 `encore_pixel_cp41`，显示版本、当前配置和 `Tensor G5 (laguna)`。
 - 调度起始频率改为按需模式：GPU 约 512 MHz 起步，FAS 根据持续帧时间不足逐档提升，稳定后逐档回落。
 - 动态线程后端继续运行，线程级 uclamp 与 Encore 共用同一游戏目标。
 - 自动温控 `v1.6.4-thermal-expanded`：高温前段延后 GPU 降档，748 → 633 → 512 MHz 平滑保护。
