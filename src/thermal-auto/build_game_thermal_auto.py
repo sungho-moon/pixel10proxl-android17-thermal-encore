@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 MODULE = ROOT / "module"
 OUTPUT = ROOT / "dist"
-VERSION = "1.7.0-dynamic-tensor"
+VERSION = "1.7.1-safe-tensor"
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -39,9 +39,9 @@ def main() -> None:
     prop = "\n".join([
         "id=pixel_game_thermal_cp41",
         "name=Pixel Tensor Game Thermal Dynamic",
-        f"version={VERSION}", "versionCode=17000",
+        f"version={VERSION}", "versionCode=17100",
         "author=Local device adaptation",
-        "description=Runtime Thermal JSON discovery and frequency-scaled game profile for Pixel Tensor Android 17.", "",
+        "description=Runtime Thermal JSON discovery with validated Tensor game profile for Android 17.", "",
     ])
     (MODULE / "module.prop").write_text(prop, encoding="utf-8", newline="\n")
     normalize_tree(MODULE)

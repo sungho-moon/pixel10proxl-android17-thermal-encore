@@ -1,7 +1,7 @@
 {
-  "version": "1.7.0-dynamic-tensor",
-  "package_sha256": "b5060b8a7b457515b39ef20c0823c3f28e15b12624c9099594afc80380698f11",
-  "source_sha256": "acd337f050c1dea139c208ae7ac6820d1103fb4499fdc1cac85d3eeeed3dbe0f",
+  "version": "1.7.1-safe-tensor",
+  "package_sha256": "920aa33a7818586ed3e61c37585c7cdaf1c612375b96386028cf1078d3fe47f1",
+  "source_sha256": "a09e64fc213413aff0ab442dd125d03b793ceb14d459c219a266247c6a15aed2",
   "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
   "changes": 44,
   "discovery": "native RapidJSON probe across thermal_info_config*.json",

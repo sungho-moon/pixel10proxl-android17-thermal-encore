@@ -110,22 +110,6 @@ static void levels(Value& sensor, const char* request, const char* key,
     if (changed == 0) throw std::runtime_error(std::string("array_shape:") + key);
 }
 
-static long long scaled_target(Value& sensor, const char* request, const char* key,
-                              double fraction, long long fallback) {
-    Value& cdev = one_cdev(sensor, request);
-    if (!cdev.HasMember(key) || !cdev[key].IsArray()) return fallback;
-    long long maximum = 0;
-    for (auto& item : cdev[key].GetArray()) {
-        if (!item.IsNumber()) continue;
-        long long value = item.IsInt64() ? item.GetInt64() : item.IsUint64()
-            ? static_cast<long long>(item.GetUint64()) : static_cast<long long>(item.GetDouble());
-        if (value > maximum && value < 2000000000LL) maximum = value;
-    }
-    if (maximum <= 0) return fallback;
-    long long target = static_cast<long long>(std::llround(maximum * fraction));
-    if (std::string(key) != "CdevCeiling") target = (target / 1000) * 1000;
-    return std::max(1LL, target);
-}
 static int apply_profile(Document& doc) {
     Value& hint = one_sensor(doc, "VIRTUAL-SKIN-HINT");
     Value& light = one_sensor(doc, "VIRTUAL-SKIN-CPU-LIGHT-ODPM");
@@ -137,31 +121,31 @@ static int apply_profile(Document& doc) {
     threshold(hint, 1, 39.0); polling(hint);
 
     threshold(light, 1, 40.0); threshold(light, 2, 42.0); polling(light);
-    levels(light, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, scaled_target(light, "cpufreq-cpu0", "CdevCeilingFrequency", .68, 1881000));
-    levels(light, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, scaled_target(light, "cpufreq-cpu2", "CdevCeilingFrequency", .82, 2534000));
-    levels(light, "big_and_big_mid", "CdevCeiling", {1, 2}, scaled_target(light, "big_and_big_mid", "CdevCeiling", .80, 4));
+    levels(light, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, 1881000);
+    levels(light, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, 2534000);
+    levels(light, "big_and_big_mid", "CdevCeiling", {1, 2}, 4);
 
     threshold(mid, 1, 42.0); threshold(mid, 2, 44.0); polling(mid);
-    levels(mid, "thermal-uclamp-0", "CdevCeilingFrequency", {1, 2}, scaled_target(mid, "thermal-uclamp-0", "CdevCeilingFrequency", .68, 1881000));
-    levels(mid, "thermal-uclamp-2", "CdevCeilingFrequency", {1, 2}, scaled_target(mid, "thermal-uclamp-2", "CdevCeilingFrequency", .82, 2534000));
-    levels(mid, "thermal-uclamp-5", "CdevCeilingFrequency", {1, 2}, scaled_target(mid, "thermal-uclamp-5", "CdevCeilingFrequency", .82, 2534000));
-    levels(mid, "thermal-uclamp-7", "CdevCeilingFrequency", {1, 2}, scaled_target(mid, "thermal-uclamp-7", "CdevCeilingFrequency", .92, 2937000));
+    levels(mid, "thermal-uclamp-0", "CdevCeilingFrequency", {1, 2}, 1881000);
+    levels(mid, "thermal-uclamp-2", "CdevCeilingFrequency", {1, 2}, 2534000);
+    levels(mid, "thermal-uclamp-5", "CdevCeilingFrequency", {1, 2}, 2534000);
+    levels(mid, "thermal-uclamp-7", "CdevCeilingFrequency", {1, 2}, 2937000);
 
     threshold(odpm, 1, 42.0); threshold(odpm, 2, 44.0); polling(odpm);
-    levels(odpm, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, scaled_target(odpm, "cpufreq-cpu0", "CdevCeilingFrequency", .68, 1881000));
-    levels(odpm, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, scaled_target(odpm, "cpufreq-cpu2", "CdevCeilingFrequency", .82, 2534000));
-    levels(odpm, "big_and_big_mid", "CdevCeiling", {1, 2}, scaled_target(odpm, "big_and_big_mid", "CdevCeiling", .80, 4));
+    levels(odpm, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, 1881000);
+    levels(odpm, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, 2534000);
+    levels(odpm, "big_and_big_mid", "CdevCeiling", {1, 2}, 4);
 
     threshold(high, 1, 44.0); threshold(high, 2, 46.0); polling(high);
 
-    levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, scaled_target(soc, "cpufreq-cpu0", "CdevCeilingFrequency", .68, 1881000));
-    levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, scaled_target(soc, "cpufreq-cpu2", "CdevCeilingFrequency", .82, 2534000));
-    levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, scaled_target(soc, "big_and_big_mid", "CdevCeiling", .80, 4));
+    levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, 1881000);
+    levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, 2534000);
+    levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
     // Keep the 748 MHz ceiling through the first high-temperature states.
     // Derate in two smaller steps only at the upper protection states.
-    levels(soc, "gpu", "CdevCeilingFrequency", {1, 2, 3, 4}, scaled_target(soc, "gpu", "CdevCeilingFrequency", .92, 748000000));
-    levels(soc, "gpu", "CdevCeilingFrequency", {5}, scaled_target(soc, "gpu", "CdevCeilingFrequency", .78, 633000000));
-    levels(soc, "gpu", "CdevCeilingFrequency", {6}, scaled_target(soc, "gpu", "CdevCeilingFrequency", .63, 512000000));
+    levels(soc, "gpu", "CdevCeilingFrequency", {1, 2, 3, 4}, 748000000);
+    levels(soc, "gpu", "CdevCeilingFrequency", {5}, 633000000);
+    levels(soc, "gpu", "CdevCeilingFrequency", {6}, 512000000);
     return 40;
 }
 
