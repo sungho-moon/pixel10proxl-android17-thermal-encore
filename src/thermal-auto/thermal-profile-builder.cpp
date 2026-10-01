@@ -134,7 +134,11 @@ static int apply_profile(Document& doc) {
     levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, 1881000);
     levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, 2534000);
     levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
-    levels(soc, "gpu", "CdevCeilingFrequency", {1, 2}, 633000000);
+    // Keep the 748 MHz ceiling through the first high-temperature states.
+    // Derate in two smaller steps only at the upper protection states.
+    levels(soc, "gpu", "CdevCeilingFrequency", {1, 2, 3, 4}, 748000000);
+    levels(soc, "gpu", "CdevCeilingFrequency", {5}, 633000000);
+    levels(soc, "gpu", "CdevCeilingFrequency", {6}, 512000000);
     return 40;
 }
 

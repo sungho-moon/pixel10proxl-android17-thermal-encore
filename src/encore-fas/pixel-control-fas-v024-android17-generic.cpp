@@ -115,7 +115,8 @@ static std::vector<Node> make_nodes() {
         // Select from the live table. The fallback preserves the known-good
         // CP41 values when the node is temporarily unavailable during boot.
         n.push_back({p + "vote_manager/debug_min_freq", p + "scaling_available_frequencies", p + "scaling_max_freq",
-            table_fraction(p + "scaling_available_frequencies", .42, full[i]),
+            // Start games from a moderate floor; FAS raises this in stages.
+            table_fraction(p + "scaling_available_frequencies", .34, full[i]),
             table_fraction(p + "scaling_available_frequencies", .32, lite[i]),
             table_fraction(p + "scaling_available_frequencies", .70, boost[i])});
     }
@@ -129,7 +130,9 @@ static std::vector<Node> make_nodes() {
         std::string p = "/sys/class/devfreq/" + std::string(dev[i]) + "/";
         // Match the aggressive thermal profile's 633 MHz GPU ceiling so the
         // controller does not release the request when Thermal HAL derates.
-        double game_fraction = i == 0 ? .50 : .42;
+        // GPU starts near the 512 MHz OPP instead of jumping to 633 MHz.
+        // Sustained frame deficit is handled by staged_floor()/FAS advice.
+        double game_fraction = i == 0 ? .36 : .34;
         n.push_back({p + "vote_manager/debug_min_freq", p + "available_frequencies", p + "max_freq",
             table_fraction(p + "available_frequencies", game_fraction, df[i]),
             table_fraction(p + "available_frequencies", .32, dl[i]),

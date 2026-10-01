@@ -1,6 +1,6 @@
 #!/system/bin/sh
 SKIPUNZIP=0
-ui_print "Pixel 10 Pro XL Game Thermal 1.6.1 Auto Config"
+ui_print "Pixel 10 Pro XL Game Thermal 1.6.4 Expanded Thermal"
 ui_print "Schema discovery will run after the complete module is extracted"
 [ "$(getprop ro.product.device)" = mustang ] || abort "Unsupported device"
 [ "$(getprop ro.build.version.sdk)" = 37 ] || abort "Unsupported Android SDK"
@@ -18,3 +18,4 @@ for file in customize.sh post-fs-data.sh service.sh action.sh uninstall.sh tools
   [ -f "$MODPATH/$file" ] && set_perm "$MODPATH/$file" 0 0 0755
 done
 ui_print "Automatic Thermal JSON discovery deferred to post-fs-data"
+
