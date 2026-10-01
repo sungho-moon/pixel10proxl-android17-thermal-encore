@@ -19,9 +19,28 @@ has_game_threads() {
   done
   return 1
 }
+sample_dynamic_threads() {
+  local pid=$1 out="$MODDIR/../../../.config/encore_pixel_cp41/dynamic-tids" a b
+  mkdir -p "${out%/*}"
+  : > "$STATE/dynamic-a"
+  for t in /proc/$pid/task/*; do
+    tid=${t##*/}; [ -r "$t/stat" ] || continue
+    awk -v id="$tid" '{print id, $14+$15}' "$t/stat" >> "$STATE/dynamic-a"
+  done
+  sleep .25
+  : > "$STATE/dynamic-b"
+  for t in /proc/$pid/task/*; do
+    tid=${t##*/}; [ -r "$t/stat" ] || continue
+    awk -v id="$tid" '{print id, $14+$15}' "$t/stat" >> "$STATE/dynamic-b"
+  done
+  awk 'NR==FNR{a[$1]=$2;next}{d=$2-a[$1];if(d>0)print $1,d}' "$STATE/dynamic-a" "$STATE/dynamic-b" |
+    sort -k2,2nr | head -n 4 | awk '{print $1}' > "$out.new"
+  [ -s "$out.new" ] && mv -f "$out.new" "$out"
+}
 find_game() {
   local pkg pid uid
   pkg=$(foreground_package)
+  sample_dynamic_threads "$pid"
   case "$pkg" in ''|android|com.android.*|com.google.android.apps.nexuslauncher) return 1;; esac
   for pid in $(pidof "$pkg" 2>/dev/null); do
     uid=$(sed -n 's/^Uid:[[:space:]]*//p' /proc/$pid/status 2>/dev/null | awk '{print $1}')
