@@ -11,7 +11,7 @@ deficit or up to two on a severe deficit. It has no fixed 6-second hold or
 temperature caps. The 43°C whole-controller protection remains active. Read `FAS_EXPERIMENT.md` for
 controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 
-适用设备：Pixel 10 Pro XL (`mustang`)，Android 17（SDK 37）各 QPR/测试版本。频率节点预检通过后启用基础 Encore 调度；只有已匹配的 `libgui.so` 才启用 FAS 帧探针。
+适用设备：Pixel Tensor 系列，Android 17（SDK 37）各 QPR/测试版本。频率节点预检通过后启用基础 Encore 调度；只有已匹配的 `libgui.so` 才启用 FAS 帧探针。
 
 这是 Encore 的源码分支，非官方 Pixel 版本。上游：<https://github.com/Rem01Gaming/encore>，版本 5.2.1，提交 `361ab0ef483f3a6a9d57b2aae0ac2284c2fe6d64`，Apache-2.0。
 
@@ -133,3 +133,4 @@ bash rebuild.sh
 固定依赖：RapidJSON `24b5e7a8b27f42fa16b96fc70aade9106cf7102f`；spdlog `1685e694c5cd8328280c48f8b94b1281c17c6fee`。源码压缩包已包含这些头文件和各自许可证。
 
 WebUI 构建环境：Node.js 24.19.0，npm 11.17.0。在 fork/webui 中运行 npm ci --ignore-scripts --no-audit --no-fund 和 npm run build，或运行 build-webui.ps1。先构建原生程序和前端，再运行 package.py，最后运行 package-regression.py 核对安装与清理后运行文件。
+

@@ -13,7 +13,6 @@ sleep 25
 [ -f "$MODPATH/remove" ] && exit 0
 [ -f "$MODPATH/update" ] && exit 0
 [ -f "$C/pause" ] && exit 0
-[ "$(getprop ro.product.device)" = mustang ] || { echo 'STARTUP_FAILED device mismatch' > "$C/status"; exit 1; }
 [ "$(getprop ro.build.version.sdk)" = 37 ] || { echo 'STARTUP_FAILED Android SDK mismatch' > "$C/status"; exit 1; }
 # KernelSU removes customize.sh and README.md after installation. SHA256SUMS
 # covers only persistent runtime files; INSTALL_SHA256SUMS is used by customize.sh.

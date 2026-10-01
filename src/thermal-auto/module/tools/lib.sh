@@ -1,9 +1,8 @@
 #!/system/bin/sh
-# Auto-discovery and fail-closed checks for the CP41 thermal profile.
+# Auto-discovery and fail-closed checks for Pixel Tensor Android 17 thermal profiles.
 pgt_sha() { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
 pgt_reason() { printf 'PGT_FAIL=%s\n' "$1"; }
 pgt_platform() {
-  [ "$(getprop ro.product.device)" = "mustang" ] || { pgt_reason device_mismatch; return 1; }
   [ "$(getprop ro.build.version.sdk)" = "37" ] || { pgt_reason sdk_mismatch; return 1; }
 }
 pgt_conflicts() {
@@ -39,10 +38,16 @@ pgt_active_file() {
   [ "$_sha" = "$GAME_SHA" ] || [ "$_sha" = "$STOCK_SHA" ] || { pgt_reason active_config_unrecognized; return 1; }
 }
 pgt_hardware() {
-  grep -qw 1881000 /sys/devices/system/cpu/cpufreq/policy0/scaling_available_frequencies || { pgt_reason unsupported_cpu0_target; return 1; }
-  grep -qw 2534000 /sys/devices/system/cpu/cpufreq/policy2/scaling_available_frequencies || { pgt_reason unsupported_cpu2_target; return 1; }
-  grep -qw 2937000 /sys/devices/system/cpu/cpufreq/policy7/scaling_available_frequencies || { pgt_reason unsupported_cpu7_target; return 1; }
-  grep -qw 633000000 /sys/devices/platform/34f00000.gpu0/devfreq/34f00000.gpu0/available_frequencies || { pgt_reason unsupported_gpu_target; return 1; }
+  _policies=0
+  for _p in /sys/devices/system/cpu/cpufreq/policy*; do
+    [ -r "$_p/scaling_available_frequencies" ] && _policies=$((_policies + 1))
+  done
+  [ "$_policies" -ge 1 ] || { pgt_reason no_cpu_frequency_policy; return 1; }
+  _devfreq=0
+  for _p in /sys/class/devfreq/*; do
+    [ -r "$_p/available_frequencies" ] && _devfreq=$((_devfreq + 1))
+  done
+  [ "$_devfreq" -ge 1 ] || { pgt_reason no_devfreq_policy; return 1; }
 }
 pgt_check() {
   _module=$1; _vendor=${2:-/vendor/etc}; _modules=${3:-/data/adb/modules}; _pending=${4:-/data/adb/modules_update}

@@ -396,12 +396,10 @@ static Scene scene() {
     return out;
 }
 static bool compatible() {
-    auto product = capture({"/system/bin/getprop", "ro.product.device"});
     auto sdk = capture({"/system/bin/getprop", "ro.build.version.sdk"});
-    // Android 17 Pixel 10 Pro XL family gate. Frequency tables and the
-    // libgui uprobe are checked separately; unknown libgui builds keep the
-    // baseline Encore controller but do not guess a trace offset.
-    return product == "mustang\n" && sdk == "37\n";
+    // Device-independent Android 17 gate. Frequency domains are probed at
+    // runtime; unknown libgui builds keep baseline control and disable FAS.
+    return sdk == "37\n";
 }
 static bool conflict() {
     for (const auto& id : {"pixel_pubg_uclamp_cp41", "encore", "fas_rs", "fas_rs_pixel_cp41"}) {

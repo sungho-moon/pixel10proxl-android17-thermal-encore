@@ -1,8 +1,7 @@
 #!/system/bin/sh
 SKIPUNZIP=0
-ui_print "Pixel 10 Pro XL Game Thermal 1.6.4 Expanded Thermal"
+ui_print "Pixel Tensor Game Thermal 1.7.0 Dynamic"
 ui_print "Schema discovery will run after the complete module is extracted"
-[ "$(getprop ro.product.device)" = mustang ] || abort "Unsupported device"
 [ "$(getprop ro.build.version.sdk)" = 37 ] || abort "Unsupported Android SDK"
 capacity=$(cat /sys/class/power_supply/battery/capacity 2>/dev/null || echo 0)
 [ "$capacity" -ge 15 ] || abort "Charge battery to at least 15%"

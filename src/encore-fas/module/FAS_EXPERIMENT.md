@@ -1,4 +1,4 @@
-# Encore Pixel 10 Pro XL Android 17 0.2.3 generic adviser
+# Encore Pixel Tensor Android 17 0.2.3 generic adviser
 
 This is a userspace adaptation of the frame-deficit concept in
 https://github.com/rem01project/encore_fas, pinned at commit
@@ -79,3 +79,4 @@ frame policy restored when the test ended. This establishes a real control
 contribution, **not** an FPS or stability benefit. If a game behaves poorly,
 create `disable-fas-rs-advisor`, then `disable-fas` if needed, or pause the
 module from KernelSU and inspect the controller log.
+

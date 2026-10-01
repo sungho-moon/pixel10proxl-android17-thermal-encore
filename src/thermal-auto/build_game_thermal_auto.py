@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 MODULE = ROOT / "module"
 OUTPUT = ROOT / "dist"
-VERSION = "1.6.4-thermal-expanded"
+VERSION = "1.7.0-dynamic-tensor"
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -38,18 +38,18 @@ def main() -> None:
     if binary.resolve() != destination.resolve(): shutil.copy2(binary, destination)
     prop = "\n".join([
         "id=pixel_game_thermal_cp41",
-        "name=Pixel 10 Pro XL Game Thermal Auto Config",
-        f"version={VERSION}", "versionCode=16400",
+        "name=Pixel Tensor Game Thermal Dynamic",
+        f"version={VERSION}", "versionCode=17000",
         "author=Local device adaptation",
-        "description=CP41 schema-matched Thermal JSON discovery and game profile patch; ambiguous configurations fail closed.", "",
+        "description=Runtime Thermal JSON discovery and frequency-scaled game profile for Pixel Tensor Android 17.", "",
     ])
     (MODULE / "module.prop").write_text(prop, encoding="utf-8", newline="\n")
     normalize_tree(MODULE)
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    package = OUTPUT / f"pixel10proxl-game-thermal-CP41-v{VERSION}.zip"
+    package = OUTPUT / f"pixel-tensor-game-thermal-v{VERSION}.zip"
     archive(package, MODULE)
     with zipfile.ZipFile(package) as z: assert z.testzip() is None
-    source = OUTPUT / f"pixel10proxl-game-thermal-source-v{VERSION}.zip"
+    source = OUTPUT / f"pixel-tensor-game-thermal-source-v{VERSION}.zip"
     with zipfile.ZipFile(source, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
         for p in sorted(MODULE.rglob("*")):
             if p.is_file(): z.writestr("module/" + p.relative_to(MODULE).as_posix(), p.read_bytes())

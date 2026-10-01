@@ -1,6 +1,6 @@
 id=encore_pixel_cp41
-name=Encore Pixel CP41
-version=0.4.0-per-game-fps
+name=Encore Pixel Tensor
+version=0.5.0-dynamic-tensor
 versionCode=400
-author=Rem01Gaming (upstream), Pixel CP41 adaptation
-description=Encore single-writer controller with reused thread uclamp, dynamic frequency tables, FAS feedback, and smooth aggressive thermal derating.
+author=Rem01Gaming (upstream), Pixel Tensor adaptation
+description=Device-independent Android 17 controller with runtime frequency discovery, thread uclamp, and guarded FAS feedback.

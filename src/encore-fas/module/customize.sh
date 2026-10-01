@@ -1,6 +1,5 @@
 #!/system/bin/sh
-ui_print "Encore Pixel Android 17 generic 0.2.3 fas-rs advisor (upstream 5.2.1)"
-[ "$(getprop ro.product.device)" = mustang ] || abort "Only Pixel 10 Pro XL / mustang is supported"
+ui_print "Encore Pixel Tensor Android 17 generic 0.3.0 fas-rs advisor"
 [ "$(getprop ro.build.version.sdk)" = 37 ] || abort "This package requires Android SDK 37"
 [ "$ARCH" = arm64 ] || abort "arm64 required"
 C=/data/adb/.config/encore_pixel_cp41
