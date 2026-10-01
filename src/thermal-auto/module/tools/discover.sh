@@ -52,11 +52,11 @@ STOCK_SHA=$stock_sha
 GAME_SHA=$game_sha
 BUILD_FINGERPRINT=$fingerprint
 DISCOVERY=thermal-profile-builder
-PATCH_CHANGES=46
+PATCH_CHANGES=44
 EOF
 cp -fp "$MODDIR/state/config.env" "$MODDIR/expected.env"
 printf '%s\n' "$config_name" > "$MODDIR/config-name"
 printf '%s\n' discovered > "$MODDIR/state/discovery"
 rm -f "$MODDIR/state/blocked-reason" "$MODDIR/disable" "$MODDIR/skip_mount"
 chmod 0600 "$MODDIR/state/config.env" "$MODDIR/expected.env"
-pgt_log "$MODDIR" "discovered_config=$config_name changes=46 fingerprint=$fingerprint"
+pgt_log "$MODDIR" "discovered_config=$config_name changes=44 fingerprint=$fingerprint"

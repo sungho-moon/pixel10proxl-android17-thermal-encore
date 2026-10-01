@@ -1,6 +1,6 @@
 id=pixel_game_thermal_cp41
 name=Pixel 10 Pro XL Game Thermal Auto Config
-version=1.6.2-smooth-gpu
-versionCode=16100
+version=1.6.3-soc-fix
+versionCode=16300
 author=Local device adaptation
 description=CP41 schema-matched Thermal JSON discovery and game profile patch; ambiguous configurations fail closed.

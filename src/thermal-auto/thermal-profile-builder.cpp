@@ -135,14 +135,26 @@ static int apply_profile(Document& doc) {
     // range. The stock profile enters its level-3 GPU ceiling at 41 C,
     // which can collapse a 120 Hz game while the battery is still cool.
     threshold(soc, 1, 39.0); threshold(soc, 2, 41.0);
-    threshold(soc, 3, 44.0); threshold(soc, 4, 47.0); polling(soc);
+    threshold(soc, 3, 44.0); polling(soc);
     levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, 1881000);
     levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, 2534000);
     levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
     levels(soc, "gpu", "CdevCeilingFrequency", {1, 2}, 633000000);
-    levels(soc, "gpu", "CdevCeilingFrequency", {3}, 576000000);
-    levels(soc, "gpu", "CdevCeilingFrequency", {4}, 448000000);
-    return 46;
+    return 44;
+}
+
+static void validate_thresholds(Document& doc) {
+    for (auto& sensor : doc["Sensors"].GetArray()) {
+        if (!sensor.HasMember("HotThreshold")) continue;
+        double previous = -1e30;
+        for (auto& slot : sensor["HotThreshold"].GetArray()) {
+            if (!slot.IsNumber()) continue; // vendor NAN placeholders
+            double value = slot.GetDouble();
+            if (value <= previous)
+                throw std::runtime_error(std::string("non_increasing_threshold:") + sensor["Name"].GetString());
+            previous = value;
+        }
+    }
 }
 
 static void atomic_write(const std::string& path, const std::string& data) {
@@ -170,7 +182,11 @@ int main(int argc, char** argv) {
         Document doc;
         doc.Parse(text.data(), text.size());
         if (doc.HasParseError()) throw std::runtime_error("json_parse");
+        if (!doc.IsObject() || !doc.HasMember("Sensors") || !doc["Sensors"].IsArray())
+            throw std::runtime_error("sensors_missing");
+        validate_thresholds(doc);
         int changes = apply_profile(doc);
+        validate_thresholds(doc);
         if (std::string(argv[1]) == "probe") {
             if (argc != 3) return 2;
             std::cout << "THERMAL_PROFILE_MATCH changes=" << changes << "\n";
