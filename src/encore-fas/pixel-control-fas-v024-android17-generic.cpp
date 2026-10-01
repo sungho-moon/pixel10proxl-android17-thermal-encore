@@ -118,8 +118,11 @@ static std::vector<Node> make_nodes() {
     long db[] = {806000000, 806000000, 921000000};
     for (int i = 0; i < 3; ++i) {
         std::string p = "/sys/class/devfreq/" + std::string(dev[i]) + "/";
+        // Match the aggressive thermal profile's 633 MHz GPU ceiling so the
+        // controller does not release the request when Thermal HAL derates.
+        double game_fraction = i == 0 ? .50 : .42;
         n.push_back({p + "vote_manager/debug_min_freq", p + "available_frequencies", p + "max_freq",
-            table_fraction(p + "available_frequencies", .42, df[i]),
+            table_fraction(p + "available_frequencies", game_fraction, df[i]),
             table_fraction(p + "available_frequencies", .32, dl[i]),
             table_fraction(p + "available_frequencies", .70, db[i])});
     }
@@ -187,6 +190,15 @@ public:
         size_t index = ((choices.size() - 1) * static_cast<size_t>(level) + 2) / 3;
         return choices[std::min(index, choices.size() - 1)];
     }
+    static long clamp_floor(const Node& n, long requested, long ceiling) {
+        if (ceiling <= 0) return 0;
+        std::vector<long> choices;
+        long value;
+        std::istringstream table(readstr(n.table));
+        while (table >> value && value <= ceiling) choices.push_back(value);
+        if (choices.empty()) return 0;
+        return std::min(requested, choices.back());
+    }
     bool apply(bool lite, int boost_level = 0) {
         for (auto& n : nodes) {
             if (n.blocked) continue;
@@ -195,12 +207,11 @@ public:
             if (n.active && cur != n.last) { n.active = false; n.blocked = true; save(); log("YIELD external writer " + n.path); continue; }
             if (!n.active) n.original = cur;
             long floor = lite ? n.lite : staged_floor(n, boost_level);
-            long want = std::max(n.original, floor);
-            if (want > ceiling) {
-                if (n.active && !writeval(n.path, n.original)) { restore(); return false; }
-                n.active = false; if (!save()) { restore(); return false; }
-                continue;
-            }
+            long requested = std::max(n.original, floor);
+            long want = clamp_floor(n, requested, ceiling);
+            // Dynamic clamping: keep a valid floor at the thermal ceiling
+            // instead of releasing to zero when Thermal HAL derates.
+            if (want != requested) log("CLAMP " + n.path + " requested=" + std::to_string(requested) + " ceiling=" + std::to_string(ceiling) + " target=" + std::to_string(want));
             if (cur == want) continue;
             n.prior = cur;
             n.last = want; n.active = true;
