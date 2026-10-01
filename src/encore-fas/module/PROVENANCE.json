@@ -9,7 +9,7 @@
   "binder_resolver_apk_sha256": "beb99604cf31649102ebc9174e35250087f44296dfca1622846e5c5cefc8c20c",
   "binaries": {
     "encored": "174e00ca15bffd150673177bbc8a56dc709ea3e4874b58b7c02e1266bdaf37d9",
-    "pixel-control": "907a078639514584d90d9270d00d105e8731051a69b688cc2941207b5596ce9b"
+    "pixel-control": "d8fa0917a1e2bdd8b8c65d81fa0fba729514d49d06d02211d19676411863869e"
   },
   "frame_feedback": {
     "type": "Encore single-writer FAS with independently implemented fas-rs proportional adviser",
