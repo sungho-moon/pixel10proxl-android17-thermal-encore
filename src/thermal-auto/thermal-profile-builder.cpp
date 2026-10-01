@@ -131,11 +131,18 @@ static int apply_profile(Document& doc) {
 
     threshold(high, 1, 44.0); threshold(high, 2, 46.0); polling(high);
 
+    // Delay the severe SOC/GPU derating out of the normal 40-42 C gaming
+    // range. The stock profile enters its level-3 GPU ceiling at 41 C,
+    // which can collapse a 120 Hz game while the battery is still cool.
+    threshold(soc, 1, 39.0); threshold(soc, 2, 41.0);
+    threshold(soc, 3, 44.0); threshold(soc, 4, 47.0); polling(soc);
     levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, 1881000);
     levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, 2534000);
     levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
     levels(soc, "gpu", "CdevCeilingFrequency", {1, 2}, 633000000);
-    return 40;
+    levels(soc, "gpu", "CdevCeilingFrequency", {3}, 576000000);
+    levels(soc, "gpu", "CdevCeilingFrequency", {4}, 448000000);
+    return 46;
 }
 
 static void atomic_write(const std::string& path, const std::string& data) {

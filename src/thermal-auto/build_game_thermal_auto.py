@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 MODULE = ROOT / "module"
 OUTPUT = ROOT / "dist"
-VERSION = "1.6.1-auto-config"
+VERSION = "1.6.2-smooth-gpu"
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -58,7 +58,7 @@ def main() -> None:
     report = {
         "version": VERSION, "package_sha256": sha(package), "source_sha256": sha(source),
         "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
-        "changes": 40, "discovery": "native RapidJSON probe across thermal_info_config*.json",
+        "changes": 46, "discovery": "native RapidJSON probe across thermal_info_config*.json",
         "fail_closed": ["malformed JSON", "duplicate target sensors/cdevs", "ambiguous matching files", "unsupported target frequencies"],
         "fingerprint_keyed_cache": True,
         "atomic_stock_and_overlay_promotion": True,
