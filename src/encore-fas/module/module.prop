@@ -1,6 +1,6 @@
 id=encore_pixel_cp41
 name=Encore Pixel CP41
-version=0.3.0-android17-thread-dynamic
-versionCode=300
+version=0.4.0-per-game-fps
+versionCode=400
 author=Rem01Gaming (upstream), Pixel CP41 adaptation
 description=Encore single-writer controller with reused thread uclamp, dynamic frequency tables, FAS feedback, and smooth aggressive thermal derating.

@@ -18,6 +18,7 @@
 #include <vector>
 #include <fcntl.h>
 #include <poll.h>
+#include <regex>
 #include <sys/file.h>
 #include <sys/prctl.h>
 #include <sys/stat.h>
@@ -490,13 +491,16 @@ class FrameObserver {
             log("FAS observer attach failed; disabled for this game session"); clean(); blocked = true; return false;
         }
         game_pid = pid; last = nowsec();
-        // User-configured targets take precedence. Auto targets are a
-        // session high-water mark: observed underperformance must never
-        // lower the target that the governor is trying to recover.
-        std::istringstream targets(readstr(cfg + "/fas-targets.conf"));
-        std::string name; int rate = 0;
-        while (targets >> name >> rate) if (name == package && rate >= 24 && rate <= 240) {
-            target_fps = rate; fixed_target = true; break;
+        // The WebUI stores the per-game target in gamelist.json. Missing or
+        // zero means automatic inference; there is no module-wide fallback.
+        const std::string games = readstr(cfg + "/gamelist.json");
+        if (!games.empty()) {
+            const std::regex entry("\\\"" + package + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)");
+            std::smatch match;
+            if (std::regex_search(games, match, entry) && match.size() > 1) {
+                const int rate = std::atoi(match[1].str().c_str());
+                if (rate >= 24 && rate <= 240) { target_fps = rate; fixed_target = true; }
+            }
         }
         log("FAS observer attached pid=" + std::to_string(pid)); return true;
     }

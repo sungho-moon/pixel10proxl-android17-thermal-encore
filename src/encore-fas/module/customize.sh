@@ -15,12 +15,10 @@ for s in service.sh action.sh uninstall.sh ui-state.sh ui-write.sh; do set_perm 
 for f in config.json device_mitigation.json default_cpu_gov; do
  [ -f "$C/$f" ] || cp "$MODPATH/defaults/$f" "$C/$f"
 done
-if [ ! -f "$C/fas-targets.conf" ]; then
- printf 'com.tencent.tmgp.pubgmhd 120\ncom.tencent.tmgp.dfm 120\ncom.netease.sky 120\n' > "$C/fas-targets.conf"
- chmod 600 "$C/fas-targets.conf"
-elif ! grep -q '^com.netease.sky[[:space:]]' "$C/fas-targets.conf"; then
- printf '\ncom.netease.sky 120\n' >> "$C/fas-targets.conf"
-fi
+# Target FPS is configured per game in WebUI gamelist.json. Keep a legacy
+# file empty so older installations do not reintroduce a global fixed target.
+[ -f "$C/fas-targets.conf" ] || : > "$C/fas-targets.conf"
+chmod 600 "$C/fas-targets.conf"
 [ -f "$C/gamelist.json" ] || "$MODPATH/bin/encored" setup_gamelist "$MODPATH/gamelist.txt" || abort "Game list setup failed"
 "$MODPATH/bin/encored" check_gamelist || abort "Invalid game list"
 "$MODPATH/bin/pixel-control" probe || abort "Pixel frequency interface check failed"
