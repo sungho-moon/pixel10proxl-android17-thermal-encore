@@ -45,7 +45,7 @@ game_thread() {
     [ -r "$task/comm" ] || continue
     name=$(cat "$task/comm" 2>/dev/null)
     case "$name" in
-      UnityMain|UnityGfxDeviceW*|UnityPreload*|RHIThread|GameThread|MainThread-UE4|GfxDeviceWorker|Cocos2dxGLThread|Godot*|TaskGraphNP*|JobSystem*|Worker\ Thread*|SDLThread)
+      UnityMain|UnityGfxDeviceW*|UnityPreload*|RHIThread|GameThread|MainThread-UE4|GfxDeviceWorker|Cocos2dxGLThread|Godot*|TaskGraphNP*|JobSystem*|JobThread*|Worker\ Thread*|SDLThread)
         return 0 ;;
     esac
   done
