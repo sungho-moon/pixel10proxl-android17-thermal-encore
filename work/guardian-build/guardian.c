@@ -15,11 +15,13 @@ static const uint32_t floors[]={0,257,385,513};
 static char directory[768];static volatile sig_atomic_t alive=1;
 static int session_fd=-1;
 static int inferred_target(double fps) {
- static const int tiers[]={24,30,40,45,60,75,90,120,144,165,240};
- int best=0; double distance=1e9;
- if(fps<15)return 0;
- for(unsigned i=0;i<sizeof(tiers)/sizeof(tiers[0]);i++){double d=fps-tiers[i];if(d<0)d=-d;if(d<distance){distance=d;best=tiers[i];}}
- return best;
+ /* Automatic mode only exposes the device's supported user-facing tiers.
+  * Use an upper-band decision so a loaded 120-FPS game at 80-100 FPS is
+  * not mistaken for a 60/90-FPS preference. The target is latched later. */
+ if(fps<24)return 0;
+ if(fps<42)return 30;
+ if(fps<78)return 60;
+ return 120;
 }
 static int session_lock(void){
  char path[900];snprintf(path,sizeof(path),"%s/session.lock",directory);
@@ -171,7 +173,7 @@ int main(int argc,char**argv){
   load();return restore_all();
  }
  if(argc!=6){fprintf(stderr,"Usage: guardian PID SAMPLER MODULE_DIR SECONDS TARGET_FPS\n");return 2;}
- int target=atoi(argv[5]); int automatic=target==0,candidate=0,windows=0;if(target!=0&&(target<24||target>240))return 2;
+ int target=atoi(argv[5]); int automatic=target==0;if(target!=0&&(target<24||target>240))return 2;
  int pid=atoi(argv[1]),seconds=atoi(argv[4]);if(pid<=1||seconds<1||seconds>300||strlen(argv[3])>700)return 2;
  snprintf(directory,sizeof(directory),"%s/state",argv[3]);
  if(session_lock()){puts("SESSION_ALREADY_ACTIVE");return 75;}
@@ -191,7 +193,7 @@ int main(int argc,char**argv){
  char path[900];snprintf(path,sizeof(path),"%s/guardian.pid",directory);FILE*f=fopen(path,"w");if(f){fprintf(f,"%d\n",getpid());fclose(f);}
  snprintf(path,sizeof(path),"%s/sampler.pid",directory);f=fopen(path,"w");if(f){fprintf(f,"%d\n",worker);fclose(f);}
  printf("GUARDIAN_READY pid=%d worker=%d targets=%d\n",pid,worker,count);
- struct policy policy={0};int error=0,eof=0;uint64_t start=now_ns(),last=start;
+ struct policy policy={0};int error=0,eof=0;int auto_windows=0,auto_peak=0;uint64_t start=now_ns(),last=start;
  char buffer[8192];size_t used=0;
  while(alive&&now_ns()-start<(uint64_t)(seconds+3)*1000000000ull){
   if(!enabled(argv[3])||!top_app(pid)){puts("STOP foreground_or_enabled=0");break;}
@@ -208,11 +210,13 @@ int main(int argc,char**argv){
     int fields=sscanf(begin,"FRAME_STATS samples=%d fps=%lf avg_ms=%lf p95_ms=%lf late_pct=%lf valid=%d",&samples,&fps,&avg,&p95,&late,&valid);
     if(fields!=6&&samples!=0){error=10;alive=0;break;}
     last=now_ns();int temp=number("/sys/class/power_supply/battery/temp");
-    if(automatic&&valid) {
+    if(automatic&&valid&&samples>=20) {
      int tier=inferred_target(fps);
-     if(tier>target){if(tier==candidate)windows++;else{candidate=tier;windows=1;}
-      if(windows>=2){target=tier;memset(&policy,0,sizeof(policy));printf("TARGET_AUTO target=%d\n",target);}
-     }else{candidate=windows=0;}
+     if(tier>auto_peak)auto_peak=tier;
+     auto_windows++;
+     printf("TARGET_AUTO_SAMPLE fps=%.2f tier=%d peak=%d window=%d/3\n",fps,tier,auto_peak,auto_windows);
+     if(target==0&&auto_windows>=3&&auto_peak>0){target=auto_peak;memset(&policy,0,sizeof(policy));printf("TARGET_AUTO_LOCK target=%d\n",target);}
+     else if(target>0&&auto_peak>target){target=auto_peak;memset(&policy,0,sizeof(policy));printf("TARGET_AUTO_RAISE target=%d\n",target);}
     }
     /* late_pct came from an automatic sampler budget; always use our latched target. */
     late=p95>1100.0/(target?target:1)?100:0;
