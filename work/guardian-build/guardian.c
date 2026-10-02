@@ -72,7 +72,11 @@ static int discover(int pid){
  char path[128];snprintf(path,sizeof(path),"/proc/%d/task",pid);DIR*d=opendir(path);if(!d)return -1;
  struct dirent*e;int added=0;
  while((e=readdir(d))){int tid=atoi(e->d_name);if(tid<=0)continue;
-  int known=find(tid);if(known>=0&&records[known].start==birth(tid))continue;
+  int known=find(tid);
+  if(known>=0&&records[known].start==birth(tid)){
+   if(records[known].target==0&&dynamic_tid(tid)){records[known].target=1;added++;}
+   continue;
+  }
   snprintf(path,sizeof(path),"/proc/%d/comm",tid);FILE*f=fopen(path,"r");char name[64]={0};
   if(f){if(!fgets(name,sizeof(name),f))name[0]=0;fclose(f);}name[strcspn(name,"\n")]=0;
   if(!selected(name,tid,pid))continue;
@@ -82,7 +86,7 @@ static int discover(int pid){
  }
  for(int i=0;i<count;i++){
   struct record*r=&records[i];
-  if(!r->target||dynamic_tid(r->tid))continue;
+  if(r->target!=1||dynamic_tid(r->tid))continue;
   if(restore_one(r)){closedir(d);return -1;}
   r->target=0;
  }
@@ -105,12 +109,12 @@ static int forks(struct watch*w){
 static int apply(int level){
  int active=0;
  for(int i=0;i<count;i++){
-  struct record*r=&records[i];if(!r->target||birth(r->tid)!=r->start)continue;
+  struct record*r=&records[i];if(r->target!=1||birth(r->tid)!=r->start)continue;
   struct attr a;if(get_attr(r->tid,&a))continue;
   if(!allowed_policy(a.policy)||a.max!=1024||(!ours(a.min)&&a.min!=r->original)){
    /* Yield ownership if ADPF or another actor changed the request. */
    if(restore_one(r))return -1;
-   r->target=0;printf("YIELD tid=%d external_attr_change=1\n",r->tid);continue;
+   r->target=2;printf("YIELD tid=%d external_attr_change=1\n",r->tid);continue;
   }
   uint32_t wanted=level?floors[level]:r->original;
   if(a.min!=wanted){

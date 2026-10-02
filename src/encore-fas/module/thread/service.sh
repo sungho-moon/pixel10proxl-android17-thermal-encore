@@ -18,6 +18,7 @@ sample_dynamic_threads() {
   : > "$STATE/dynamic-a"
   for t in /proc/$pid/task/*; do
     tid=${t##*/}; [ -r "$t/stat" ] || continue
+    [ "$tid" = "$pid" ] && continue
     rest=$("$TOYBOX" sed 's/^[0-9][0-9]* ([^)]*) //' "$t/stat") || continue
     set -- $rest
     utime=${12:-0}; stime=${13:-0}
@@ -28,6 +29,7 @@ sample_dynamic_threads() {
   : > "$STATE/dynamic-b"
   for t in /proc/$pid/task/*; do
     tid=${t##*/}; [ -r "$t/stat" ] || continue
+    [ "$tid" = "$pid" ] && continue
     rest=$("$TOYBOX" sed 's/^[0-9][0-9]* ([^)]*) //' "$t/stat") || continue
     set -- $rest
     utime=${12:-0}; stime=${13:-0}
