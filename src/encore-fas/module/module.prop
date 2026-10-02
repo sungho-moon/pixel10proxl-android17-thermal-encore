@@ -1,6 +1,6 @@
 id=encore_pixel_cp41
 name=Encore Pixel Tensor
-version=0.5.1-auto-game
-versionCode=510
+version=0.5.2-auto-game-fix
+versionCode=520
 author=Rem01Gaming (upstream), Pixel Tensor adaptation
 description=Device-independent Android 17 controller with runtime frequency discovery, thread uclamp, and guarded FAS feedback.

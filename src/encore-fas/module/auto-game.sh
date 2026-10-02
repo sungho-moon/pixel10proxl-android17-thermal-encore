@@ -10,9 +10,16 @@ LOG="$C/auto-game.log"
 log() { printf '%s %s\n' "$(date +%s)" "$*" >> "$LOG"; }
 
 foreground_package() {
-  dumpsys activity activities 2>/dev/null |
-    sed -n 's/.*topResumedActivity=.* u[0-9][0-9]* \([^/ ]*\)\/.*/\1/p' |
-    head -n 1
+  dumpsys activity activities 2>/dev/null | awk '
+    /topResumedActivity=|mResumedActivity=|mFocusedApp=/ {
+      for (i=1; i<=NF; i++) if ($i ~ /\//) {
+        split($i, a, "/");
+        if ($0 ~ /topResumedActivity=|mResumedActivity=/) { print a[1]; found=1; exit }
+        fallback=a[1]; break
+      }
+    }
+    END { if (!found && fallback != "") print fallback }
+  ' | head -n 1
 }
 
 excluded_package() {
@@ -58,16 +65,25 @@ candidate() {
 register_game() {
   local pkg=$1 lock tmp
   grep -qF "\"$pkg\"" "$LIST" 2>/dev/null && return 0
-  lock="$C/auto-game.lock"
+  lock="$C/ui-write-lock"
   mkdir "$lock" 2>/dev/null || return 0
   trap 'rmdir "$lock" 2>/dev/null || true' EXIT INT TERM
   grep -qF "\"$pkg\"" "$LIST" 2>/dev/null && { rmdir "$lock" 2>/dev/null || true; trap - EXIT INT TERM; return 0; }
   tmp=$(mktemp "$C/gamelist.auto.XXXXXX") || { rmdir "$lock" 2>/dev/null || true; trap - EXIT INT TERM; return 1; }
-  sed '$d' "$LIST" > "$tmp" || { rm -f "$tmp"; rmdir "$lock" 2>/dev/null || true; trap - EXIT INT TERM; return 1; }
-  if grep -q '^[[:space:]]*"' "$LIST"; then printf ',\n' >> "$tmp"; fi
+  "$MODDIR/bin/encored" validate_gamelist "$LIST" >/dev/null 2>&1 || {
+    log "invalid existing gamelist; registration skipped"
+    rm -f "$tmp"; rmdir "$lock" 2>/dev/null || true; trap - EXIT INT TERM; return 1
+  }
+  # Remove the final object delimiter, including for a compact empty object {}.
+  awk '{ text=text $0 "\n" } END { sub(/}[[:space:]]*$/, "", text); printf "%s", text }' "$LIST" > "$tmp"
+  if grep -q '"' "$LIST"; then printf ',\n' >> "$tmp"; fi
   printf '  "%s": {\n    "lite_mode": false,\n    "enable_dnd": false,\n    "target_fps": 0\n  }\n}\n' "$pkg" >> "$tmp"
-  chmod 0600 "$tmp" && mv -f "$tmp" "$LIST"
-  log "registered package=$pkg target_fps=auto"
+  if "$MODDIR/bin/encored" validate_gamelist "$tmp" >/dev/null 2>&1 && chmod 0600 "$tmp" && mv -f "$tmp" "$LIST"; then
+    log "registered package=$pkg target_fps=auto"
+  else
+    log "registration failed package=$pkg"
+    rm -f "$tmp"
+  fi
   rmdir "$lock" 2>/dev/null || true
   trap - EXIT INT TERM
 }
@@ -78,8 +94,10 @@ for i in $(seq 1 120); do
 done
 [ "$(getprop sys.boot_completed)" = 1 ] || exit 0
 sleep 8
+log 'auto discovery started'
 while [ ! -e "$MODDIR/disable" ] && [ ! -e "$MODDIR/remove" ] && [ ! -e "$C/pause" ]; do
+  if [ -e "$C/disable-auto-game" ]; then sleep 2; continue; fi
   pkg=$(foreground_package)
-  [ -n "$pkg" ] && candidate "$pkg" && register_game "$pkg"
+  [ -n "$pkg" ] && ! grep -qF "\"$pkg\"" "$LIST" 2>/dev/null && candidate "$pkg" && register_game "$pkg"
   sleep 2
 done
