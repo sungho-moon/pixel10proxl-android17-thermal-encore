@@ -82,7 +82,7 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 
 1. 在 KernelSU 中停用旧 `Pixel Global Game Uclamp`（ID `pixel_pubg_uclamp_cp41`，0.3.2）以及原版 Encore（如已安装）。
 2. 安装 `Encore-Pixel-10-Android17-v0.2.3-generic.zip`，确认新模块处于启用状态，重启。
-3. 开机后等待约 25 秒。游戏列表初次建立时使用上游列表筛选已安装应用；本机识别到三角洲、和平精英、光遇。不同游戏共用默认模式，可逐游戏选择 Lite。
+3. 安装阶段会读取上游固定游戏列表，只将设备已安装的匹配包加入本机列表；之后监听 `/data/app` 的 APK 安装事件并刷新匹配项。开机后等待约 25 秒服务启动。不同游戏共用默认模式，可逐游戏选择 Lite。
 4. 进入三角洲 120 帧实际对局，核对 status、投票读回值和实际呈现帧时间；最低请求高于当前系统上限时该节点释放投票。退出和息屏后应看到请求及帧率策略恢复。
 
 已有独立温控模块可以保留；本模块自身不修改温控配置。已知旧调度或原版 Encore 仍启用时，本模块拒绝进入实际控制。
@@ -91,8 +91,9 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 
 配置目录：`/data/adb/.config/encore_pixel_cp41`。
 
-- `gamelist.json`：游戏包名与 `lite_mode`；新增游戏可以手动添加。不依赖单一游戏包名。
-- `auto-game.sh`：后台扫描前台第三方应用；检测到 Unity/IL2CPP、Unreal、Cocos、Godot 等游戏引擎库或线程后，自动以 `target_fps=0` 加入 `gamelist.json`。可创建 `/data/adb/.config/encore_pixel_cp41/disable-auto-game` 关闭自动登记。
+- `gamelist.json`：游戏包名与 `lite_mode`；由上游固定列表和已安装应用交集生成，也可在 WebUI 手动维护。
+- `refresh-games.sh`：安装阶段或 APK 安装事件触发一次，将上游列表中已安装的包合并到 `gamelist.json`。
+- `package-watch.sh` / `package-event.sh`：使用 `/data/app` 的 inotify 事件刷新列表，不轮询前台应用，不检测引擎库或线程。
 - `config.json`：`preferences.enforce_lite_mode=true` 全局使用 Lite；`disable_tweaks=true` 暂停频率请求。修改已有文件后原生监听读取配置。
 - `status`：当前有效状态、前台包名、电池温度（0.1°C）、电量和游戏 PID。
 - `controller.log` / `encore.log` / `service.log`：硬件请求、事件监听和服务诊断。

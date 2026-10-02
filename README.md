@@ -8,21 +8,22 @@
 - **FAS-rs 风格帧反馈**：仅对已验证的 `libgui.so` 启用帧探针；未知版本保留基础调度，不猜测 uprobe 偏移。
 - **自动温控配置**：自动发现 Thermal JSON，生成游戏配置；结构或目标频率不匹配时自动隔离。
 - **WebUI**：支持 ReSukiSU/KernelSU 的游戏列表、Lite 模式、高帧率开关、状态和频率投票查看。
-- **自动游戏识别**：后台扫描前台第三方应用，识别常见游戏引擎库或专用游戏线程后自动加入 WebUI 游戏列表，默认目标为自动判断。
+- **固定游戏列表**：使用 Encore 上游公开游戏列表，安装模块时只登记设备已安装的匹配游戏。
+- **安装事件刷新**：通过 Android `/data/app` 的 inotify 安装事件刷新已安装匹配项，不常驻扫描前台应用。
 
 ## 最新更新
 
 当前构建包含：
 
 - Encore 目标帧率按游戏配置：WebUI 可选自动判断、30、60、120 FPS。
-- 新游戏不再必须手动添加；自动识别器会通过引擎库/线程特征登记，并使用 `target_fps=0`。
+- 新安装的游戏如果出现在上游列表中，会在 APK 安装事件后自动加入，并使用 `target_fps=0`。
 - 调度起始频率改为按需模式：GPU 约 512 MHz 起步，FAS 根据持续帧时间不足逐档提升，稳定后逐档回落。
 - 动态线程后端继续运行，线程级 uclamp 与 Encore 共用同一游戏目标。
 - 自动温控 `v1.7.1-safe-tensor`：使用已验证离散频率，748 → 633 → 512 MHz 平滑保护，避免动态计算非法频率。
 
 源码请查看仓库中的 `src/` 目录；发布页只提供可安装模块 ZIP，不放源码压缩包或 SHA256 文件。
 
-默认游戏包名列表来自 [Rem01Gaming/encore 的 gamelist.txt](https://github.com/Rem01Gaming/encore/blob/main/gamelist.txt)。它只用于初始导入；运行中的新游戏由本地自动识别器补充，不依赖联网。
+固定游戏包名列表来自 [Rem01Gaming/encore 的 gamelist.txt](https://github.com/Rem01Gaming/encore/blob/main/gamelist.txt)。模块安装时和新 APK 安装事件后，会将其中已安装的包合并到本机列表；列表不依赖运行时联网。
 
 仓库内安装包：
 
