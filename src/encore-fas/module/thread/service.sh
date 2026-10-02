@@ -12,15 +12,6 @@ foreground_package() {
     "$TOYBOX" sed -n 's/.*topResumedActivity=.* u[0-9][0-9]* \([^/ ]*\)\/.*/\1/p' |
     "$TOYBOX" head -n 1
 }
-has_game_threads() {
-  local pid=$1 task tid name
-  for task in /proc/$pid/task/*; do
-    tid=${task##*/}; [ -r "$task/comm" ] || continue
-    name=$("$TOYBOX" cat "$task/comm")
-    case "$name" in RenderThread|RenderThread\ *|RHIThread|GameThread|MainThread-UE4|UnityMain|UnityPreload*|UnityGfxDeviceW*|UnityMultiRende*|UnityChoreograp*|GfxDeviceWorker|Cocos2dxGLThread|GLThread|NativeThread|SDLThread|TaskGraphNP\ *|Worker\ Thread*|CoreThread*|Job.Worker\ *|JobSystem\ *) return 0;; esac
-  done
-  return 1
-}
 sample_dynamic_threads() {
   local pid=$1 out="$MODDIR/../../../.config/encore_pixel_cp41/dynamic-tids" a b rest utime stime tid t d
   mkdir -p "${out%/*}"
@@ -50,15 +41,16 @@ sample_dynamic_threads() {
     d=$((b - a)); [ "$d" -gt 0 ] && printf '%s %s\n' "$d" "$tid" >> "$STATE/dynamic-delta"
   done < "$STATE/dynamic-b"
   "$TOYBOX" sort -nr "$STATE/dynamic-delta" | "$TOYBOX" head -n 4 | "$TOYBOX" cut -d' ' -f2 > "$out.new"
-  [ -s "$out.new" ] && mv -f "$out.new" "$out"
+  mv -f "$out.new" "$out"
 }
 find_game() {
   local pkg pid uid
   pkg=$(foreground_package)
   case "$pkg" in ''|android|com.android.*|com.google.android.apps.nexuslauncher) return 1;; esac
+  "$TOYBOX" grep -qF "\"$pkg\"" /data/adb/.config/encore_pixel_cp41/gamelist.json 2>/dev/null || return 1
   for pid in $(pidof "$pkg" 2>/dev/null); do
     uid=$("$TOYBOX" sed -n 's/^Uid:[[:space:]]*//p' /proc/$pid/status 2>/dev/null | "$TOYBOX" tr '\t' ' ' | "$TOYBOX" cut -d' ' -f1)
-    [ "$uid" -ge 10000 ] 2>/dev/null && has_game_threads "$pid" && { echo "$pid"; return 0; }
+    [ "$uid" -ge 10000 ] 2>/dev/null && { echo "$pid"; return 0; }
   done
   return 1
 }
@@ -72,8 +64,20 @@ while ! stopped; do
   pkg=$(foreground_package)
   fps=$("$MODDIR/../bin/pixel-control" target-fps "$pkg")
   case "$fps" in ''|*[!0-9]*) fps=0;; esac
-  "$MODDIR/bin/guardian" "$pid" "$MODDIR/bin/sampler" "$MODDIR" 300 "$fps" > "$STATE/frames.log" 2>&1
+  "$MODDIR/bin/guardian" "$pid" "$MODDIR/bin/sampler" "$MODDIR" 300 "$fps" > "$STATE/frames.log" 2>&1 &
+  GUARDIAN_PID=$!
+  (
+    while kill -0 "$GUARDIAN_PID" 2>/dev/null; do
+      "$TOYBOX" sleep 3
+      kill -0 "$GUARDIAN_PID" 2>/dev/null || break
+      sample_dynamic_threads "$pid"
+    done
+  ) &
+  SCAN_PID=$!
+  wait "$GUARDIAN_PID"
   result=$?
+  kill "$SCAN_PID" 2>/dev/null
+  wait "$SCAN_PID" 2>/dev/null
   "$MODDIR/bin/guardian" --restore "$STATE" >> "$STATE/recovery.log" 2>&1
   [ "$result" -eq 0 ] || echo "guardian_exit=$result" >> "$STATE/recovery.log"
   [ "$("$TOYBOX" wc -c < "$STATE/recovery.log" 2>/dev/null)" -gt 32768 ] && mv "$STATE/recovery.log" "$STATE/recovery.previous.log"

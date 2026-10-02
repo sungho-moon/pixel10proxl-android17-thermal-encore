@@ -94,6 +94,7 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 - `gamelist.json`：游戏包名与 `lite_mode`；由上游固定列表和已安装应用交集生成，也可在 WebUI 手动维护。
 - `refresh-games.sh`：安装阶段或 APK 安装事件触发一次，将上游列表中已安装的包合并到 `gamelist.json`。
 - `thread/service.sh`：动态采样线程并调用 guardian/sampler；文本处理和计时统一通过 Android toybox，兼容 Android 17 精简系统。
+- 线程识别仅对已登记前台游戏进程生效，按约 250 ms CPU 时间增量选出前 4 个 TID，每 3 秒刷新；guardian 随候选变化接管新线程并恢复退出候选的线程，不额外按静态线程名扩张范围。
 - `package-watch.sh` / `package-event.sh`：使用 `/data/app` 的 inotify 事件刷新列表，不轮询前台应用，不检测引擎库或线程。
 - `config.json`：`preferences.enforce_lite_mode=true` 全局使用 Lite；`disable_tweaks=true` 暂停频率请求。修改已有文件后原生监听读取配置。
 - `status`：当前有效状态、前台包名、电池温度（0.1°C）、电量和游戏 PID。

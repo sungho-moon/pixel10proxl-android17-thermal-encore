@@ -14,6 +14,13 @@ static struct record records[LIMIT];static int count;
 static const uint32_t floors[]={0,257,385,513};
 static char directory[768];static volatile sig_atomic_t alive=1;
 static int session_fd=-1;
+static int inferred_target(double fps) {
+ static const int tiers[]={24,30,40,45,60,75,90,120,144,165,240};
+ int best=0; double distance=1e9;
+ if(fps<15)return 0;
+ for(unsigned i=0;i<sizeof(tiers)/sizeof(tiers[0]);i++){double d=fps-tiers[i];if(d<0)d=-d;if(d<distance){distance=d;best=tiers[i];}}
+ return best;
+}
 static int session_lock(void){
  char path[900];snprintf(path,sizeof(path),"%s/session.lock",directory);
  session_fd=open(path,O_CREAT|O_RDWR|O_CLOEXEC,0600);
@@ -73,6 +80,13 @@ static int discover(int pid){
   if(add(tid,a.min,1)){closedir(d);return -1;}added++;
   printf("TARGET tid=%d name=%s nice=%d min=%u max=%u flags=%llu\n",tid,name,a.nice,a.min,a.max,(unsigned long long)a.flags);
  }
+ for(int i=0;i<count;i++){
+  struct record*r=&records[i];
+  if(!r->target||dynamic_tid(r->tid))continue;
+  if(restore_one(r)){closedir(d);return -1;}
+  r->target=0;
+ }
+ if(save()){closedir(d);return -1;}
  closedir(d);return added;
 }
 static int forks(struct watch*w){
@@ -153,7 +167,7 @@ int main(int argc,char**argv){
   load();return restore_all();
  }
  if(argc!=6){fprintf(stderr,"Usage: guardian PID SAMPLER MODULE_DIR SECONDS TARGET_FPS\n");return 2;}
- int target=atoi(argv[5]);if(target<30||target>144)return 2;
+ int target=atoi(argv[5]); int automatic=target==0,candidate=0,windows=0;if(target!=0&&(target<24||target>240))return 2;
  int pid=atoi(argv[1]),seconds=atoi(argv[4]);if(pid<=1||seconds<1||seconds>300||strlen(argv[3])>700)return 2;
  snprintf(directory,sizeof(directory),"%s/state",argv[3]);
  if(session_lock()){puts("SESSION_ALREADY_ACTIVE");return 75;}
@@ -190,6 +204,14 @@ int main(int argc,char**argv){
     int fields=sscanf(begin,"FRAME_STATS samples=%d fps=%lf avg_ms=%lf p95_ms=%lf late_pct=%lf valid=%d",&samples,&fps,&avg,&p95,&late,&valid);
     if(fields!=6&&samples!=0){error=10;alive=0;break;}
     last=now_ns();int temp=number("/sys/class/power_supply/battery/temp");
+    if(automatic&&valid) {
+     int tier=inferred_target(fps);
+     if(tier>target){if(tier==candidate)windows++;else{candidate=tier;windows=1;}
+      if(windows>=2){target=tier;memset(&policy,0,sizeof(policy));printf("TARGET_AUTO target=%d\n",target);}
+     }else{candidate=windows=0;}
+    }
+    /* late_pct came from an automatic sampler budget; always use our latched target. */
+    late=p95>1100.0/(target?target:1)?100:0;
     int level=decide(&policy,samples,fps,avg,p95,late,temp,target,valid);
     printf("%s battery_c=%.1f cooldown=%d\n",begin,temp/10.0,policy.cooldown);
     if(discover(pid)<0||apply(level)<0){error=11;alive=0;break;}
