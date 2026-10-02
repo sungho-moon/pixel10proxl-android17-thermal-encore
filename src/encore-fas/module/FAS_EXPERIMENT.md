@@ -50,8 +50,10 @@ clipped, one-sided frame-deficit CUSUM with 5% tolerance. After acquisition,
 a sustained deficit can request a bounded boost when the current rate is
 roughly 40–98% of the configured target.
 The aggressive fas-rs adviser adds one bounded level for any proportional
-error and can add two for a severe error. Requests return to the
-normal floor as soon as the deficit clears; there is no fixed hold or cooldown.
+error and can add two for a severe error. Global frequency requests use a
+three-window downward hysteresis while the game remains below 98% of target.
+The thread controller's no-gain trial falls back to level 1 for eight windows
+instead of releasing to zero; two severe deficit windows re-enter level 2.
 Quiet scenes disarm the detector.
 
 The highest extra level requests up to CPU policy0 1036 MHz,

@@ -4,12 +4,12 @@
   "commit": "361ab0ef483f3a6a9d57b2aae0ac2284c2fe6d64",
   "rapidjson": "24b5e7a8b27f42fa16b96fc70aade9106cf7102f",
   "spdlog": "1685e694c5cd8328280c48f8b94b1281c17c6fee",
-  "ndk": "r30 / 30.0.16248370",
+  "ndk": "r27c",
   "binder_resolver_apk": "unmodified official release 5.2.1 binary",
   "binder_resolver_apk_sha256": "beb99604cf31649102ebc9174e35250087f44296dfca1622846e5c5cefc8c20c",
   "binaries": {
     "encored": "174e00ca15bffd150673177bbc8a56dc709ea3e4874b58b7c02e1266bdaf37d9",
-    "pixel-control": "d8fa0917a1e2bdd8b8c65d81fa0fba729514d49d06d02211d19676411863869e"
+    "pixel-control": "f61b1d2911fe9ef7ab5845dd8f736a2e834aa3241b90d64490055352b6aa3d76"
   },
   "frame_feedback": {
     "type": "Encore single-writer FAS with independently implemented fas-rs proportional adviser",
@@ -19,7 +19,7 @@
     "fas_rs_executable_included": false,
     "pixel_frame_source": "hash-pinned libgui Surface::hook_queueBuffer tracefs uprobe",
     "libgui_sha256": "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a",
-    "control": "aggressive profile: 90th percentile of 30-60 recent frame intervals, fas-rs kp equivalent, +1 OPP for advice 1-2 and +2 OPP for advice 3, bounded to Encore level 3",
+    "control": "configured 30/60/120 FPS target, 90th percentile of 30-60 recent frame intervals, bounded level 0-3 response, three-window global downshift hysteresis, thread no-gain fallback to level 1 with eight-window cooldown and severe-deficit early reentry",
     "thermal_cap": "battery 40/41/42 C tiered extra-boost limit; whole-controller protection remains 43 C with 41 C recovery"
   }
 }

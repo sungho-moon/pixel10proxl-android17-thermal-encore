@@ -434,7 +434,7 @@ class FrameObserver {
     static constexpr const char* libhash = "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a";
     std::string boot, pending;
     std::deque<double> frame_intervals;
-    int pipefd = -1, game_pid = 0, render_tid = 0, warm = 0, good = 0, quiet = 0;
+    int pipefd = -1, game_pid = 0, render_tid = 0, warm = 0, good = 0, quiet = 0, relax = 0;
     int target_fps = 0, candidate_tier = 0, candidate_windows = 0, last_advice = 0;
     bool fixed_target = false;
     int user_target = 0;
@@ -481,7 +481,7 @@ class FrameObserver {
         emit(std::string(trace) + "/uprobe_events", std::string("-:") + group + "/qb_hook\n", true);
         rmdir(instance);
         if (access(instance, F_OK) != 0 && access((std::string(trace) + "/events/" + group).c_str(), F_OK) != 0) unlink(marker);
-        owned = false; pending.clear(); frame_intervals.clear(); game_pid = render_tid = 0; warm = good = quiet = 0;
+        owned = false; pending.clear(); frame_intervals.clear(); game_pid = render_tid = 0; warm = good = quiet = relax = 0;
         armed = boosted = degraded = false; boost_level = 0;
         last = last_frame = pressure = filtered_fps = 0;
         target_fps = candidate_tier = candidate_windows = last_advice = 0; fixed_target = false;
@@ -566,7 +566,7 @@ public:
                 render_tid = selected; last_frame = pressure = filtered_fps = 0;
                 frame_intervals.clear();
                 degraded = boosted = armed = false; boost_level = 0;
-                warm = good = quiet = last_advice = 0;
+                warm = good = quiet = relax = last_advice = 0;
                 candidate_tier = candidate_windows = 0;
                 // A render-thread handoff does not prove the user changed the
                 // in-game FPS setting. Keep the session target latched.
@@ -639,7 +639,7 @@ public:
             } else candidate_tier = candidate_windows = 0;
         }
         if (fps >= target_fps * 0.98) ++good; else good = 0;
-        if (degraded && good >= 1) { degraded = false; pressure = 0; }
+        if (degraded && good >= 3) { degraded = false; pressure = 0; }
         int next_level = 0;
         double boost_floor = std::max(12.0, target_fps * (fixed_target ? 0.40 : 0.55));
         if (degraded && fps >= boost_floor && fps < target_fps * 0.95) {
@@ -662,6 +662,10 @@ public:
             // still owns every vote and enforces its level-3 ceiling.
             next_level = combine_fas_rs_advice(base_level, advice);
         }
+        if (next_level < boost_level && fps < target_fps * 0.98) {
+            if (++relax < 3) next_level = boost_level;
+            else { next_level = std::max(next_level, boost_level - 1); relax = 0; }
+        } else relax = 0;
         if (advice != last_advice) {
             log("FAS_RS_ADVICE level=" + std::to_string(advice) + " target=" + std::to_string(target_fps)
                 + " fps=" + std::to_string(static_cast<int>(std::lround(fps)))

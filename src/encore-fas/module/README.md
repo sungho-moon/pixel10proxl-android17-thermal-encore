@@ -6,8 +6,9 @@ observer. The original fas-rs process must stay disabled: its CPU cpufreq
 writes and exit reset are incompatible with a single-owner policy. The
 adviser's extra request is bounded to the existing three OPP levels, responds
 from 30 recent frame intervals, and adds one OPP step on the first proportional
-deficit or up to two on a severe deficit. It has no fixed 6-second hold or
-20-second cooldown and remains subject to the raised 40/41/42°C FAS
+deficit or up to two on a severe deficit. A failed high-level trial now falls
+back to a light level-1 request for up to eight windows instead of dropping to
+zero; two severe deficit windows can re-enter level 2 early. It remains subject to the raised 40/41/42°C FAS
 temperature caps. The 43°C whole-controller protection remains active. Read `FAS_EXPERIMENT.md` for
 controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 
@@ -96,6 +97,7 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 - `thread/service.sh`：动态采样线程并调用 guardian/sampler；文本处理和计时统一通过 Android toybox，兼容 Android 17 精简系统。
 - 线程识别仅对已登记前台游戏进程生效，按约 250 ms CPU 时间增量选出前 4 个 TID，每 3 秒刷新；guardian 随候选变化接管新线程并恢复退出候选的线程，不额外按静态线程名扩张范围。
 - 目标帧率只来自 WebUI 配置或安装刷新时的游戏预设；FAS 仅根据该目标计算帧时间误差并调节频率。
+- 线程 FAS 的无收益回退保留 level 1，冷却期间若连续出现严重帧时间不足会提前恢复 level 2；全局 FAS 降档需连续窗口确认，避免频率档位频繁往返。
 - `package-watch.sh` / `package-event.sh`：使用 `/data/app` 的 inotify 事件刷新列表，不轮询前台应用，不检测引擎库或线程。
 - `config.json`：`preferences.enforce_lite_mode=true` 全局使用 Lite；`disable_tweaks=true` 暂停频率请求。修改已有文件后原生监听读取配置。
 - `status`：当前有效状态、前台包名、电池温度（0.1°C）、电量和游戏 PID。
