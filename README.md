@@ -10,6 +10,7 @@
 - **WebUI**：支持 ReSukiSU/KernelSU 的游戏列表、Lite 模式、高帧率开关、状态和频率投票查看。
 - **固定游戏列表**：使用 Encore 上游公开游戏列表，安装模块时只登记设备已安装的匹配游戏。
 - **安装事件刷新**：通过 Android `/data/app` 的 inotify 安装事件刷新已安装匹配项，不常驻扫描前台应用。
+- **线程后端兼容性**：线程采样服务统一使用 Android toybox 命令入口，避免 Android 17 精简系统缺少独立 `sed`、`head`、`sleep` 导致采样中断。
 
 ## 最新更新
 
