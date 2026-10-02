@@ -60,7 +60,7 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 - 游戏：列出已安装应用，逐个启用/停用游戏识别、设置 Lite；开关保存后立即生效。
 - 设置：允许高帧率、全局 Lite、停用游戏优化、语言和日志等级。允许高帧率默认开启，表示游戏前台且保护条件允许时临时关闭系统默认游戏限帧策略，不能保证实际 120 FPS。
 - Lite 降低最低频率请求；全局 Lite 优先于单游戏设置。停用游戏优化会释放模块请求及帧率策略。
-- 每个游戏可在 WebUI 选择 30/40/45/60/75/90/120/144/165/240 FPS；选择“自动判断”时不写入固定目标，由 FAS 根据实际帧节奏锁存目标。
+- 每个游戏可在 WebUI 选择 30、60 或 120 FPS。已知竞技 FPS/MOBA 包默认 120，其余游戏默认 60；FAS 不再猜测目标帧率。
 - 移除不适用于此 Pixel 分支的 governor、设备缓解、勿扰配置入口；没有按帧时间自适应频率的 FAS。
 - 配置使用 UTF-8/Base64 传递，严格校验 JSON 和支持字段，检查保存前的旧内容，互斥写入后原子替换。原生监听新增 IN_MOVED_TO，支持替换后的配置重新加载。保存失败显示错误并恢复页面开关。
 
@@ -95,7 +95,7 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 - `refresh-games.sh`：安装阶段或 APK 安装事件触发一次，将上游列表中已安装的包合并到 `gamelist.json`。
 - `thread/service.sh`：动态采样线程并调用 guardian/sampler；文本处理和计时统一通过 Android toybox，兼容 Android 17 精简系统。
 - 线程识别仅对已登记前台游戏进程生效，按约 250 ms CPU 时间增量选出前 4 个 TID，每 3 秒刷新；guardian 随候选变化接管新线程并恢复退出候选的线程，不额外按静态线程名扩张范围。
-- 自动目标帧率不会按单个掉帧窗口降档：先收集 3 个有效窗口，使用 30/60/120 FPS 分段中的最高观察档位锁定本次前台会话目标；显式设置 30/60/120 时仍完全按 WebUI 配置执行。
+- 目标帧率只来自 WebUI 配置或安装刷新时的游戏预设；FAS 仅根据该目标计算帧时间误差并调节频率。
 - `package-watch.sh` / `package-event.sh`：使用 `/data/app` 的 inotify 事件刷新列表，不轮询前台应用，不检测引擎库或线程。
 - `config.json`：`preferences.enforce_lite_mode=true` 全局使用 Lite；`disable_tweaks=true` 暂停频率请求。修改已有文件后原生监听读取配置。
 - `status`：当前有效状态、前台包名、电池温度（0.1°C）、电量和游戏 PID。

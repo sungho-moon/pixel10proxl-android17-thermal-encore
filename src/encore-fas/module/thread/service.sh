@@ -65,7 +65,7 @@ while ! stopped; do
   sample_dynamic_threads "$pid"
   pkg=$(foreground_package)
   fps=$("$MODDIR/../bin/pixel-control" target-fps "$pkg")
-  case "$fps" in ''|*[!0-9]*) fps=0;; esac
+  case "$fps" in ''|*[!0-9]*|0) fps=60;; esac
   "$MODDIR/bin/guardian" "$pid" "$MODDIR/bin/sampler" "$MODDIR" 300 "$fps" > "$STATE/frames.log" 2>&1 &
   GUARDIAN_PID=$!
   (

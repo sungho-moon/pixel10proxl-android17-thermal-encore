@@ -38,9 +38,9 @@ static int configured_target(const std::string& package) {
     const std::string games = readstr(cfg + "/gamelist.json");
     const std::regex entry("\\\"" + package + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)");
     std::smatch match;
-    if (!std::regex_search(games, match, entry) || match.size() < 2) return 0;
+    if (!std::regex_search(games, match, entry) || match.size() < 2) return 60;
     const int rate = std::atoi(match[1].str().c_str());
-    return rate >= 24 && rate <= 240 ? rate : 0;
+    return rate >= 30 && rate <= 120 ? rate : 60;
 }
 static long number(const std::string& p) {
     std::istringstream s(readstr(p)); long n = -1; s >> n; return n;

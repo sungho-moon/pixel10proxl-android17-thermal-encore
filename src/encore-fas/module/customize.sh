@@ -10,6 +10,7 @@ set_perm_recursive "$MODPATH/bin" 0 0 0755 0755
 set_perm_recursive "$MODPATH/thread/bin" 0 0 0755 0755
 set_perm "$MODPATH/thread/service.sh" 0 0 0755
 for s in service.sh action.sh uninstall.sh ui-state.sh ui-write.sh refresh-games.sh package-event.sh package-watch.sh; do set_perm "$MODPATH/$s" 0 0 0755; done
+set_perm "$MODPATH/fps-presets.conf" 0 0 0644
 rm -f "$MODPATH/auto-game.sh"
 rm -f "$C/auto-game.log" "$C/auto-game-service.log"
 (cd "$MODPATH" && sha256sum -c INSTALL_SHA256SUMS) || abort "Install payload checksum failed"
@@ -28,7 +29,7 @@ ui_print "Keep this Encore Pixel module enabled; disable standalone Uclamp and f
 ui_print "Keep your separate thermal module if desired."
 ui_print "Full/lite game modes; restores requests on exit, screen off or battery saver."
 ui_print "Foreground game: disables Android default 60 FPS policy; restores on exit."
-ui_print "WebUI: status, game list, Lite mode and high-frame-rate preferences."
+ui_print "WebUI: status, game list, Lite mode and 30/60/120 FPS presets."
 ui_print "Uses the upstream fixed game list and refreshes installed matches at install/package events."
 ui_print "fas-rs proportional feedback runs inside Encore; no second CPU frequency writer."
 ui_print "See FAS_EXPERIMENT.md for targets and opt-out."

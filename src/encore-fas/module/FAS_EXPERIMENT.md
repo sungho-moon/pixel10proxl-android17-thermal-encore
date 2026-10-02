@@ -40,18 +40,15 @@ The WebUI game page stores `target_fps` in
     com.tencent.tmgp.dfm 120
 
 The installer creates these two entries only when the file does not exist.
-Choose a value from 24–240 FPS in WebUI, or choose Auto (0). Auto targets are
-inferred from two consecutive frame-rate
-windows, using 24/30/40/45/60/75/90/120/144 FPS tiers. A confirmed target
-is latched for the session and can only rise; falling performance cannot
-automatically downgrade it. Auto inference still cannot read an in-game
-frame-rate setting, so configure an explicit target when a game cannot reach
-its selected setting from the start.
+Choose 30, 60, or 120 FPS in WebUI. New games are assigned 120 FPS only when
+their package is in the maintained competitive FPS/MOBA preset table;
+otherwise they receive 60 FPS. FAS never infers a target from a temporary
+drop in measured frame rate; it only feeds back against the configured target.
 
 The detector follows the game's dominant queueBuffer thread and uses a
 clipped, one-sided frame-deficit CUSUM with 5% tolerance. After acquisition,
 a sustained deficit can request a bounded boost when the current rate is
-roughly 40–98% of a configured target (55–98% for an inferred target).
+roughly 40–98% of the configured target.
 The aggressive fas-rs adviser adds one bounded level for any proportional
 error and can add two for a severe error. Requests return to the
 normal floor as soon as the deficit clears; there is no fixed hold or cooldown.
