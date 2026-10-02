@@ -30,10 +30,9 @@
 
 固定游戏包名列表来自 [Rem01Gaming/encore 的 gamelist.txt](https://github.com/Rem01Gaming/encore/blob/main/gamelist.txt)。模块安装时和新 APK 安装事件后，会将其中已安装的包合并到本机列表；列表不依赖运行时联网。
 
-仓库内安装包：
+安装包下载：
 
-- [Encore 调度模块 v0.5.0](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.5.0-android17/Encore-Pixel-10-Android17-v0.5.0-dynamic-tensor.zip)
-- [自动温控模块 v1.7.2](src/thermal-auto/dist/pixel-tensor-game-thermal-v1.7.2-soc-smooth.zip)
+- [Encore 调度模块与自动温控模块 Releases](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases)
 
 ## 兼容范围
 
@@ -49,7 +48,7 @@
 
 - `src/encore-fas/`：调度器源码、模块目录和打包脚本。
 - `src/thermal-auto/`：RapidJSON 温控配置生成器、模块目录和构建脚本。
-- `release/`：两个可安装模块 ZIP 的版本化发布目录。
+- [GitHub Releases](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases)：两个可安装模块 ZIP 的版本化发布页面。
 - `docs/`：兼容性、安装和回滚说明。
 
 ## 安装前须知
