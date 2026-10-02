@@ -62,18 +62,6 @@ static Value& one_cdev(Value& sensor, const char* request) {
     return *found;
 }
 
-static Value& number_array(Value& object, const char* key, size_t required) {
-    if (!object.HasMember(key) || !object[key].IsArray() || object[key].Size() < required)
-        throw std::runtime_error(std::string("array_shape:") + key);
-    Value& array = object[key];
-    for (size_t i = 0; i < required; ++i) {
-        if (i == 0 && array[static_cast<rapidjson::SizeType>(i)].IsString()) continue;
-        if (!array[static_cast<rapidjson::SizeType>(i)].IsNumber())
-            throw std::runtime_error(std::string("array_value:") + key + ":" + std::to_string(i));
-    }
-    return array;
-}
-
 static void threshold(Value& sensor, size_t index, double value) {
     if (!sensor.HasMember("HotThreshold") || !sensor["HotThreshold"].IsArray()
         || sensor["HotThreshold"].Size() <= index) return;
@@ -117,6 +105,7 @@ static int apply_profile(Document& doc) {
     Value& odpm = one_sensor(doc, "VIRTUAL-SKIN-CPU-ODPM");
     Value& high = one_sensor(doc, "VIRTUAL-SKIN-CPU-HIGH");
     Value& soc = one_sensor(doc, "VIRTUAL-SKIN-SOC");
+    Value& extreme = one_sensor(doc, "VIRTUAL-SKIN-SOC-EXTREME");
 
     threshold(hint, 1, 39.0); polling(hint);
 
@@ -138,15 +127,25 @@ static int apply_profile(Document& doc) {
 
     threshold(high, 1, 44.0); threshold(high, 2, 46.0); polling(high);
 
+    polling(soc);
     levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, 1881000);
+    levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {4}, 1632000);
+    levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {5}, 1363000);
     levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, 2534000);
+    levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {4}, 2188000);
+    levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {5}, 1670000);
     levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
+    levels(soc, "big_and_big_mid", "CdevCeiling", {4}, 8);
+    levels(soc, "big_and_big_mid", "CdevCeiling", {5}, 14);
     // Keep the 748 MHz ceiling through the first high-temperature states.
     // Derate in two smaller steps only at the upper protection states.
     levels(soc, "gpu", "CdevCeilingFrequency", {1, 2, 3, 4}, 748000000);
     levels(soc, "gpu", "CdevCeilingFrequency", {5}, 633000000);
     levels(soc, "gpu", "CdevCeilingFrequency", {6}, 512000000);
-    return 40;
+    // Preserve every EXTREME ceiling and threshold. Faster observation only
+    // ensures the unchanged emergency policy activates and recovers promptly.
+    polling(extreme);
+    return 48;
 }
 
 static void atomic_write(const std::string& path, const std::string& data) {

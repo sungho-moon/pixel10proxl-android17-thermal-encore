@@ -24,7 +24,7 @@
 - 调度起始频率改为按需模式：GPU 约 512 MHz 起步，FAS 根据持续帧时间不足逐档提升，稳定后逐档回落。
 - 动态线程后端继续运行，线程级 uclamp 与 Encore 共用同一游戏目标。
 - FAS 回落改为逐级、带迟滞的平滑控制，减少高档与完全释放之间的周期性帧率波动。
-- 自动温控 `v1.7.1-safe-tensor`：使用已验证离散频率，748 → 633 → 512 MHz 平滑保护，避免动态计算非法频率。
+- 自动温控 `v1.7.2-soc-smooth`：CPU SOC Ceiling 在 45/46.5°C 使用 1632/2188 与 1363/1670 MHz 平滑降级，GPU 保持 748 → 633 → 512 MHz，52°C 最高保护档保持原厂。
 
 源码请查看仓库中的 `src/` 目录；发布页只提供可安装模块 ZIP，不放源码压缩包或 SHA256 文件。
 
@@ -33,7 +33,7 @@
 仓库内安装包：
 
 - [Encore 调度模块 v0.5.0](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.5.0-android17/Encore-Pixel-10-Android17-v0.5.0-dynamic-tensor.zip)
-- [自动温控模块 v1.7.1](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/download/v0.5.0-android17/pixel-tensor-game-thermal-v1.7.1-safe-tensor.zip)
+- [自动温控模块 v1.7.2](src/thermal-auto/dist/pixel-tensor-game-thermal-v1.7.2-soc-smooth.zip)
 
 ## 兼容范围
 
@@ -43,7 +43,7 @@
 2. CPU、GPU 或其他频率域必须通过运行时能力检查；
 3. Thermal JSON 必须通过本机 schema 检查。
 
-温控模块 v1.7.1-safe-tensor 会按完整系统指纹重新建立 stock 缓存，自动发现唯一的 `thermal_info_config*.json`，并校验虚拟皮肤传感器和冷却设备。不同 Android 17 QPR/测试版如果改变 Thermal JSON 结构，模块会安全停止，不覆盖系统原配置。
+温控模块 v1.7.2-soc-smooth 会按完整系统指纹重新建立 stock 缓存，自动发现唯一的 `thermal_info_config*.json`，并校验虚拟皮肤传感器和冷却设备。SOC 第 4/5 档采用有效离散频率平滑降级，SOC-EXTREME 的阈值与 Ceiling 保持原厂。不同 Android 17 QPR/测试版如果改变 Thermal JSON 结构，模块会安全停止，不覆盖系统原配置。
 
 ## 目录结构
 

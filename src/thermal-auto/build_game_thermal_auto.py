@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 MODULE = ROOT / "module"
 OUTPUT = ROOT / "dist"
-VERSION = "1.7.1-safe-tensor"
+VERSION = "1.7.2-soc-smooth"
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -39,9 +39,9 @@ def main() -> None:
     prop = "\n".join([
         "id=pixel_game_thermal_cp41",
         "name=Pixel Tensor Game Thermal Dynamic",
-        f"version={VERSION}", "versionCode=17100",
+        f"version={VERSION}", "versionCode=17200",
         "author=Local device adaptation",
-        "description=Runtime Thermal JSON discovery with validated Tensor game profile for Android 17.", "",
+        "description=Runtime Thermal JSON discovery with smooth SOC CPU/GPU thermal ceilings for Android 17.", "",
     ])
     (MODULE / "module.prop").write_text(prop, encoding="utf-8", newline="\n")
     normalize_tree(MODULE)
@@ -57,8 +57,8 @@ def main() -> None:
         z.writestr("build_game_thermal_auto.py", Path(__file__).read_bytes())
     report = {
         "version": VERSION, "package_sha256": sha(package), "source_sha256": sha(source),
-        "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
-        "changes": 44, "discovery": "native RapidJSON probe across thermal_info_config*.json",
+        "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC/SOC-EXTREME",
+        "changes": 57, "discovery": "native RapidJSON probe across thermal_info_config*.json",
         "fail_closed": ["malformed JSON", "duplicate target sensors/cdevs", "ambiguous matching files", "unsupported target frequencies"],
         "fingerprint_keyed_cache": True,
         "atomic_stock_and_overlay_promotion": True,

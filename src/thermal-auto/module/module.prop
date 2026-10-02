@@ -1,6 +1,6 @@
 id=pixel_game_thermal_cp41
 name=Pixel Tensor Game Thermal Dynamic
-version=1.7.1-safe-tensor
-versionCode=17100
+version=1.7.2-soc-smooth
+versionCode=17200
 author=Local device adaptation
-description=Runtime Thermal JSON discovery with validated Tensor game profile for Android 17.
+description=Runtime Thermal JSON discovery with smooth SOC CPU/GPU thermal ceilings for Android 17.

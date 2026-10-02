@@ -1,9 +1,9 @@
 {
-  "version": "1.7.1-safe-tensor",
-  "package_sha256": "920aa33a7818586ed3e61c37585c7cdaf1c612375b96386028cf1078d3fe47f1",
-  "source_sha256": "a09e64fc213413aff0ab442dd125d03b793ceb14d459c219a266247c6a15aed2",
-  "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC",
-  "changes": 44,
+  "version": "1.7.2-soc-smooth",
+  "package_sha256": "c851888d257ec31c1d4fab69ddff8860d94706dbfc5db16e15db76b4bb92db78",
+  "source_sha256": "3bc1875f3bf32343f1a8f6ff256e2d753dc168f84d585a7e8160b1e87881ff55",
+  "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC/SOC-EXTREME",
+  "changes": 57,
   "discovery": "native RapidJSON probe across thermal_info_config*.json",
   "fail_closed": [
     "malformed JSON",

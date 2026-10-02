@@ -1,6 +1,6 @@
 #!/system/bin/sh
 SKIPUNZIP=0
-ui_print "Pixel Tensor Game Thermal 1.7.1 Safe"
+ui_print "Pixel Tensor Game Thermal 1.7.2 SOC Smooth"
 ui_print "Schema discovery will run after the complete module is extracted"
 [ "$(getprop ro.build.version.sdk)" = 37 ] || abort "Unsupported Android SDK"
 capacity=$(cat /sys/class/power_supply/battery/capacity 2>/dev/null || echo 0)
