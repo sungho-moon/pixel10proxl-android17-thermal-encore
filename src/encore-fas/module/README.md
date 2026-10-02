@@ -92,6 +92,7 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 配置目录：`/data/adb/.config/encore_pixel_cp41`。
 
 - `gamelist.json`：游戏包名与 `lite_mode`；新增游戏可以手动添加。不依赖单一游戏包名。
+- `auto-game.sh`：后台扫描前台第三方应用；检测到 Unity/IL2CPP、Unreal、Cocos、Godot 等游戏引擎库或线程后，自动以 `target_fps=0` 加入 `gamelist.json`。可创建 `/data/adb/.config/encore_pixel_cp41/disable-auto-game` 关闭自动登记。
 - `config.json`：`preferences.enforce_lite_mode=true` 全局使用 Lite；`disable_tweaks=true` 暂停频率请求。修改已有文件后原生监听读取配置。
 - `status`：当前有效状态、前台包名、电池温度（0.1°C）、电量和游戏 PID。
 - `controller.log` / `encore.log` / `service.log`：硬件请求、事件监听和服务诊断。
