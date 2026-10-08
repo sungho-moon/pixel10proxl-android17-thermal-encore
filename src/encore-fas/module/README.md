@@ -116,7 +116,7 @@ touch /data/adb/.config/encore_pixel_cp41/pause
 /data/adb/modules/encore_pixel_cp41/bin/pixel-control restore
 ```
 
-卸载会停止控制并尝试恢复；配置及诊断保留供审查。更新到其他 Android 17 QPR/测试版本后，基础调度会按设备、SDK 和频率节点预检决定是否加载；`libgui.so` 哈希未登记时只停用 FAS 帧探针，不猜测 uprobe 偏移。温控模块同样按 Thermal JSON 结构和目标频率预检，匹配失败会自动隔离。
+卸载会停止控制并尝试恢复；配置及诊断保留供审查。更新到其他 Android 17 QPR/测试版本后，基础调度会按设备、SDK 和频率节点预检决定是否加载；FAS 只接受 `PROVENANCE.json` 中成对登记的 `libgui.so` 哈希和 `Surface::hook_queueBuffer` 偏移，未登记时只停用帧探针，不猜测 uprobe 偏移。QPR3 Beta 1 的 profile 为 `4b091a5a...2f04f3` + `0x129c90`。温控模块同样按 Thermal JSON 结构和目标频率预检，匹配失败会自动隔离。
 
 ## 已验证和仍需验证
 

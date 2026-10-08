@@ -9,7 +9,7 @@
   "binder_resolver_apk_sha256": "beb99604cf31649102ebc9174e35250087f44296dfca1622846e5c5cefc8c20c",
   "binaries": {
     "encored": "174e00ca15bffd150673177bbc8a56dc709ea3e4874b58b7c02e1266bdaf37d9",
-    "pixel-control": "f61b1d2911fe9ef7ab5845dd8f736a2e834aa3241b90d64490055352b6aa3d76"
+    "pixel-control": "7800d730251ce8acea08d5ee11293c96a66228c0295689cb9804ce84fca7dd6f"
   },
   "frame_feedback": {
     "type": "Encore single-writer FAS with independently implemented fas-rs proportional adviser",
@@ -17,9 +17,21 @@
     "fas_rs_version": "v4.9.1",
     "fas_rs_source_commit": "eb883c534e92107f536ae8ebc343c99243f5ee4d",
     "fas_rs_executable_included": false,
-    "pixel_frame_source": "hash-pinned libgui Surface::hook_queueBuffer tracefs uprobe",
-    "libgui_sha256": "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a",
-    "control": "configured 30/60/120 FPS target, 90th percentile of 30-60 recent frame intervals, bounded level 0-3 response, three-window global downshift hysteresis, thread no-gain fallback to level 1 with eight-window cooldown and severe-deficit early reentry",
+    "pixel_frame_source": "profile-pinned libgui Surface::hook_queueBuffer tracefs uprobe",
+    "libgui_profiles": [
+      {
+        "name": "CP41-260831",
+        "sha256": "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a",
+        "hook_offset": "0x129ed0"
+      },
+      {
+        "name": "QPR3-Beta1-DP11.260918.006",
+        "sha256": "4b091a5a47e2c9ac3882578305a9eb86dba02cabf4150baa8ed737a7722f04f3",
+        "hook_offset": "0x129c90",
+        "symbol": "_ZN7android7Surface16hook_queueBufferEP13ANativeWindowP19ANativeWindowBufferi"
+      }
+    ],
+    "control": "configured 30/60/120 FPS target, 90th percentile of 30-60 recent frame intervals, bounded level 0-3 response, two-window upshift and three-window global downshift hysteresis, thread no-gain fallback to level 1 with eight-window cooldown and severe-deficit early reentry",
     "thermal_cap": "battery 40/41/42 C tiered extra-boost limit; whole-controller protection remains 43 C with 41 C recovery"
   }
 }

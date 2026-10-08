@@ -1,12 +1,15 @@
-# Encore Pixel Tensor Android 17 0.2.3 generic adviser
+# Encore Pixel Tensor Android 17 0.7.4 QPR3 FAS adviser with upshift hysteresis
 
 This is a userspace adaptation of the frame-deficit concept in
 https://github.com/rem01project/encore_fas, pinned at commit
 46d5af8e8756467b636a1da0c2227ee74abd1225. It does not include a
 kernel module. Only the existing Pixel controller writes frequency requests.
 The tracefs uprobe observes Surface::hook_queueBuffer only for a separately
-validated libgui hash and offset. Unknown Android 17 QPR builds keep the
-baseline Encore controller and refuse to guess a trace offset.
+validated libgui profile. The QPR3 Beta 1 DP11.260918.006 profile uses SHA-256
+`4b091a5a47e2c9ac3882578305a9eb86dba02cabf4150baa8ed737a7722f04f3` and the
+exported function entry at `0x129c90`; the earlier CP41 profile remains at
+`0x129ed0`. Unknown Android 17 QPR builds keep the baseline Encore controller
+and refuse to guess a trace offset.
 
 The proportional adviser independently reimplements the frame-error equation
 from fas-rs v4.9.1: `control_khz = 300000 * (frame_seconds * target_fps - 1)`.

@@ -423,6 +423,45 @@ static int combine_fas_rs_advice(int base_level, int advice_level) {
     int extra = advice_level >= 3 ? 2 : advice_level >= 1 ? 1 : 0;
     return std::clamp(base_level + extra, 0, 3);
 }
+// Frame-signal samples are collected in two-second windows.  A single noisy
+// tail window can therefore request one extra boost step even when the
+// sustained FPS is unchanged.  Require two consecutive upward requests before
+// applying a higher level; a request that falls back to the current level
+// cancels the pending raise.  Downward requests keep the existing three-window
+// relaxation below, so a 2/3 oscillation cannot complete in adjacent samples.
+static int fas_upshift_hysteresis(int current, int requested, int& pending_windows,
+                                  int confirm_windows = 2) {
+    current = std::clamp(current, 0, 3);
+    requested = std::clamp(requested, 0, 3);
+    confirm_windows = std::max(confirm_windows, 1);
+    if (requested <= current) {
+        pending_windows = 0;
+        return current;
+    }
+    pending_windows = std::min(pending_windows + 1, confirm_windows);
+    if (pending_windows < confirm_windows) return current;
+    pending_windows = 0;
+    return requested;
+}
+struct FasProbeProfile {
+    const char* name;
+    const char* libgui_sha256;
+    const char* hook_offset;
+};
+static const FasProbeProfile* fas_probe_profile(const std::string& sha256sum) {
+    // The probe is deliberately profile-pinned. The QPR3 Beta 1 symbol table
+    // moved Surface::hook_queueBuffer from 0x129ed0 to 0x129c90; accepting
+    // the hash without its matching entry point would silently observe the
+    // wrong function.
+    static constexpr FasProbeProfile profiles[] = {
+        {"CP41-260831", "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a", "0x129ed0"},
+        {"QPR3-Beta1-DP11.260918.006", "4b091a5a47e2c9ac3882578305a9eb86dba02cabf4150baa8ed737a7722f04f3", "0x129c90"},
+    };
+    for (const auto& profile : profiles) {
+        if (sha256sum.rfind(profile.libgui_sha256, 0) == 0) return &profile;
+    }
+    return nullptr;
+}
 // Experimental userspace adaptation of encore_fas' frame-signal concept.
 // tracefs observes libgui calls; this controller remains the only vote writer.
 class FrameObserver {
@@ -431,11 +470,11 @@ class FrameObserver {
     static constexpr const char* instance = "/sys/kernel/tracing/instances/encore_pixel_fas";
     static constexpr const char* event = "/sys/kernel/tracing/instances/encore_pixel_fas/events/encore_pixel_fas/qb_hook/enable";
     static constexpr const char* marker = "/data/adb/.config/encore_pixel_cp41/fas-probe-owner";
-    static constexpr const char* libhash = "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a";
     std::string boot, pending;
     std::deque<double> frame_intervals;
     int pipefd = -1, game_pid = 0, render_tid = 0, warm = 0, good = 0, quiet = 0, relax = 0;
     int target_fps = 0, candidate_tier = 0, candidate_windows = 0, last_advice = 0;
+    int upshift_windows = 0;
     bool fixed_target = false;
     int user_target = 0;
     bool owned = false, blocked = false, armed = false, boosted = false, degraded = false, verbose = false;
@@ -484,17 +523,19 @@ class FrameObserver {
         owned = false; pending.clear(); frame_intervals.clear(); game_pid = render_tid = 0; warm = good = quiet = relax = 0;
         armed = boosted = degraded = false; boost_level = 0;
         last = last_frame = pressure = filtered_fps = 0;
-        target_fps = candidate_tier = candidate_windows = last_advice = 0; fixed_target = false;
+        target_fps = candidate_tier = candidate_windows = last_advice = 0;
+        upshift_windows = 0; fixed_target = false;
     }
     bool start(int pid, const std::string& package) {
         if (blocked || access(instance, F_OK) == 0 || access((std::string(trace) + "/events/" + group).c_str(), F_OK) == 0) return false;
         auto hash = capture({"/system/bin/sha256sum", "/system/lib64/libgui.so"}, 5);
-        if (hash.rfind(libhash, 0) != 0) { log("FAS observer libgui hash mismatch; disabled"); blocked = true; return false; }
+        const auto* profile = fas_probe_profile(hash);
+        if (!profile) { log("FAS observer libgui profile mismatch; disabled"); blocked = true; return false; }
         if (!atomicfile(marker, boot + "\n")) return false;
         owned = true;
         if (mkdir(instance, 0700) != 0 || !emit(path("/tracing_on"), "0\n")
             || !emit(path("/buffer_size_kb"), "256\n")
-            || !emit(std::string(trace) + "/uprobe_events", std::string("p:") + group + "/qb_hook /system/lib64/libgui.so:0x129ed0\n", true)
+            || !emit(std::string(trace) + "/uprobe_events", std::string("p:") + group + "/qb_hook /system/lib64/libgui.so:" + profile->hook_offset + "\n", true)
             || !emit(event, "1\n") || !emit(path("/trace"), "\n")
             || (pipefd = open(path("/trace_pipe").c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC)) < 0
             || !emit(path("/tracing_on"), "1\n")) {
@@ -504,7 +545,7 @@ class FrameObserver {
         // The WebUI stores the per-game target in gamelist.json. Missing or
         // zero means automatic inference; there is no module-wide fallback.
         user_target = target_fps = configured_target(package); fixed_target = target_fps > 0;
-        log("FAS observer attached pid=" + std::to_string(pid)); return true;
+        log("FAS observer attached pid=" + std::to_string(pid) + " profile=" + profile->name + " offset=" + profile->hook_offset); return true;
     }
     int drain(const std::unordered_set<int>& tids, std::unordered_map<int, std::vector<double>>& streams) {
         int count = 0; size_t bytes = 0; char buf[8192];
@@ -557,7 +598,7 @@ public:
         int count = drain(tids, streams);
         if (count < 0) { log("FAS observer trace overflow/read failure"); clean(); blocked = true; return 0; }
         double now = nowsec(), span = now - last; last = now;
-        if (span > 8.0) { boosted = degraded = false; boost_level = 0; pressure = filtered_fps = 0; return 0; }
+        if (span > 8.0) { boosted = degraded = false; boost_level = 0; upshift_windows = 0; pressure = filtered_fps = 0; return 0; }
         if (span < 1.0) return boost_level;
         if (render_tid == 0 || !streams.count(render_tid)) {
             int selected = 0; size_t most = 0;
@@ -568,6 +609,7 @@ public:
                 degraded = boosted = armed = false; boost_level = 0;
                 warm = good = quiet = relax = last_advice = 0;
                 candidate_tier = candidate_windows = 0;
+                upshift_windows = 0;
                 // A render-thread handoff does not prove the user changed the
                 // in-game FPS setting. Keep the session target latched.
                 log("FAS render thread=" + std::to_string(render_tid));
@@ -621,6 +663,7 @@ public:
         if (fps < std::max(8.0, target_fps * 0.35)) ++quiet; else quiet = 0;
         if (quiet >= 2) {
             armed = boosted = degraded = false; boost_level = last_advice = 0;
+            upshift_windows = 0;
             pressure = filtered_fps = 0; good = quiet = warm = 0;
             // A quiet menu is not evidence of a lower game FPS setting.
             return 0;
@@ -661,6 +704,14 @@ public:
             // Add one step for any deficit and two for a severe one. Encore
             // still owns every vote and enforces its level-3 ceiling.
             next_level = combine_fas_rs_advice(base_level, advice);
+        }
+        if (next_level > boost_level) {
+            // A single p90/advisor spike should not immediately add another
+            // OPP step.  Require two consecutive samples before raising the
+            // level; a non-raising sample cancels the pending transition.
+            next_level = fas_upshift_hysteresis(boost_level, next_level, upshift_windows);
+        } else {
+            upshift_windows = 0;
         }
         if (next_level < boost_level && fps < target_fps * 0.98) {
             if (++relax < 3) next_level = boost_level;
@@ -703,6 +754,20 @@ static int selftest() {
     ok &= combine_fas_rs_advice(2, 1) == 3;
     ok &= combine_fas_rs_advice(1, 3) == 3;
     ok &= combine_fas_rs_advice(3, 2) == 3;
+    int pending_raise = 0;
+    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 2 && pending_raise == 1;
+    // A one-window spike is cancelled by the next stable request.
+    ok &= fas_upshift_hysteresis(2, 2, pending_raise) == 2 && pending_raise == 0;
+    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 2 && pending_raise == 1;
+    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 3 && pending_raise == 0;
+    // A large jump is still accepted after confirmation, while levels remain
+    // bounded for malformed advisor output.
+    ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 0 && pending_raise == 1;
+    ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 3 && pending_raise == 0;
+    ok &= fas_upshift_hysteresis(3, 9, pending_raise) == 3 && pending_raise == 0;
+    ok &= fas_probe_profile("20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a  /system/lib64/libgui.so")->hook_offset == std::string("0x129ed0");
+    ok &= fas_probe_profile("4b091a5a47e2c9ac3882578305a9eb86dba02cabf4150baa8ed737a7722f04f3  /system/lib64/libgui.so")->hook_offset == std::string("0x129c90");
+    ok &= fas_probe_profile("unknown  /system/lib64/libgui.so") == nullptr;
     writeval(min, 300); ok &= b.restore() && number(min) == 300; // external owner preserved.
     atomicfile(d + "/journal", "test-boot\nbroken\n");
     Requests c(nodes, d + "/journal", "test-boot"); ok &= !c.recover();

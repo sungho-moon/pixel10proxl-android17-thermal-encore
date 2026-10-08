@@ -23,8 +23,19 @@ provenance["frame_feedback"] = {
     "fas_rs_version": "v4.9.1",
     "fas_rs_source_commit": "eb883c534e92107f536ae8ebc343c99243f5ee4d",
     "fas_rs_executable_included": False,
-    "pixel_frame_source": "hash-pinned libgui Surface::hook_queueBuffer tracefs uprobe",
-    "libgui_sha256": "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a",
+    "pixel_frame_source": "profile-pinned libgui Surface::hook_queueBuffer tracefs uprobe",
+    "libgui_profiles": [
+        {
+            "name": "CP41-260831",
+            "sha256": "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a",
+            "hook_offset": "0x129ed0",
+        },
+        {
+            "name": "QPR3-Beta1-DP11.260918.006",
+            "sha256": "4b091a5a47e2c9ac3882578305a9eb86dba02cabf4150baa8ed737a7722f04f3",
+            "hook_offset": "0x129c90",
+        },
+    ],
     "control": "aggressive profile: 90th percentile of 30-60 recent frame intervals, fas-rs kp equivalent, +1 OPP for advice 1-2 and +2 OPP for advice 3, bounded to Encore level 3",
     "thermal_cap": "battery 40/41/42 C tiered extra-boost limit; whole-controller protection remains 43 C with 41 C recovery",
 }

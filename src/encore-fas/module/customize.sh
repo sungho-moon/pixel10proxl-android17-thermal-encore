@@ -1,5 +1,5 @@
 #!/system/bin/sh
-ui_print "Encore Pixel Tensor Android 17 generic 0.3.0 fas-rs advisor"
+ui_print "Encore Pixel Tensor Android 17 0.7.4 QPR3 FAS hysteresis"
 [ "$(getprop ro.build.version.sdk)" = 37 ] || abort "This package requires Android SDK 37"
 [ "$ARCH" = arm64 ] || abort "arm64 required"
 C=/data/adb/.config/encore_pixel_cp41
