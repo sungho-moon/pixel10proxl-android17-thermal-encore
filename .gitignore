@@ -3,3 +3,15 @@
 __pycache__/
 .venv/
 src/thermal-auto/module/thermal-test-*/
+
+# Local build and device-test artifacts
+obj/
+.tmp-*
+work/*
+!work/guardian-build/
+!work/guardian-build/**
+outputs/*
+!outputs/Encore-Pixel-10-Android17-v0.7.1-smooth-feedback.zip
+src/thermal-auto/dist/*
+!src/thermal-auto/dist/pixel-game-thermal-auto-validation.json
+!src/thermal-auto/dist/pixel-tensor-game-thermal-v1.7.2-soc-smooth.zip

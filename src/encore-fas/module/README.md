@@ -1,4 +1,4 @@
-# Encore Pixel 10 Pro XL Android 17 — 0.2.3 generic adviser
+# Encore Pixel Tensor Android 17 — 0.7.1 smooth feedback
 
 This build keeps Encore as the only frequency-request writer and adds a
 fas-rs-derived proportional frame-error adviser to its existing tracefs
@@ -75,14 +75,14 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 
 ## 0.1.6 游戏 UID 恢复修复
 
-和平精英 29 分 46 秒实战监测发现，同一游戏 PID 在原生服务短暂切换 balance/performance 后，可能继续以 UID 0 提交游戏请求。Pixel 控制器会正确拒绝该请求并释放频率投票与帧率策略，但游戏持续前台时不会自动恢复。0.1.6 保留游戏身份的 UID，在同 PID 前台回调中刷新身份，并将 UID 纳入性能请求的重应用条件；UID 0 不再发送性能请求。频率、温度保护和帧率策略参数不变。原始监测见 `pubg-full-match-2026-09-28.md`。
+和平精英 29 分 46 秒实战监测发现，同一游戏 PID 在原生服务短暂切换 balance/performance 后，可能继续以 UID 0 提交游戏请求。Pixel 控制器会正确拒绝该请求并释放频率投票与帧率策略，但游戏持续前台时不会自动恢复。0.1.6 保留游戏身份的 UID，在同 PID 前台回调中刷新身份，并将 UID 纳入性能请求的重应用条件；UID 0 不再发送性能请求。频率、温度保护和帧率策略参数不变。
 
 实机短时回归：身份采样中游戏请求均带有正确 UID；游戏切至桌面、息屏后解锁返回时，七项请求和帧率策略均先释放后恢复。退出游戏后七项请求为 0、帧率策略恢复原值。随后真实重启，原生服务及控制器自动运行、运行文件校验通过。此测试验证了故障路径，不代表长时间游戏的帧率提升或完全覆盖竞态；整局复测仍可继续进行。
 
 ## 安装
 
 1. 在 KernelSU 中停用旧 `Pixel Global Game Uclamp`（ID `pixel_pubg_uclamp_cp41`，0.3.2）以及原版 Encore（如已安装）。
-2. 安装 `Encore-Pixel-10-Android17-v0.2.3-generic.zip`，确认新模块处于启用状态，重启。
+2. 安装 Releases 中的 `Encore-Pixel-10-Android17-v0.7.1-smooth-feedback.zip`，确认新模块处于启用状态，重启。
 3. 安装阶段会读取上游固定游戏列表，只将设备已安装的匹配包加入本机列表；之后监听 `/data/app` 的 APK 安装事件并刷新匹配项。开机后等待约 25 秒服务启动。不同游戏共用默认模式，可逐游戏选择 Lite。
 4. 进入三角洲 120 帧实际对局，核对 status、投票读回值和实际呈现帧时间；最低请求高于当前系统上限时该节点释放投票。退出和息屏后应看到请求及帧率策略恢复。
 
@@ -124,11 +124,11 @@ touch /data/adb/.config/encore_pixel_cp41/pause
 
 使用只观察模式临时把当前普通应用注册为游戏，可以测试原生性能模式进入/退出，而不写硬件；测试后恢复正式游戏列表。这不能替代真实游戏测试。
 
-0.1.2 已实机验证三角洲 GAME/GAME_LITE 切换、前台频率请求和退出释放，以及帧率策略的短时关闭/恢复对照。0.1.3 已在本次开机加载，通过真实 Binder 临时关闭/恢复、模拟崩溃日志恢复/外部写入/事务号错误拒绝控制、安装阶段和 KernelSU 清理后的双重校验。新版真实游戏自动进入通过，20 个有效窗口约 103–120 FPS，窗口中位数 119.97 FPS，P95 帧间隔 8.37 ms；退出后 3 次采样均释放 7 项投票并恢复原帧率策略。0.1.4 已随后完成真实重启自动加载验证；尚未验证多游戏连续对局、息屏/省电/高温状态实机切换及功耗。这些帧率是短时采样窗口数据。0.1.4 WebUI 验证另见 webui-validation.txt 与 webui-backend-validation.txt；没有根据每帧时间自适应频率的 FAS 控制或新的内核调度算法。
+0.1.2 已实机验证三角洲 GAME/GAME_LITE 切换、前台频率请求和退出释放，以及帧率策略的短时关闭/恢复对照。0.1.3 已在本次开机加载，通过真实 Binder 临时关闭/恢复、模拟崩溃日志恢复/外部写入/事务号错误拒绝控制、安装阶段和 KernelSU 清理后的双重校验。新版真实游戏自动进入通过，20 个有效窗口约 103–120 FPS，窗口中位数 119.97 FPS，P95 帧间隔 8.37 ms；退出后 3 次采样均释放 7 项投票并恢复原帧率策略。0.1.4 已随后完成真实重启自动加载验证；尚未验证多游戏连续对局、息屏/省电/高温状态实机切换及功耗。这些帧率是短时采样窗口数据。
 
 ## 源码与复现
 
-`Encore-Pixel-10-Android17-v0.2.3-generic-source.zip` 包含修改后的上游源码、固定的 RapidJSON/spdlog 子模块源码、Pixel 控制器、WebUI 源码与依赖锁文件、模块脚本、编译命令、差异和实机验证日志。
+源码位于仓库的 `src/encore-fas/`，发布页只提供可安装模块 ZIP，不再生成源码压缩包。
 
 上游 `binder_resolver.apk` 沿用 5.2.1 官方发布二进制，本次没有重编译 APK；Encore 源码仓库把它放在 `prebuilt/` 中，其源码另见 <https://github.com/Rem01Gaming/binder_resolver>。模块中的 `encored` 和 `pixel-control` 均由随附源码编译。APK 的哈希和来源记录在 `PROVENANCE.json` 中。
 
