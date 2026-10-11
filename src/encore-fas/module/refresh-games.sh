@@ -18,7 +18,7 @@ valid_list() {
 preset_target() {
   pkg=$1; target=60
   while read -r rate name; do
-    case "$rate" in ''|\#*) continue;; esac
+    case "$rate" in 30|60|90|120) ;; *) continue;; esac
     [ -n "$name" ] || continue
     [ "$name" = "$pkg" ] && target=$rate
   done < "$PRESETS"
@@ -29,9 +29,8 @@ migrate_targets() {
   tmp=$(mktemp "$C/gamelist.preset.XXXXXX") || return 1
   cp "$LIST" "$tmp" || { rm -f "$tmp"; return 1; }
   while read -r rate pkg; do
-    case "$rate" in ''|\#*) continue;; esac
+    case "$rate" in 30|60|90|120) ;; *) continue;; esac
     [ -n "$pkg" ] || continue
-    [ "$rate" = 120 ] || continue
     sed -i "/\"$pkg\": {/,/\"target_fps\"/s/\"target_fps\": 0/\"target_fps\": $rate/" "$tmp"
   done < "$PRESETS"
   sed -i 's/"target_fps": 0/"target_fps": 60/g' "$tmp"

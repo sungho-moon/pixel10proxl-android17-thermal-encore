@@ -1,9 +1,18 @@
 #!/system/bin/sh
 M=${0%/*}
 C=/data/adb/.config/encore_pixel_cp41
+STATUS=$(cat "$C/status" 2>/dev/null || echo 'UNKNOWN')
 echo STATUS_BEGIN
-cat "$C/status" 2>/dev/null || echo 'UNKNOWN'
+printf '%s\n' "$STATUS"
 echo STATUS_END
+
+# Read the current controller snapshot, never an old log entry.
+# -1 means unavailable (for example, an older native controller).
+FAS_LEVEL=$(printf '%s\n' "$STATUS" | sed -n 's/.*[[:space:]]FAS_LEVEL=\([0-9][0-9]*\)\([[:space:]].*\)\{0,1\}$/\1/p' | head -n 1)
+case "$FAS_LEVEL" in 0|1|2|3) ;; *) FAS_LEVEL=-1;; esac
+FOREGROUND_PACKAGE=$(printf '%s\n' "$STATUS" | sed -n 's/.*[[:space:]]package=\([^[:space:]]*\).*/\1/p' | head -n 1)
+GAME_ACTIVE=0
+case "$STATUS" in GAME\ *|GAME_LITE\ *) GAME_ACTIVE=1;; esac
 # Native heartbeat uses CLOCK_MONOTONIC, which excludes device suspend.
 # /proc/uptime includes suspend on this device, so comparing those counters
 # falsely marks a healthy service stopped after the screen has been off.
@@ -21,9 +30,14 @@ for f in controller.pid brain.pid; do
 done
 [ "$AGE" -ge 0 ] && [ "$AGE" -le 8 ] || OK=0
 printf 'process_ok=%s\nheartbeat_age=%s\n' "$OK" "$AGE"
+[ "$OK" = 1 ] || { GAME_ACTIVE=0; FAS_LEVEL=-1; FOREGROUND_PACKAGE=; }
+printf 'foreground_package=%s\ngame_active=%s\n' "$FOREGROUND_PACKAGE" "$GAME_ACTIVE"
+printf 'FAS_LEVEL=%s\nfas_level=%s\n' "$FAS_LEVEL" "$FAS_LEVEL"
 for flag in pause disable-high-fps; do
  if [ -f "$C/$flag" ]; then printf '%s=1\n' "$flag"; else printf '%s=0\n' "$flag"; fi
 done
+printf 'fas_disabled=%s\n' "$( [ -f "$C/disable-fas" ] && echo 1 || echo 0 )"
+printf 'fas_advisor_disabled=%s\n' "$( [ -f "$C/disable-fas-rs-advisor" ] && echo 1 || echo 0 )"
 printf 'default_fps_disabled=%s\n' "$(getprop debug.graphics.game_default_frame_rate.disabled)"
 for id in 0 2 5 7; do
  D=/sys/devices/system/cpu/cpufreq/policy$id

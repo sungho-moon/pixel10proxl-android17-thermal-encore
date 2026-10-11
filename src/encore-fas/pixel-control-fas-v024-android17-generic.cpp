@@ -6,6 +6,7 @@
 #include <cmath>
 #include <csignal>
 #include <deque>
+#include <elf.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -13,6 +14,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -20,6 +22,7 @@
 #include <poll.h>
 #include <regex>
 #include <sys/file.h>
+#include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/stat.h>
 #include <sys/system_properties.h>
@@ -34,13 +37,121 @@ static long monotime() { timespec t{}; clock_gettime(CLOCK_MONOTONIC, &t); retur
 static std::string readstr(const std::string& p) {
     std::ifstream f(p); std::ostringstream s; s << f.rdbuf(); return s.str();
 }
+
+static bool elf_range(size_t file_size, uint64_t offset, uint64_t length) {
+    return offset <= file_size && length <= static_cast<uint64_t>(file_size) - offset;
+}
+
+// Resolve the uprobe target from libgui's exported dynamic symbol table.  The
+// system library is stripped of its full .symtab on some builds, so .dynsym
+// is preferred and .symtab is accepted as a harmless fallback.  No fixed
+// build hash or function offset is trusted here: each QPR can move the entry.
+static bool elf_queuebuffer_offset(const char* filename, std::string& offset_text) {
+    offset_text.clear();
+    int fd = open(filename, O_RDONLY | O_CLOEXEC);
+    if (fd < 0) return false;
+    struct stat file_stat{};
+    if (fstat(fd, &file_stat) != 0 || file_stat.st_size < static_cast<off_t>(sizeof(Elf64_Ehdr))) {
+        close(fd); return false;
+    }
+    const size_t file_size = static_cast<size_t>(file_stat.st_size);
+    void* mapping = mmap(nullptr, file_size, PROT_READ, MAP_PRIVATE, fd, 0);
+    close(fd);
+    if (mapping == MAP_FAILED) return false;
+    const auto* bytes = static_cast<const unsigned char*>(mapping);
+    const auto* header = reinterpret_cast<const Elf64_Ehdr*>(bytes);
+    bool found = false;
+    uint64_t found_value = 0;
+    do {
+        if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0
+            || header->e_ident[EI_CLASS] != ELFCLASS64
+            || header->e_ident[EI_DATA] != ELFDATA2LSB
+            || header->e_machine != EM_AARCH64
+            || header->e_type != ET_DYN
+            || header->e_shentsize != sizeof(Elf64_Shdr)
+            || header->e_shoff == 0 || header->e_shnum == 0
+            || !elf_range(file_size, header->e_shoff,
+                          static_cast<uint64_t>(header->e_shentsize) * header->e_shnum)) {
+            break;
+        }
+        if (header->e_phentsize != sizeof(Elf64_Phdr) || header->e_phnum == 0
+            || header->e_phoff == 0
+            || !elf_range(file_size, header->e_phoff,
+                          static_cast<uint64_t>(header->e_phentsize) * header->e_phnum)) {
+            break;
+        }
+        const auto* programs = reinterpret_cast<const Elf64_Phdr*>(bytes + header->e_phoff);
+        const auto executable_value = [&](uint64_t value) {
+            for (uint16_t program_index = 0; program_index < header->e_phnum; ++program_index) {
+                const auto& program = programs[program_index];
+                if (program.p_type == PT_LOAD && (program.p_flags & PF_X)
+                    && value >= program.p_vaddr
+                    && value - program.p_vaddr < program.p_memsz)
+                    return true;
+            }
+            return false;
+        };
+        const auto* sections = reinterpret_cast<const Elf64_Shdr*>(bytes + header->e_shoff);
+        const uint64_t section_count = header->e_shnum;
+        for (uint64_t section_index = 0; section_index < section_count && !found; ++section_index) {
+            const auto& symbols_section = sections[section_index];
+            if (symbols_section.sh_type != SHT_DYNSYM && symbols_section.sh_type != SHT_SYMTAB)
+                continue;
+            if (symbols_section.sh_link >= section_count
+                || symbols_section.sh_entsize != sizeof(Elf64_Sym)
+                || symbols_section.sh_size < sizeof(Elf64_Sym)
+                || !elf_range(file_size, symbols_section.sh_offset, symbols_section.sh_size))
+                continue;
+            const auto& strings_section = sections[symbols_section.sh_link];
+            if (strings_section.sh_type != SHT_STRTAB
+                || !elf_range(file_size, strings_section.sh_offset, strings_section.sh_size))
+                continue;
+            const auto* symbols = bytes + symbols_section.sh_offset;
+            const auto* strings = reinterpret_cast<const char*>(bytes + strings_section.sh_offset);
+            const uint64_t symbol_count = symbols_section.sh_size / symbols_section.sh_entsize;
+            for (uint64_t symbol_index = 0; symbol_index < symbol_count; ++symbol_index) {
+                const uint64_t symbol_offset = symbol_index * symbols_section.sh_entsize;
+                if (!elf_range(file_size, symbols_section.sh_offset + symbol_offset, sizeof(Elf64_Sym)))
+                    break;
+                const auto* symbol = reinterpret_cast<const Elf64_Sym*>(symbols + symbol_offset);
+                if (symbol->st_name >= strings_section.sh_size || symbol->st_shndx == SHN_UNDEF
+                    || symbol->st_value == 0 || symbol->st_size < 4
+                    || (symbol->st_value & 3) != 0 || ELF64_ST_TYPE(symbol->st_info) != STT_FUNC
+                    || !executable_value(symbol->st_value))
+                    continue;
+                const char* name = strings + symbol->st_name;
+                const size_t remaining = strings_section.sh_size - symbol->st_name;
+                const void* terminator = memchr(name, '\0', remaining);
+                if (!terminator) continue;
+                const std::string_view symbol_name(name,
+                    static_cast<const char*>(terminator) - name);
+                // Android's current name includes the ANativeWindow parameter;
+                // matching the stable Surface method prefix also handles ABI
+                // spelling changes while excluding hook_queueBuffer_DEPRECATE.
+                if (symbol_name.find("_ZN7android7Surface16hook_queueBuffer") == 0
+                    && symbol_name.find("_DEPRECATE") == std::string_view::npos) {
+                    found_value = symbol->st_value;
+                    found = true;
+                    break;
+                }
+            }
+        }
+    } while (false);
+    munmap(mapping, file_size);
+    if (!found) return false;
+    std::ostringstream value;
+    value << "0x" << std::hex << found_value;
+    offset_text = value.str();
+    return true;
+}
 static int configured_target(const std::string& package) {
     const std::string games = readstr(cfg + "/gamelist.json");
-    const std::regex entry("\\\"" + package + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)");
+    const std::regex entry("\\\"" + package + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)\\s*[,}]");
     std::smatch match;
     if (!std::regex_search(games, match, entry) || match.size() < 2) return 60;
-    const int rate = std::atoi(match[1].str().c_str());
-    return rate >= 30 && rate <= 120 ? rate : 60;
+    const std::string rate = match[1].str();
+    if (rate == "30" || rate == "60" || rate == "90" || rate == "120") return std::atoi(rate.c_str());
+    return 60;
 }
 static long number(const std::string& p) {
     std::istringstream s(readstr(p)); long n = -1; s >> n; return n;
@@ -423,6 +534,26 @@ static int combine_fas_rs_advice(int base_level, int advice_level) {
     int extra = advice_level >= 3 ? 2 : advice_level >= 1 ? 1 : 0;
     return std::clamp(base_level + extra, 0, 3);
 }
+// Frame-signal samples are collected in two-second windows.  A single noisy
+// tail window can therefore request one extra boost step even when the
+// sustained FPS is unchanged.  Require two consecutive upward requests before
+// applying a higher level; a request that falls back to the current level
+// cancels the pending raise.  Downward requests keep the existing three-window
+// relaxation below, so a 2/3 oscillation cannot complete in adjacent samples.
+static int fas_upshift_hysteresis(int current, int requested, int& pending_windows,
+                                  int confirm_windows = 2) {
+    current = std::clamp(current, 0, 3);
+    requested = std::clamp(requested, 0, 3);
+    confirm_windows = std::max(confirm_windows, 1);
+    if (requested <= current) {
+        pending_windows = 0;
+        return current;
+    }
+    pending_windows = std::min(pending_windows + 1, confirm_windows);
+    if (pending_windows < confirm_windows) return current;
+    pending_windows = 0;
+    return requested;
+}
 // Experimental userspace adaptation of encore_fas' frame-signal concept.
 // tracefs observes libgui calls; this controller remains the only vote writer.
 class FrameObserver {
@@ -431,11 +562,11 @@ class FrameObserver {
     static constexpr const char* instance = "/sys/kernel/tracing/instances/encore_pixel_fas";
     static constexpr const char* event = "/sys/kernel/tracing/instances/encore_pixel_fas/events/encore_pixel_fas/qb_hook/enable";
     static constexpr const char* marker = "/data/adb/.config/encore_pixel_cp41/fas-probe-owner";
-    static constexpr const char* libhash = "20163138d23043abf3d755602483b212b6f9ff321e9810814b213e8655b5057a";
     std::string boot, pending;
     std::deque<double> frame_intervals;
     int pipefd = -1, game_pid = 0, render_tid = 0, warm = 0, good = 0, quiet = 0, relax = 0;
     int target_fps = 0, candidate_tier = 0, candidate_windows = 0, last_advice = 0;
+    int upshift_windows = 0;
     bool fixed_target = false;
     int user_target = 0;
     bool owned = false, blocked = false, armed = false, boosted = false, degraded = false, verbose = false;
@@ -446,8 +577,8 @@ class FrameObserver {
         return static_cast<double>(t.tv_sec) + static_cast<double>(t.tv_nsec) / 1e9;
     }
     static int nearest_tier(double fps) {
-        constexpr int rates[] = {24, 30, 40, 45, 60, 75, 90, 120, 144};
-        if (fps < 15.0) return 0;
+        constexpr int rates[] = {30, 60, 90, 120};
+        if (!std::isfinite(fps) || fps < 15.0) return 0;
         int best = rates[0];
         double distance = std::abs(std::log(fps / best));
         for (int rate : rates) {
@@ -484,17 +615,22 @@ class FrameObserver {
         owned = false; pending.clear(); frame_intervals.clear(); game_pid = render_tid = 0; warm = good = quiet = relax = 0;
         armed = boosted = degraded = false; boost_level = 0;
         last = last_frame = pressure = filtered_fps = 0;
-        target_fps = candidate_tier = candidate_windows = last_advice = 0; fixed_target = false;
+        target_fps = candidate_tier = candidate_windows = last_advice = 0;
+        upshift_windows = 0; fixed_target = false;
     }
     bool start(int pid, const std::string& package) {
         if (blocked || access(instance, F_OK) == 0 || access((std::string(trace) + "/events/" + group).c_str(), F_OK) == 0) return false;
-        auto hash = capture({"/system/bin/sha256sum", "/system/lib64/libgui.so"}, 5);
-        if (hash.rfind(libhash, 0) != 0) { log("FAS observer libgui hash mismatch; disabled"); blocked = true; return false; }
+        std::string hook_offset;
+        if (!elf_queuebuffer_offset("/system/lib64/libgui.so", hook_offset)) {
+            log("FAS observer ELF symbol resolution failed; disabled");
+            blocked = true;
+            return false;
+        }
         if (!atomicfile(marker, boot + "\n")) return false;
         owned = true;
         if (mkdir(instance, 0700) != 0 || !emit(path("/tracing_on"), "0\n")
             || !emit(path("/buffer_size_kb"), "256\n")
-            || !emit(std::string(trace) + "/uprobe_events", std::string("p:") + group + "/qb_hook /system/lib64/libgui.so:0x129ed0\n", true)
+            || !emit(std::string(trace) + "/uprobe_events", std::string("p:") + group + "/qb_hook /system/lib64/libgui.so:" + hook_offset + "\n", true)
             || !emit(event, "1\n") || !emit(path("/trace"), "\n")
             || (pipefd = open(path("/trace_pipe").c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC)) < 0
             || !emit(path("/tracing_on"), "1\n")) {
@@ -504,7 +640,7 @@ class FrameObserver {
         // The WebUI stores the per-game target in gamelist.json. Missing or
         // zero means automatic inference; there is no module-wide fallback.
         user_target = target_fps = configured_target(package); fixed_target = target_fps > 0;
-        log("FAS observer attached pid=" + std::to_string(pid)); return true;
+        log("FAS observer attached pid=" + std::to_string(pid) + " ELF offset=" + hook_offset); return true;
     }
     int drain(const std::unordered_set<int>& tids, std::unordered_map<int, std::vector<double>>& streams) {
         int count = 0; size_t bytes = 0; char buf[8192];
@@ -557,7 +693,7 @@ public:
         int count = drain(tids, streams);
         if (count < 0) { log("FAS observer trace overflow/read failure"); clean(); blocked = true; return 0; }
         double now = nowsec(), span = now - last; last = now;
-        if (span > 8.0) { boosted = degraded = false; boost_level = 0; pressure = filtered_fps = 0; return 0; }
+        if (span > 8.0) { boosted = degraded = false; boost_level = 0; upshift_windows = 0; pressure = filtered_fps = 0; return 0; }
         if (span < 1.0) return boost_level;
         if (render_tid == 0 || !streams.count(render_tid)) {
             int selected = 0; size_t most = 0;
@@ -568,6 +704,7 @@ public:
                 degraded = boosted = armed = false; boost_level = 0;
                 warm = good = quiet = relax = last_advice = 0;
                 candidate_tier = candidate_windows = 0;
+                upshift_windows = 0;
                 // A render-thread handoff does not prove the user changed the
                 // in-game FPS setting. Keep the session target latched.
                 log("FAS render thread=" + std::to_string(render_tid));
@@ -621,6 +758,7 @@ public:
         if (fps < std::max(8.0, target_fps * 0.35)) ++quiet; else quiet = 0;
         if (quiet >= 2) {
             armed = boosted = degraded = false; boost_level = last_advice = 0;
+            upshift_windows = 0;
             pressure = filtered_fps = 0; good = quiet = warm = 0;
             // A quiet menu is not evidence of a lower game FPS setting.
             return 0;
@@ -661,6 +799,14 @@ public:
             // Add one step for any deficit and two for a severe one. Encore
             // still owns every vote and enforces its level-3 ceiling.
             next_level = combine_fas_rs_advice(base_level, advice);
+        }
+        if (next_level > boost_level) {
+            // A single p90/advisor spike should not immediately add another
+            // OPP step.  Require two consecutive samples before raising the
+            // level; a non-raising sample cancels the pending transition.
+            next_level = fas_upshift_hysteresis(boost_level, next_level, upshift_windows);
+        } else {
+            upshift_windows = 0;
         }
         if (next_level < boost_level && fps < target_fps * 0.98) {
             if (++relax < 3) next_level = boost_level;
@@ -703,6 +849,21 @@ static int selftest() {
     ok &= combine_fas_rs_advice(2, 1) == 3;
     ok &= combine_fas_rs_advice(1, 3) == 3;
     ok &= combine_fas_rs_advice(3, 2) == 3;
+    int pending_raise = 0;
+    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 2 && pending_raise == 1;
+    // A one-window spike is cancelled by the next stable request.
+    ok &= fas_upshift_hysteresis(2, 2, pending_raise) == 2 && pending_raise == 0;
+    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 2 && pending_raise == 1;
+    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 3 && pending_raise == 0;
+    // A large jump is still accepted after confirmation, while levels remain
+    // bounded for malformed advisor output.
+    ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 0 && pending_raise == 1;
+    ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 3 && pending_raise == 0;
+    ok &= fas_upshift_hysteresis(3, 9, pending_raise) == 3 && pending_raise == 0;
+    std::string queuebuffer_offset;
+    ok &= elf_queuebuffer_offset("/system/lib64/libgui.so", queuebuffer_offset)
+        && queuebuffer_offset.size() > 2 && queuebuffer_offset.rfind("0x", 0) == 0;
+    if (!queuebuffer_offset.empty()) fprintf(stderr, "ELF_QUEUEBUFFER_OFFSET %s\n", queuebuffer_offset.c_str());
     writeval(min, 300); ok &= b.restore() && number(min) == 300; // external owner preserved.
     atomicfile(d + "/journal", "test-boot\nbroken\n");
     Requests c(nodes, d + "/journal", "test-boot"); ok &= !c.recover();
@@ -836,7 +997,7 @@ int main(int argc, char** argv) {
         int frame_boost = std::min(frame_level, thermal_cap);
         std::string state = observe ? "OBSERVE" : "RESTORED";
         if (game) state = observe ? (reduced ? "OBSERVE_LITE" : "OBSERVE_GAME") : (reduced ? "GAME_LITE" : "GAME");
-        std::ostringstream report; report << state << " package=" << sc.package << " request=" << mode << " temp=" << temp << " capacity=" << capacity << " pid=" << pid << '\n';
+        std::ostringstream report; report << state << " package=" << sc.package << " request=" << mode << " temp=" << temp << " capacity=" << capacity << " pid=" << pid << " FAS_LEVEL=" << frame_boost << '\n';
         atomicfile(cfg + "/status", report.str());
         if (state + sc.package != previous) { log(report.str()); previous = state + sc.package; }
         if (!observe) {

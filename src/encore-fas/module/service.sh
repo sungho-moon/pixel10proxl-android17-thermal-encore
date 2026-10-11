@@ -2,7 +2,7 @@
 MODPATH=${0%/*}
 C=/data/adb/.config/encore_pixel_cp41
 mkdir -p "$C"
-# Post-boot only; never participate in early boot or restart the vendor HAL.
+# Runtime services are post-boot only and never restart the vendor HAL.
 for i in $(seq 1 120); do
  [ "$(getprop sys.boot_completed)" = 1 ] && break
  sleep 1
@@ -12,7 +12,6 @@ sleep 25
 [ -f "$MODPATH/disable" ] && exit 0
 [ -f "$MODPATH/remove" ] && exit 0
 [ -f "$MODPATH/update" ] && exit 0
-[ -f "$C/pause" ] && exit 0
 [ "$(getprop ro.build.version.sdk)" = 37 ] || { echo 'STARTUP_FAILED Android SDK mismatch' > "$C/status"; exit 1; }
 # KernelSU removes customize.sh and README.md after installation. SHA256SUMS
 # covers only persistent runtime files; INSTALL_SHA256SUMS is used by customize.sh.
@@ -20,6 +19,11 @@ if ! (cd "$MODPATH" && sha256sum -c SHA256SUMS) > "$C/startup-check.log" 2>&1; t
  echo 'STARTUP_FAILED runtime checksum; see startup-check.log' > "$C/status"
  exit 1
 fi
+# Thermal verification is one-shot and independent of the scheduling pause.
+if [ -x "$MODPATH/thermal-service.sh" ]; then
+  "$MODPATH/thermal-service.sh" >> "$C/thermal-service.log" 2>&1 &
+fi
+[ -f "$C/pause" ] && exit 0
 # A separate shell waits for the controller and recovers its journal if it crashes.
 "$MODPATH/bin/pixel-control" run >> "$C/service.log" 2>&1 &
 PID=$!

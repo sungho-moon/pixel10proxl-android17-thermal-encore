@@ -1,0 +1,116 @@
+@import url('https://mui.kernelsu.org/internal/insets.css');
+@import url('https://mui.kernelsu.org/internal/colors.css');
+
+@import 'tailwindcss';
+
+html,
+body,
+#app {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+@layer utilities {
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* 
+   * Unified padding that accounts for the navbar + system insets
+   * nav-height is the height of the navbar, automatically set by Navigation.vue
+   * window-inset-bottom is the system inset, set by KSU's insets.css
+   */
+  .pb-safe-nav {
+    padding-bottom: calc(var(--nav-height) - var(--window-inset-bottom, 0px));
+  }
+
+  /*
+   * On desktop, we can just add the system inset to the padding, since the navbar is not present
+   * with additional 2rem buffer so there's enough space between the content and the edge of the screen.
+   */
+  @media (min-width: 768px) {
+    .pb-safe-nav {
+      padding-bottom: calc(2rem + var(--window-inset-bottom, 0px));
+    }
+  }
+
+  .md3-list {
+    @apply mb-1 last:mb-4;
+  }
+
+  .md3-list .md3-list-item {
+    @apply bg-surface-container overflow-hidden cursor-pointer;
+  }
+
+  .md3-list:first-child .md3-list-item {
+    @apply rounded-t-2xl rounded-b-sm;
+  }
+
+  .md3-list:last-child .md3-list-item {
+    @apply rounded-t-sm rounded-b-2xl;
+  }
+
+  .md3-list:not(:first-child):not(:last-child) .md3-list-item {
+    @apply rounded-sm;
+  }
+
+  .single-card-item {
+    @apply mb-0!;
+  }
+
+  .single-card-item .md3-list-item {
+    @apply rounded-2xl!;
+  }
+}
+
+@theme {
+  --color-primary: var(--primary, #ffb0ccff);
+  --color-on-primary: var(--onPrimary, #541d35ff);
+  --color-primary-container: var(--primaryContainer, #6f334bff);
+  --color-on-primary-container: var(--onPrimaryContainer, #ffd9e4ff);
+  --color-inverse-primary: var(--inversePrimary, #8b4a63ff);
+
+  --color-secondary: var(--secondary, #e2bdc8ff);
+  --color-on-secondary: var(--onSecondary, #422932ff);
+  --color-secondary-container: var(--secondaryContainer, #5a3f48ff);
+  --color-on-secondary-container: var(--onSecondaryContainer, #ffd9e4ff);
+
+  --color-tertiary: var(--tertiary, #f0bc95ff);
+  --color-on-tertiary: var(--onTertiary, #48290dff);
+  --color-tertiary-container: var(--tertiaryContainer, #623f21ff);
+  --color-on-tertiary-container: var(--onTertiaryContainer, #ffdcc4ff);
+
+  --color-background: var(--background, #1c1014ff);
+  --color-on-background: var(--onBackground, #f2dde2ff);
+  --color-surface: var(--surface, #1c1014ff);
+  --color-tonal-surface: var(--tonalSurface, #28181dff);
+  --color-on-surface: var(--onSurface, #f2dde2ff);
+  --color-surface-variant: var(--surfaceVariant, #514347ff);
+  --color-on-surface-variant: var(--onSurfaceVariant, #d5c2c6ff);
+  --color-surface-tint: var(--surfaceTint, #ffb0ccff);
+
+  --color-inverse-surface: var(--inverseSurface, #f2dde2ff);
+  --color-inverse-on-surface: var(--inverseOnSurface, #392d31ff);
+
+  --color-error: var(--error, #f2b8b5ff);
+  --color-on-error: var(--onError, #601410ff);
+  --color-error-container: var(--errorContainer, #8c1d18ff);
+  --color-on-error-container: var(--onErrorContainer, #f9dedcff);
+
+  --color-outline: var(--outline, #9d8c91ff);
+  --color-outline-variant: var(--outlineVariant, #514347ff);
+  --color-scrim: var(--scrim, #000000ff);
+
+  --color-surface-bright: var(--surfaceBright, #433639ff);
+  --color-surface-dim: var(--surfaceDim, #1c1014ff);
+  --color-surface-container: var(--surfaceContainer, #281c20ff);
+  --color-surface-container-high: var(--surfaceContainerHigh, #33272aff);
+  --color-surface-container-highest: var(--surfaceContainerHighest, #3e3135ff);
+  --color-surface-container-low: var(--surfaceContainerLow, #23191cff);
+  --color-surface-container-lowest: var(--surfaceContainerLowest, #18090fff);
+}

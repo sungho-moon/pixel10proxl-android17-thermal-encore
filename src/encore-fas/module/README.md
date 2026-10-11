@@ -1,4 +1,4 @@
-# Encore Pixel Tensor Android 17 — 0.7.1 smooth feedback
+# Encore Pixel Tensor Android 17 — 0.8.0 Integrated Thermal + Dynamic ELF FAS
 
 This build keeps Encore as the only frequency-request writer and adds a
 fas-rs-derived proportional frame-error adviser to its existing tracefs
@@ -12,7 +12,7 @@ zero; two severe deficit windows can re-enter level 2 early. It remains subject 
 temperature caps. The 43°C whole-controller protection remains active. Read `FAS_EXPERIMENT.md` for
 controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 
-适用设备：Pixel Tensor 系列，Android 17（SDK 37）各 QPR/测试版本。频率节点预检通过后启用基础 Encore 调度；只有已匹配的 `libgui.so` 才启用 FAS 帧探针。
+适用设备：Pixel Tensor 系列，Android 17（SDK 37）各 QPR/测试版本。频率节点预检通过后启用基础 Encore 调度；只有能解析出有效 `Surface::hook_queueBuffer` ELF 符号的 `libgui.so` 才启用 FAS 帧探针。
 
 这是 Encore 的源码分支，非官方 Pixel 版本。上游：<https://github.com/Rem01Gaming/encore>，版本 5.2.1，提交 `361ab0ef483f3a6a9d57b2aae0ac2284c2fe6d64`，Apache-2.0。
 
@@ -60,6 +60,7 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 
 - 游戏：列出已安装应用，逐个启用/停用游戏识别、设置 Lite；开关保存后立即生效。
 - 设置：允许高帧率、全局 Lite、停用游戏优化、语言和日志等级。允许高帧率默认开启，表示游戏前台且保护条件允许时临时关闭系统默认游戏限帧策略，不能保证实际 120 FPS。
+- 设置还提供 FAS 帧反馈和 fas-rs 建议算法两个独立开关；开关状态分别由 `disable-fas` 与 `disable-fas-rs-advisor` 原子更新，关闭后控制器下一轮检查释放对应请求。
 - Lite 降低最低频率请求；全局 Lite 优先于单游戏设置。停用游戏优化会释放模块请求及帧率策略。
 - 每个游戏可在 WebUI 选择 30、60 或 120 FPS。已知竞技 FPS/MOBA 包默认 120，其余游戏默认 60；FAS 不再猜测目标帧率。
 - 移除不适用于此 Pixel 分支的 governor、设备缓解、勿扰配置入口；没有按帧时间自适应频率的 FAS。
@@ -82,11 +83,15 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 ## 安装
 
 1. 在 KernelSU 中停用旧 `Pixel Global Game Uclamp`（ID `pixel_pubg_uclamp_cp41`，0.3.2）以及原版 Encore（如已安装）。
-2. 安装 Releases 中的 `Encore-Pixel-10-Android17-v0.7.1-smooth-feedback.zip`，确认新模块处于启用状态，重启。
+2. 安装 Releases 中的 `Encore-Pixel-10-Android17-v0.8.0-integrated-thermal.zip`，确认新模块处于启用状态，重启。
 3. 安装阶段会读取上游固定游戏列表，只将设备已安装的匹配包加入本机列表；之后监听 `/data/app` 的 APK 安装事件并刷新匹配项。开机后等待约 25 秒服务启动。不同游戏共用默认模式，可逐游戏选择 Lite。
 4. 进入三角洲 120 帧实际对局，核对 status、投票读回值和实际呈现帧时间；最低请求高于当前系统上限时该节点释放投票。退出和息屏后应看到请求及帧率策略恢复。
 
-已有独立温控模块可以保留；本模块自身不修改温控配置。已知旧调度或原版 Encore 仍启用时，本模块拒绝进入实际控制。
+温控与调度已合并在同一个模块中。安装时按提示使用音量键选择温控模式：音量上键放宽温控限制（推荐），音量下键保持原厂温控；10 秒无操作默认放宽。温控配置会在开机阶段按当前 Thermal JSON 自动发现并生成，未知结构或校验失败时只隔离温控 overlay，Encore 调度继续运行。安装前请停用或卸载独立 `pixel_game_thermal_cp41`、旧调度和原版 Encore，避免 Thermal overlay 冲突。
+
+运行时校验失败会阻止下次开机继续挂载温控 overlay；已加载的 HAL 配置要在下次重启后恢复原厂。调度的暂停开关只控制调度服务，不改变安装时选择的温控模式。
+
+如果日志出现 `thermal_disabled`，确认已停用冲突模块后，可删除 `/data/adb/.config/encore_pixel_cp41/thermal-disabled` 并重启，让当前系统的 Thermal JSON 重新发现。
 
 动作按钮：暂停并恢复请求；再次点击恢复服务。暂停状态跨重启保留。
 
@@ -105,6 +110,8 @@ controls, limits and rollback. The 0.1.6 behavior below remains the baseline.
 - `journal`：同次开机的恢复记录，不要在服务运行时删除。
 - `frame-policy-journal`：同次开机的默认帧率策略恢复记录。
 - `disable-high-fps`：创建后只关闭帧率策略适配，频率控制继续运行。
+- `thermal-relaxed`：安装选择写入的温控模式标记，`1` 为放宽温控，`0` 为原厂温控。
+- `thermal-service.log` 与 `state/boot.log`：温控发现、HAL 校验和 fail-closed 隔离记录。
 
 维护命令（在 `adb shell` 的 root shell 中运行）：
 
@@ -116,7 +123,7 @@ touch /data/adb/.config/encore_pixel_cp41/pause
 /data/adb/modules/encore_pixel_cp41/bin/pixel-control restore
 ```
 
-卸载会停止控制并尝试恢复；配置及诊断保留供审查。更新到其他 Android 17 QPR/测试版本后，基础调度会按设备、SDK 和频率节点预检决定是否加载；`libgui.so` 哈希未登记时只停用 FAS 帧探针，不猜测 uprobe 偏移。温控模块同样按 Thermal JSON 结构和目标频率预检，匹配失败会自动隔离。
+卸载会停止控制并尝试恢复；配置及诊断保留供审查。更新到其他 Android 17 QPR/测试版本后，基础调度会按设备、SDK 和频率节点预检决定是否加载；ELF 符号解析失败时只停用 FAS 帧探针，不猜测 uprobe 偏移。集成温控按 Thermal JSON 结构和目标频率预检，匹配失败会自动隔离温控 overlay，不会关闭 Encore 调度。
 
 ## 已验证和仍需验证
 
@@ -128,7 +135,7 @@ touch /data/adb/.config/encore_pixel_cp41/pause
 
 ## 源码与复现
 
-源码位于仓库的 `src/encore-fas/`，发布页只提供可安装模块 ZIP，不再生成源码压缩包。
+源码位于仓库的 `src/encore-fas/`，WebUI 源码位于 `src/encore-fas/webui/`，发布页只提供可安装模块 ZIP。该版本基于 GitHub `v0.7.4-qpr3-android17`，并叠加运行时 ELF 符号解析、90 FPS、FAS 开关、动态线程采样、菜单修复和自动 Thermal JSON 温控。
 
 上游 `binder_resolver.apk` 沿用 5.2.1 官方发布二进制，本次没有重编译 APK；Encore 源码仓库把它放在 `prebuilt/` 中，其源码另见 <https://github.com/Rem01Gaming/binder_resolver>。模块中的 `encored` 和 `pixel-control` 均由随附源码编译。APK 的哈希和来源记录在 `PROVENANCE.json` 中。
 

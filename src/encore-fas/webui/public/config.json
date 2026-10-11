@@ -1,0 +1,7 @@
+{
+  "title": "Encore Pixel",
+  "icon": "icon.webp",
+  "exitConfirm": false,
+  "backInterceptor": "javascript",
+  "contentSecurityPolicy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' ksu: data:; font-src 'self' data:; connect-src 'self'"
+}

@@ -1,4 +1,15 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later. Frame feedback with measured backoff. */
+#include <math.h>
+static int inferred_target(double fps) {
+ /* Automatic fallback: split 60/90/120 at their arithmetic midpoints.
+  * The guardian latches the highest observed tier; lower FPS cannot lower it.
+  * Explicit targets bypass inference because FPS alone cannot prove a cap. */
+ if(!isfinite(fps)||fps<24)return 0;
+ if(fps<42)return 30;
+ if(fps<75)return 60;
+ if(fps<105)return 90;
+ return 120;
+}
 struct policy {int level,good,capped,cooldown,base_n,high_n;double base_fps,base_p95,high_fps,high_p95;};
 static void reset_measure(struct policy*p){p->base_n=p->high_n=0;p->base_fps=p->base_p95=p->high_fps=p->high_p95=0;}
 static int decide(struct policy*p,int samples,double fps,double avg,double p95,double late,int temp,int target,int valid){

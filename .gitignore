@@ -2,6 +2,8 @@
 *.log
 __pycache__/
 .venv/
+node_modules/
+src/encore-fas/webui/dist/
 src/thermal-auto/module/thermal-test-*/
 
 # Local build and device-test artifacts

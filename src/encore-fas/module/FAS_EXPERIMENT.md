@@ -1,12 +1,10 @@
-# Encore Pixel Tensor Android 17 0.2.3 generic adviser
+# Encore Pixel Tensor Android 17 0.8.0 Integrated Thermal + Dynamic ELF FAS adviser
 
 This is a userspace adaptation of the frame-deficit concept in
 https://github.com/rem01project/encore_fas, pinned at commit
 46d5af8e8756467b636a1da0c2227ee74abd1225. It does not include a
 kernel module. Only the existing Pixel controller writes frequency requests.
-The tracefs uprobe observes Surface::hook_queueBuffer only for a separately
-validated libgui hash and offset. Unknown Android 17 QPR builds keep the
-baseline Encore controller and refuse to guess a trace offset.
+The tracefs uprobe resolves `Surface::hook_queueBuffer` at runtime from the ELF64 `.dynsym` and `.dynstr` tables in `libgui.so`. It validates the AArch64 ELF header, symbol type, and executable `PT_LOAD` range before using its symbol value as the uprobe offset. Unknown or stripped builds fail closed: FAS is disabled for that session and the baseline Encore controller continues running.
 
 The proportional adviser independently reimplements the frame-error equation
 from fas-rs v4.9.1: `control_khz = 300000 * (frame_seconds * target_fps - 1)`.
@@ -25,15 +23,15 @@ high-frame-rate policy switch. To disable FAS immediately as root:
     touch /data/adb/.config/encore_pixel_cp41/disable-fas
 
 Remove that file to enable FAS again. The controller reacts in its normal
-2-second loop and releases any short boost when disabled. The WebUI does not
-yet expose this switch.
+2-second loop and releases any short boost when disabled. The WebUI Settings
+page exposes this switch as “FAS frame feedback”.
 
 To disable only the fas-rs adviser while leaving Encore's original FAS detector
 active, create `/data/adb/.config/encore_pixel_cp41/disable-fas-rs-advisor`.
-Remove it to re-enable the adviser; the controller reads it each loop.
+Remove it to re-enable the adviser; the controller reads it each loop. The
+same marker is available in WebUI Settings as “fas-rs adviser”.
 
-Targets are configured in
-The WebUI game page stores `target_fps` in
+Targets are configured in the WebUI game page. It stores `target_fps` in
 `/data/adb/.config/encore_pixel_cp41/gamelist.json` for each enabled game:
 
     com.tencent.tmgp.pubgmhd 120

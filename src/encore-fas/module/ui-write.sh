@@ -3,6 +3,29 @@
 set -eu
 M=${0%/*}
 C=/data/adb/.config/encore_pixel_cp41
+if [ "${1:-}" = marker ]; then
+ MARKER=${2:-}; VALUE=${3:-}
+ case "$MARKER" in
+  disable-fas|disable-fas-rs-advisor) ;;
+  *) echo 'Unsupported marker' >&2; exit 2;;
+ esac
+ case "$VALUE" in 0|1) ;; *) echo 'Invalid marker state' >&2; exit 2;; esac
+ LOCK="$C/ui-write-lock"
+ mkdir "$LOCK" 2>/dev/null || { echo 'Another configuration write is in progress' >&2; exit 3; }
+ T=
+ trap '[ -z "$T" ] || rm -f "$T"; rmdir "$LOCK"' EXIT
+ trap 'exit 130' INT TERM HUP
+ if [ "$VALUE" = 1 ]; then
+  T=$(mktemp "$C/.marker.XXXXXX")
+  chmod 600 "$T"
+  mv -f "$T" "$C/$MARKER"
+  T=
+ else
+  rm -f "$C/$MARKER"
+ fi
+ echo saved
+ exit 0
+fi
 case "${1:-}" in
  config) DEST="$C/config.json"; VALIDATOR=validate_config;;
  games) DEST="$C/gamelist.json"; VALIDATOR=validate_gamelist;;

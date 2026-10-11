@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.zip binary
+*.apk binary
+*.so binary
+**/bin/** -text

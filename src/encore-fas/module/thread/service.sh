@@ -5,6 +5,7 @@
 MODDIR=${0%/*}
 STATE="$MODDIR/state"
 TOYBOX=/system/bin/toybox
+DYNAMIC_SAMPLER="$MODDIR/bin/thread-sampler"
 mkdir -p "$STATE"
 stopped() { [ -e "$MODDIR/../disable" ] || [ -e "$MODDIR/../remove" ] || [ -e "$STATE/paused" ]; }
 foreground_package() {
@@ -13,37 +14,10 @@ foreground_package() {
     "$TOYBOX" head -n 1
 }
 sample_dynamic_threads() {
-  local pid=$1 out="$MODDIR/../../../.config/encore_pixel_cp41/dynamic-tids" a b rest utime stime tid t d
+  local pid=$1 out="$MODDIR/../../../.config/encore_pixel_cp41/dynamic-tids"
   mkdir -p "${out%/*}"
-  : > "$STATE/dynamic-a"
-  for t in /proc/$pid/task/*; do
-    tid=${t##*/}; [ -r "$t/stat" ] || continue
-    [ "$tid" = "$pid" ] && continue
-    rest=$("$TOYBOX" sed 's/^[0-9][0-9]* ([^)]*) //' "$t/stat") || continue
-    set -- $rest
-    utime=${12:-0}; stime=${13:-0}
-    case "$utime:$stime" in *[!0-9:]*|:) continue;; esac
-    printf '%s %s\n' "$tid" "$((utime + stime))" >> "$STATE/dynamic-a"
-  done
-  "$TOYBOX" sleep .25
-  : > "$STATE/dynamic-b"
-  for t in /proc/$pid/task/*; do
-    tid=${t##*/}; [ -r "$t/stat" ] || continue
-    [ "$tid" = "$pid" ] && continue
-    rest=$("$TOYBOX" sed 's/^[0-9][0-9]* ([^)]*) //' "$t/stat") || continue
-    set -- $rest
-    utime=${12:-0}; stime=${13:-0}
-    case "$utime:$stime" in *[!0-9:]*|:) continue;; esac
-    printf '%s %s\n' "$tid" "$((utime + stime))" >> "$STATE/dynamic-b"
-  done
-  : > "$STATE/dynamic-delta"
-  while read -r tid b; do
-    a=$("$TOYBOX" grep "^$tid " "$STATE/dynamic-a" | "$TOYBOX" cut -d' ' -f2)
-    case "$a:$b" in *[!0-9:]*|:) continue;; esac
-    d=$((b - a)); [ "$d" -gt 0 ] && printf '%s %s\n' "$d" "$tid" >> "$STATE/dynamic-delta"
-  done < "$STATE/dynamic-b"
-  "$TOYBOX" sort -nr "$STATE/dynamic-delta" | "$TOYBOX" head -n 4 | "$TOYBOX" cut -d' ' -f2 > "$out.new"
-  mv -f "$out.new" "$out"
+  [ -x "$DYNAMIC_SAMPLER" ] || return 1
+  "$DYNAMIC_SAMPLER" "$pid" "$out"
 }
 find_game() {
   local pkg pid uid

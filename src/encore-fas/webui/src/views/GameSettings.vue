@@ -1,0 +1,370 @@
+<template>
+  <div class="page game-settings-page h-full flex flex-col overflow-hidden bg-surface">
+    <div class="max-w-3xl mx-auto h-full flex flex-col w-full">
+      <div class="flex-none p-5 mb-2 relative z-50">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-4">
+            <button @click="$router.back()" class="text-on-surface hover:text-primary transition-colors">
+              <ArrowLeftIcon class="w-6 h-6 cursor-pointer rtl:rotate-180" />
+            </button>
+            <h1 class="text-xl font-semibold text-on-surface">
+              {{ $t('game_settings.title') }}
+            </h1>
+          </div>
+
+          <DropdownMenu>
+            <template #trigger>
+              <button class="p-2 -mr-2 rounded-full text-on-surface hover:bg-on-surface/10 transition-colors">
+                <DotsVertical />
+              </button>
+            </template>
+
+            <template #content="{ close }">
+              <MenuItem @click="() => { handleLaunchApp(); close(); }">
+                <template #icon><OpenInNew :size="20" /></template>
+                {{ $t('game_settings.launch_app') }}
+              </MenuItem>
+
+              <MenuItem @click="() => { handleOpenAppInfo(); close(); }">
+                <template #icon><InformationOutline :size="20" /></template>
+                {{ $t('game_settings.app_info') }}
+              </MenuItem>
+            </template>
+          </DropdownMenu>
+
+        </div>
+      </div>
+
+      <!-- Settings Content -->
+      <div class="scrollbar-hidden pb-safe-nav flex-1 min-h-0 overflow-y-scroll px-5">
+        <div class="space-y-6">
+          <h2 class="text-on-surface-variant text-sm font-medium tracking-wide">
+            {{ $t('game_settings.application') }}
+          </h2>
+
+          <!-- App Info Section -->
+          <div class="flex items-center gap-4">
+            <img :src="currentApp.icon" @error="handleImageError" class="w-12 h-12 rounded-full object-cover"
+              :alt="currentApp.appName" />
+            <div class="flex-1 min-w-0">
+              <h3 class="text-base font-medium text-on-surface truncate">
+                {{ currentApp.appName || currentApp.packageName }}
+              </h3>
+              <p v-if="currentApp.appName && currentApp.appName !== currentApp.packageName"
+                class="allow-copy text-sm text-on-surface-variant truncate mt-1">
+                {{ currentApp.packageName }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Enable Tweaks Section -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <Candy class="text-primary shrink-0" />
+                <div class="pl-3 pr-4">
+                  <h3 class="text-base font-medium text-on-surface">
+                    {{ $t('game_settings.enable_tweaks') }}
+                  </h3>
+                </div>
+              </div>
+              <ToggleSwitch class="opacity-100!" :model-value="appSettings.isEnabled"
+                :disabled="isSaving"
+                @update:model-value="toggleAppEnabled" />
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <hr class="border-outline-variant opacity-40" />
+
+          <!-- Preferences Section -->
+          <div class="space-y-6">
+            <h2 class="text-on-surface-variant text-sm font-medium tracking-wide"
+              :class="{ 'opacity-50': !appSettings.isEnabled }">
+              {{ $t('game_settings.preferences') }}
+            </h2>
+
+            <div class="space-y-6">
+              <!-- Lite Mode -->
+              <div class="flex items-center justify-between"
+                :class="{ 'opacity-50': !appSettings.isEnabled || isGlobalLiteModeEnabled }">
+                <div class="flex items-center gap-1.5">
+                  <Feather class="shrink-0 text-primary" />
+                  <div class="pl-3 pr-4">
+                    <h3 class="text-base font-medium text-on-surface">
+                      {{ $t('game_settings.lite_mode') }}
+                    </h3>
+                    <p class="text-sm mt-1 text-on-surface-variant">
+                      {{ $t('game_settings.lite_mode_description') }}
+                    </p>
+                  </div>
+                </div>
+                <ToggleSwitch class="opacity-100!" :model-value="liteModeSwitchValue"
+                  :disabled="!appSettings.isEnabled || isGlobalLiteModeEnabled || isSaving" @update:model-value="toggleLiteMode" />
+              </div>
+
+              <div class="flex items-center justify-between" :class="{ 'opacity-50': !appSettings.isEnabled }">
+                <div class="flex items-center gap-1.5">
+                  <div class="pl-3 pr-4">
+                    <h3 class="text-base font-medium text-on-surface">{{ $t('game_settings.target_fps') }}</h3>
+                    <p class="text-sm text-on-surface-variant mt-1">{{ $t('game_settings.target_fps_description') }}</p>
+                  </div>
+                </div>
+                <div class="relative shrink-0">
+                  <button type="button" class="min-w-28 flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-on-surface bg-surface-container-high hover:bg-surface-container-highest transition-colors disabled:opacity-50" :disabled="!appSettings.isEnabled || isSaving" :aria-expanded="showFpsMenu" aria-haspopup="listbox" @click="showFpsMenu = !showFpsMenu">
+                    <span>{{ appSettings.target_fps ? `${appSettings.target_fps} FPS` : $t('game_settings.target_fps_auto') }}</span>
+                    <span class="text-on-surface-variant" aria-hidden="true">{{ showFpsMenu ? '⌃' : '⌄' }}</span>
+                  </button>
+                  <div v-if="showFpsMenu" role="listbox" :aria-label="$t('game_settings.target_fps')" class="absolute z-40 top-full right-0 mt-2 w-40 overflow-hidden rounded-2xl bg-surface-container-highest shadow-xl ring-1 ring-outline-variant/40">
+                    <button v-for="fps in targetFpsOptions" :key="fps" type="button" role="option" :aria-selected="appSettings.target_fps === fps" class="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-on-surface hover:bg-primary/10 transition-colors" :class="{ 'bg-primary/15 text-primary font-semibold': appSettings.target_fps === fps }" @click="selectTargetFps(fps)">
+                      <span>{{ fps ? `${fps} FPS` : $t('game_settings.target_fps_auto') }}</span>
+                      <span v-if="appSettings.target_fps === fps" class="text-primary" aria-hidden="true">✓</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p v-if="saveError" role="alert" class="text-red-500 text-sm break-words">{{ saveError }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, watch, onMounted, onActivated, shallowRef } from 'vue'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
+import { useGamesStore } from '@/stores/Games'
+import { useEncoreConfigStore } from '@/stores/EncoreConfig'
+import * as KernelSU from '@/helpers/KernelSU'
+
+import DropdownMenu from '@/components/ui/DropdownMenu.vue'
+import MenuItem from '@/components/ui/MenuItem.vue'
+
+import ToggleSwitch from '@/components/ui/ToggleSwitch.vue'
+import ArrowLeftIcon from '@/components/icons/ArrowLeft.vue'
+import Candy from '@/components/icons/Candy.vue'
+import DotsVertical from '@/components/icons/DotsVertical.vue'
+import Feather from '@/components/icons/Feather.vue'
+import NoEntry from '@/components/icons/NoEntry.vue'
+import InformationOutline from '@/components/icons/InformationOutline.vue'
+import OpenInNew from '@/components/icons/OpenInNew.vue'
+
+const route = useRoute()
+const router = useRouter()
+const gamesStore = useGamesStore()
+const encoreConfigStore = useEncoreConfigStore()
+
+const appSettings = shallowRef({ isEnabled: false, lite_mode: false, enable_dnd: false, target_fps: 0 })
+
+const currentApp = ref({})
+const originalSettings = ref({})
+const isLeaving = ref(false)
+const saveTimeout = ref(null)
+const showMenu = ref(false)
+const isGlobalLiteModeEnabled = ref(false)
+const isSaving = ref(false)
+const saveError = ref('')
+
+const liteModeSwitchValue = computed(() => {
+  if (!appSettings.value.isEnabled) {
+    return false
+  }
+
+  if (isGlobalLiteModeEnabled.value) {
+    return true
+  }
+
+  return appSettings.value.lite_mode
+})
+
+watch(
+  () => route.params.packageName,
+  (newPackageName, oldPackageName) => {
+    if (newPackageName && newPackageName !== oldPackageName) {
+      loadAppData(newPackageName)
+    }
+  },
+  { immediate: true },
+)
+
+onMounted(async () => {
+  await loadGlobalConfig()
+  loadAppData()
+})
+onActivated(async () => {
+  await encoreConfigStore.loadConfig()
+  await loadGlobalConfig()
+  await loadAppData()
+})
+
+onBeforeRouteLeave(async (to, from, next) => {
+  isLeaving.value = true
+  clearTimeout(saveTimeout.value)
+  const ok = await saveSettings()
+  next(ok === false ? false : undefined)
+})
+
+async function loadGlobalConfig() {
+  try {
+    if (!encoreConfigStore.isLoaded) {
+      await encoreConfigStore.loadConfig()
+    }
+    isGlobalLiteModeEnabled.value = encoreConfigStore.isLiteModeEnabled
+  } catch (error) {
+    console.error('Failed to load global config:', error)
+    isGlobalLiteModeEnabled.value = false
+  }
+}
+
+async function loadAppData(packageName = null) {
+  const targetPackageName = packageName || route.params.packageName
+  if (!targetPackageName) return router.push('/games')
+
+  currentApp.value = {}
+  appSettings.value = { isEnabled: false, lite_mode: false, enable_dnd: false, target_fps: 0 }
+
+  // First try to get from store
+  const fromStore = gamesStore.userApps.find((a) => a.packageName === targetPackageName)
+  if (fromStore) {
+    currentApp.value = fromStore
+  } else {
+    try {
+      // Try to get app info and icon
+      const [info, icon] = await Promise.allSettled([
+        KernelSU.getAppLabel(targetPackageName),
+        KernelSU.getAppIcon(targetPackageName, 100),
+      ])
+
+      // Use results if successful, otherwise use fallbacks
+      const appName = info.status === 'fulfilled' ? info.value : targetPackageName
+      const appIcon =
+        icon.status === 'fulfilled' && icon.value ? icon.value : './app_icon_fallback.avif'
+
+      currentApp.value = {
+        packageName: targetPackageName,
+        appName,
+        icon: appIcon,
+      }
+    } catch {
+      // Just use package name and fallback icon
+      currentApp.value = {
+        packageName: targetPackageName,
+        appName: targetPackageName,
+        icon: './app_icon_fallback.avif',
+      }
+    }
+  }
+
+  await gamesStore.loadGamelistConfig()
+  loadAppSettings()
+  originalSettings.value = { ...appSettings.value }
+}
+
+function loadAppSettings() {
+  const cfg = gamesStore.gamelistConfig[currentApp.value.packageName] || {}
+  appSettings.value = {
+    isEnabled: currentApp.value.packageName in gamesStore.gamelistConfig,
+    lite_mode: !!cfg.lite_mode,
+    enable_dnd: !!cfg.enable_dnd,
+    target_fps: Number.isInteger(cfg.target_fps) ? cfg.target_fps : 0,
+  }
+}
+
+async function toggleAppEnabled() {
+  if (isSaving.value) return
+  const newValue = !appSettings.value.isEnabled
+  appSettings.value = {
+    isEnabled: newValue,
+    lite_mode: newValue ? appSettings.value.lite_mode : false,
+    enable_dnd: newValue ? appSettings.value.enable_dnd : false,
+    target_fps: newValue ? appSettings.value.target_fps : 0,
+  }
+  if (!(await saveSettings())) appSettings.value = { ...originalSettings.value }
+}
+
+async function toggleLiteMode() {
+  if (isSaving.value) return
+  if (isGlobalLiteModeEnabled.value) {
+    return
+  }
+
+  if (appSettings.value.isEnabled) {
+    appSettings.value = {
+      ...appSettings.value,
+      lite_mode: !appSettings.value.lite_mode,
+    }
+    if (!(await saveSettings())) appSettings.value = { ...originalSettings.value }
+  }
+}
+
+const targetFpsOptions = [0, 30, 60, 90, 120]
+const showFpsMenu = ref(false)
+
+async function selectTargetFps(fps) {
+  if (isSaving.value || !appSettings.value.isEnabled) return
+  showFpsMenu.value = false
+  appSettings.value = { ...appSettings.value, target_fps: fps }
+  if (!(await saveSettings())) appSettings.value = { ...originalSettings.value }
+}
+
+function toggleDndMode() {
+  if (appSettings.value.isEnabled) {
+    appSettings.value = {
+      ...appSettings.value,
+      enable_dnd: !appSettings.value.enable_dnd,
+    }
+  }
+}
+
+function handleLaunchApp() {
+  showMenu.value = false
+  if (currentApp.value && currentApp.value.packageName) {
+    KernelSU.launchApp(currentApp.value.packageName)
+  }
+}
+
+function handleOpenAppInfo() {
+  showMenu.value = false
+  if (currentApp.value && currentApp.value.packageName) {
+    KernelSU.openAppInfo(currentApp.value.packageName)
+  }
+}
+
+async function saveSettings() {
+  if (JSON.stringify(appSettings.value) === JSON.stringify(originalSettings.value)) return true
+  if (isSaving.value) return false
+
+  const pkg = currentApp.value.packageName
+  if (!pkg) return false
+  isSaving.value = true
+  saveError.value = ''
+
+  try {
+    if (appSettings.value.isEnabled) {
+      await gamesStore.updateAppConfig(pkg, {
+        lite_mode: appSettings.value.lite_mode,
+        enable_dnd: appSettings.value.enable_dnd,
+        target_fps: appSettings.value.target_fps,
+      })
+    } else {
+      await gamesStore.updateAppConfig(pkg, null)
+    }
+
+    originalSettings.value = { ...appSettings.value }
+    console.log('Settings saved successfully for:', pkg)
+    return true
+  } catch (e) {
+    console.error('saveSettings failed', e)
+    saveError.value = e.message
+    return false
+  } finally {
+    isSaving.value = false
+  }
+}
+
+function handleImageError(e) {
+  e.target.src = './app_icon_fallback.avif'
+}
+</script>

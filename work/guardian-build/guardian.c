@@ -14,15 +14,8 @@ static struct record records[LIMIT];static int count;
 static const uint32_t floors[]={0,257,385,513};
 static char directory[768];static volatile sig_atomic_t alive=1;
 static int session_fd=-1;
-static int inferred_target(double fps) {
- /* Automatic mode only exposes the device's supported user-facing tiers.
-  * Use an upper-band decision so a loaded 120-FPS game at 80-100 FPS is
-  * not mistaken for a 60/90-FPS preference. The target is latched later. */
- if(fps<24)return 0;
- if(fps<42)return 30;
- if(fps<78)return 60;
- return 120;
-}
+/* inferred_target() is shared with the policy tests in policy.h.
+ * It is used only for target=0; explicit targets bypass inference. */
 static int session_lock(void){
  char path[900];snprintf(path,sizeof(path),"%s/session.lock",directory);
  session_fd=open(path,O_CREAT|O_RDWR|O_CLOEXEC,0600);

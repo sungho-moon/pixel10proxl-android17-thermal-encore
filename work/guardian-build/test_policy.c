@@ -2,6 +2,14 @@
 #include <stdio.h>
 #include "policy.h"
 int main(void){
+ assert(inferred_target(NAN)==0&&inferred_target(INFINITY)==0);
+ assert(inferred_target(-INFINITY)==0&&inferred_target(-1)==0);
+ assert(inferred_target(23.99)==0&&inferred_target(24)==30);
+ assert(inferred_target(41.99)==30&&inferred_target(42)==60);
+ assert(inferred_target(60)==60&&inferred_target(74.99)==60);
+ assert(inferred_target(75)==90&&inferred_target(90)==90);
+ assert(inferred_target(104.99)==90&&inferred_target(105)==120);
+ assert(inferred_target(120)==120);
  int targets[]={30,60,90,120,144};
  for(unsigned j=0;j<sizeof(targets)/sizeof(targets[0]);j++){
   int t=targets[j];double b=1000.0/t;struct policy p={0};

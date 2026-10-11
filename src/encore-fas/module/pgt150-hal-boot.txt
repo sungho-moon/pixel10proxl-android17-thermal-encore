@@ -1,0 +1,1482 @@
+getCachedTemperatures:
+ Name: IS_CHARGE_BOOST CachedValue: 0 TimeToCache: 5859ms
+ Name: VIRTUAL-SKIN-LEGACY-MODEL-DIFF CachedValue: -546.152 TimeToCache: 1228ms
+ Name: VT-FORECAST-30SEC-BACK CachedValue: 38886.6 TimeToCache: 20274ms
+ Name: VT-FORECAST-60SEC CachedValue: 42138.5 TimeToCache: 5857ms
+ Name: soc_therm CachedValue: 50264 TimeToCache: 1228ms
+ Name: VIRTUAL-SKIN-HINT CachedValue: 41520.2 TimeToCache: 6144ms
+ Name: VIRTUAL-SKIN-MODEL CachedValue: 41679.3 TimeToCache: 6141ms
+ Name: EXTREME_THROTTLE CachedValue: 0 TimeToCache: 6139ms CountThresholdCounted: [false ]
+ Name: VIRTUAL-SKIN-PREDICTION-MODEL CachedValue: 41710.9 TimeToCache: 5858ms
+ Name: MID CachedValue: 68000 TimeToCache: 20274ms
+ Name: cellular-emergency CachedValue: 41520.2 TimeToCache: 6140ms
+ Name: BG-TASKS-THROTTLING-HINT CachedValue: 0 TimeToCache: 5859ms
+ Name: VIRTUAL-USB-UI CachedValue: 0 TimeToCache: 5858ms CountThresholdCounted: [false false false ]
+ Name: disp0_therm CachedValue: 36172 TimeToCache: 1229ms
+ Name: VIRTUAL-SKIN-MODEL-LEGACY-DIFF CachedValue: 546.152 TimeToCache: 1228ms
+ Name: GPU CachedValue: 65000 TimeToCache: 24425ms
+ Name: VIRTUAL-SKIN-CPU-LIGHT-ODPM CachedValue: 41520.2 TimeToCache: 6140ms
+ Name: BIG_MID CachedValue: 66000 TimeToCache: 20275ms
+ Name: BG-TASKS-THROTTLING-EXP-PROPERTY CachedValue: 0 TimeToCache: 5858ms
+ Name: north_therm CachedValue: 41726 TimeToCache: 1229ms
+ Name: LITTLE CachedValue: 68000 TimeToCache: 20276ms
+ Name: VIRTUAL-BTS-WINDOW-PARTIAL CachedValue: 1605.24 TimeToCache: 20276ms
+ Name: BIG CachedValue: 65000 TimeToCache: 20276ms
+ Name: BG_TASKS_THROTTLING_COUNT CachedValue: 1 TimeToCache: 5858ms CountThresholdCounted: [true false ]
+ Name: VIRTUAL-SKIN-CPU-MID CachedValue: 41520.2 TimeToCache: 6140ms
+ Name: VIRTUAL-SKIN CachedValue: 41583.9 TimeToCache: 1233ms
+ Name: VIRTUAL-SKIN-CHARGE-BOOST CachedValue: 42020.2 TimeToCache: 6139ms
+ Name: VIRTUAL-SKIN-MODEL-UPDATED CachedValue: 41583.9 TimeToCache: 1231ms
+ Name: CONCURRENT_USE_POWER CachedValue: 1 TimeToCache: 6139ms CountThresholdCounted: [false true false false ]
+ Name: VIRTUAL-SKIN-SPEAKER-SUB-1 CachedValue: 38528.2 TimeToCache: 6139ms
+ Name: VIRTUAL-SKIN-OVER-35C-TRIGGER CachedValue: 41520.2 TimeToCache: 6139ms
+ Name: VIRTUAL-SKIN-SPEAKER CachedValue: 40216 TimeToCache: 6139ms
+ Name: IS_EXP_BG_TASKS_THROTTLING_ACTIVE CachedValue: 0 TimeToCache: 5858ms CountThresholdCounted: [false ]
+ Name: USB-MINUS-CHARGING CachedValue: -13334 TimeToCache: 5858ms
+ Name: BG_TASKS_THROTTLING_LEVEL CachedValue: 3 TimeToCache: 5859ms
+ Name: VIRTUAL-USB-THROTTLING CachedValue: 0 TimeToCache: 5858ms CountThresholdCounted: [false false false ]
+ Name: VIRTUAL-SKIN-SPEAKER-SUB-0 CachedValue: 39216 TimeToCache: 6139ms
+ Name: VIRTUAL-SKIN-SOC CachedValue: 41520.2 TimeToCache: 6139ms
+ Name: EXTREME_POWER_VSKIN CachedValue: 2 TimeToCache: 6139ms CountThresholdCounted: [false true true ]
+ Name: battery_capacity CachedValue: 68 TimeToCache: 5859ms
+ Name: EXTREME_CONDITION CachedValue: 1 TimeToCache: 6139ms CountThresholdCounted: [true false ]
+ Name: VIRTUAL-SKIN-CPU-ODPM CachedValue: 41520.2 TimeToCache: 6139ms
+ Name: CHARGE_BOOST_LEVEL CachedValue: 0 TimeToCache: 5859ms
+ Name: AA_ACTIVE_PROPERTY CachedValue: 0 TimeToCache: 5858ms
+ Name: DEVICE-SCREEN-AOD-OFF-HINT CachedValue: 1 TimeToCache: 5858ms CountThresholdCounted: [false true ]
+ Name: VIRTUAL-SKIN-CPU-HIGH CachedValue: 41520.2 TimeToCache: 6139ms
+ Name: IS_CHARGING CachedValue: 1 TimeToCache: 5858ms CountThresholdCounted: [true ]
+ Name: flash_therm CachedValue: 38023 TimeToCache: 1229ms
+ Name: VIRTUAL-SKIN-SOC-EXTREME CachedValue: 0 TimeToCache: 6139ms
+ Name: charging_therm CachedValue: 49406 TimeToCache: 1230ms
+ Name: rfpa_therm CachedValue: 46160 TimeToCache: 1231ms
+ Name: BG_TASKS_THROTTLING_LEVEL_BASE CachedValue: 3 TimeToCache: 5859ms
+ Name: battery CachedValue: 37300 TimeToCache: 20277ms
+ Name: TPU CachedValue: 56000 TimeToCache: 52081ms
+ Name: VIRTUAL-SKIN-LEGACY-SHUTDOWN CachedValue: 0 TimeToCache: 1228ms CountThresholdCounted: [false ]
+ Name: quiet_therm CachedValue: 46823 TimeToCache: 1231ms
+ Name: VIRTUAL-SKIN-CHARGE CachedValue: 42020.2 TimeToCache: 6139ms
+ Name: VIRTUAL-SKIN-SUB-0 CachedValue: 39730.4 TimeToCache: 1231ms
+ Name: VIRTUAL-SKIN-LEGACY CachedValue: 41133.1 TimeToCache: 1231ms
+ Name: VIRTUAL-SKIN-SUB-3 CachedValue: 40501.1 TimeToCache: 1228ms
+ Name: VT-FORECAST-30SEC CachedValue: 41914.5 TimeToCache: 5857ms
+ Name: VIRTUAL-SKIN-SUB-4 CachedValue: 40648 TimeToCache: 1228ms
+ Name: VIRTUAL-SKIN-SUB-5 CachedValue: 40300.7 TimeToCache: 1228ms
+ Name: usb_pwr_therm CachedValue: 36972 TimeToCache: 1230ms
+ Name: VT_MODEL_WEIGHT CachedValue: 1 TimeToCache: 1228ms
+ Name: VIRTUAL-SKIN-SUB-1 CachedValue: 41133.1 TimeToCache: 1228ms
+ Name: VT_LEGACY_WEIGHT CachedValue: 0 TimeToCache: 1228ms CountThresholdCounted: [false false ]
+ Name: VIRTUAL-SKIN-SUB-7 CachedValue: 39490.5 TimeToCache: 1228ms
+ Name: thb_hda CachedValue: 54 TimeToCache: 6139ms
+ Name: VIRTUAL-SKIN-CHARGE-WIRED CachedValue: 42020.2 TimeToCache: 6139ms
+ Name: VT-FORECAST-NOW CachedValue: 40992.8 TimeToCache: 20277ms
+ Name: VIRTUAL-SKIN-CHARGE-PERSIST CachedValue: 42020.2 TimeToCache: 6138ms
+ Name: VIRTUAL-SKIN-MODEL-CLAMPED CachedValue: 41679.3 TimeToCache: 1228ms
+ Name: VIRTUAL-SKIN-MODEL-UPPER-CLAMPED CachedValue: 41679.3 TimeToCache: 1228ms
+ Name: VIRTUAL-SKIN-SUB-6 CachedValue: 40127.6 TimeToCache: 1228ms
+ Name: VIRTUAL-SKIN-EQ CachedValue: 41583.9 TimeToCache: 1233ms
+ Name: IS_BG_TASKS_THROTTLING_ACTIVE CachedValue: 0 TimeToCache: 5859ms
+ Name: NO_WLC CachedValue: 1 TimeToCache: 6139ms CountThresholdCounted: [true ]
+ Name: VIRTUAL-SKIN-SUB-2 CachedValue: 40446.4 TimeToCache: 1228ms
+ Name: WLC_CHECK CachedValue: 1 TimeToCache: 6139ms CountThresholdCounted: [true false ]
+ Name: EARLY-EMERGENCY-WARNING-SENSOR CachedValue: 0 TimeToCache: 5857ms CountThresholdCounted: [false ]
+ Name: EARLY-SHUTDOWN-WARNING-SENSOR CachedValue: 0 TimeToCache: 5857ms CountThresholdCounted: [false ]
+ Name: EARLY-WARNING-SENSOR CachedValue: 0 TimeToCache: 5857ms
+getEmulSettings:
+getCurrentTemperatures:
+ Type: CPU Name: EARLY-WARNING-SENSOR CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EARLY-SHUTDOWN-WARNING-SENSOR CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EARLY-EMERGENCY-WARNING-SENSOR CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EXTREME-CONDITION-POWER-MONITOR-46C CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-44C CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VT-FORECAST-ERROR-NOW CurrentValue: 168.938 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-45C CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VT-FORECAST-60SEC-BACK CurrentValue: 39.0537 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-EQ CurrentValue: 41583.9 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EXTREME-CONDITION-POWER-MONITOR-45C CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VT_LEGACY_WEIGHT CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-MODEL-CLAMPED CurrentValue: 41679.3 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-MODEL-UPPER-CLAMPED CurrentValue: 41679.3 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CHARGE-PERSIST CurrentValue: 42.0839 ThrottlingStatus: MODERATE
+ Type: UNKNOWN Name: STATS-UPDATOR CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VT-FORECAST-NOW CurrentValue: 41.7528 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CHARGE-WIRED CurrentValue: 42.0839 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: NO_WLC CurrentValue: 1 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: WLC_CHECK CurrentValue: 1 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: thb_hda CurrentValue: 54 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-7 CurrentValue: 39.4905 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-6 CurrentValue: 40.1276 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-46C CurrentValue: 0 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-5 CurrentValue: 40.3007 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VT-FORECAST-30SEC CurrentValue: 41.9564 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-4 CurrentValue: 40.648 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-LEGACY CurrentValue: 41.1331 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-3 CurrentValue: 40.5012 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-2 CurrentValue: 40.4464 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-1 CurrentValue: 41.1331 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SUB-0 CurrentValue: 39.7304 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CHARGE CurrentValue: 42.0839 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: quiet_therm CurrentValue: 46.823 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-LEGACY-SHUTDOWN CurrentValue: 0 ThrottlingStatus: LIGHT
+ Type: BATTERY Name: battery CurrentValue: 37.6 ThrottlingStatus: LIGHT
+ Type: BATTERY Name: TPU CurrentValue: 37.6 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: BG_TASKS_THROTTLING_LEVEL_BASE CurrentValue: 3 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: rfpa_therm CurrentValue: 46.16 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: flash_therm CurrentValue: 38.023 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VT_MODEL_WEIGHT CurrentValue: 1 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: usb_pwr_therm CurrentValue: 36.972 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: IS_BG_TASKS_THROTTLING_ACTIVE CurrentValue: 0 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: IS_CHARGING CurrentValue: 1 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-HIGH CurrentValue: 41.5839 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: DEVICE-SCREEN-AOD-OFF-HINT CurrentValue: 1 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: AA_ACTIVE_PROPERTY CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: charging_therm CurrentValue: 49.406 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SOC-EXTREME CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: CHARGE_BOOST_LEVEL CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-ODPM CurrentValue: 41.5839 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EXTREME_CONDITION CurrentValue: 1 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: battery_capacity CurrentValue: 68 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EXTREME_POWER_VSKIN CurrentValue: 2 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SOC CurrentValue: 41.5839 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SPEAKER-SUB-0 CurrentValue: 39.0028 ThrottlingStatus: SEVERE
+ Type: UNKNOWN Name: VIRTUAL-USB-THROTTLING CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: BG_TASKS_THROTTLING_LEVEL CurrentValue: 3 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: USB-MINUS-CHARGING CurrentValue: -12434 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: IS_EXP_BG_TASKS_THROTTLING_ACTIVE CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SPEAKER CurrentValue: 40.0028 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-OVER-35C-TRIGGER CurrentValue: 41583.9 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SPEAKER-SUB-1 CurrentValue: 38.4635 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: CONCURRENT_USE_POWER CurrentValue: 1 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-MODEL-UPDATED CurrentValue: 41583.9 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CHARGE-BOOST CurrentValue: 42.0839 ThrottlingStatus: CRITICAL
+ Type: SKIN Name: VIRTUAL-SKIN CurrentValue: 41.5839 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-MID CurrentValue: 41.5839 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: BG_TASKS_THROTTLING_COUNT CurrentValue: 1 ThrottlingStatus: NONE
+ Type: CPU Name: BIG CurrentValue: 54 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-BTS-WINDOW-PARTIAL CurrentValue: 1.61128 ThrottlingStatus: NONE
+ Type: CPU Name: LITTLE CurrentValue: 55 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: north_therm CurrentValue: 41.726 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: BG-TASKS-THROTTLING-EXP-PROPERTY CurrentValue: 0 ThrottlingStatus: LIGHT
+ Type: CPU Name: BIG_MID CurrentValue: 54 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VT-FORECAST-ERROR-30SEC CurrentValue: 46.4766 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-LIGHT-ODPM CurrentValue: 41.5839 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: GPU CurrentValue: 41.5839 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VT-FORECAST-ERROR-60SEC CurrentValue: -2530.13 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-MODEL-LEGACY-DIFF CurrentValue: 546.152 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: disp0_therm CurrentValue: 36.172 ThrottlingStatus: LIGHT
+ Type: USB_PORT Name: VIRTUAL-USB-UI CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: BG-TASKS-THROTTLING-HINT CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EXTREME-CONDITION-POWER-MONITOR-44C CurrentValue: 0 ThrottlingStatus: NONE
+ Type: POWER_AMPLIFIER Name: cellular-emergency CurrentValue: 41.5839 ThrottlingStatus: NONE
+ Type: CPU Name: MID CurrentValue: 55 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-PREDICTION-MODEL CurrentValue: 41.7109 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: EXTREME_THROTTLE CurrentValue: 0 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-MODEL CurrentValue: 41.6793 ThrottlingStatus: NONE
+ Type: UNKNOWN Name: VIRTUAL-SKIN-HINT CurrentValue: 41.5839 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: soc_therm CurrentValue: 50.264 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VT-FORECAST-60SEC CurrentValue: 50.264 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VT-FORECAST-30SEC-BACK CurrentValue: 41.6303 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: VIRTUAL-SKIN-LEGACY-MODEL-DIFF CurrentValue: -546.152 ThrottlingStatus: LIGHT
+ Type: UNKNOWN Name: IS_CHARGE_BOOST CurrentValue: 0 ThrottlingStatus: LIGHT
+forecastSkinTemperatures: 
+(0 to 60 seconds in 10 sec intervals): 41.5839 41.8165 41.8849 41.9564 42.0317 42.1091 41.5839 
+getTemperatureThresholds:
+ Type: UNKNOWN Name: EARLY-WARNING-SENSOR hotThrottlingThreshold: [nan nan nan nan nan 1 2 ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CHARGE-PERSIST hotThrottlingThreshold: [nan 37 41 45 47 51 55 ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: STATS-UPDATOR hotThrottlingThreshold: [nan nan nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CHARGE-WIRED hotThrottlingThreshold: [nan 34 38 41 45 47 55 ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: quiet_therm hotThrottlingThreshold: [nan 31.7 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: rfpa_therm hotThrottlingThreshold: [nan 31.7 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: flash_therm hotThrottlingThreshold: [nan 31.7 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: usb_pwr_therm hotThrottlingThreshold: [nan 32.1 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-HIGH hotThrottlingThreshold: [nan 44 46 nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: DEVICE-SCREEN-AOD-OFF-HINT hotThrottlingThreshold: [nan 2 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: charging_therm hotThrottlingThreshold: [nan 48.4 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SOC-EXTREME hotThrottlingThreshold: [nan nan nan 45 46 nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-ODPM hotThrottlingThreshold: [nan 42 44 nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SOC hotThrottlingThreshold: [nan 37 39 41 45 46.5 52 ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-USB-THROTTLING hotThrottlingThreshold: [nan nan nan nan 2 nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-SPEAKER hotThrottlingThreshold: [nan 37 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-OVER-35C-TRIGGER hotThrottlingThreshold: [nan 35 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CHARGE-BOOST hotThrottlingThreshold: [nan 37 39 41 42 43 45 ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: SKIN Name: VIRTUAL-SKIN hotThrottlingThreshold: [nan 39 43 45 46.5 52 55 ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-MID hotThrottlingThreshold: [nan 42 44 nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: north_therm hotThrottlingThreshold: [nan 32.1 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-CPU-LIGHT-ODPM hotThrottlingThreshold: [nan 40 42 nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: disp0_therm hotThrottlingThreshold: [nan 31.7 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: USB_PORT Name: VIRTUAL-USB-UI hotThrottlingThreshold: [nan nan nan nan nan 2 nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: BG-TASKS-THROTTLING-HINT hotThrottlingThreshold: [nan 1 2 3 nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: POWER_AMPLIFIER Name: cellular-emergency hotThrottlingThreshold: [nan nan nan nan nan 54 nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: VIRTUAL-SKIN-HINT hotThrottlingThreshold: [nan 39 43 45 46.5 52 55 ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+ Type: UNKNOWN Name: soc_therm hotThrottlingThreshold: [nan 31.7 nan nan nan nan nan ] coldThrottlingThreshold: [nan nan nan nan nan nan nan ] vrThrottlingThreshold: nan
+getHysteresis:
+ Name: EARLY-WARNING-SENSOR hotHysteresis: [0 0 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CHARGE-PERSIST hotHysteresis: [0 0 1.9 3.9 1.9 1.9 1.9 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: STATS-UPDATOR hotHysteresis: [0 0 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CHARGE-WIRED hotHysteresis: [0 0 3.9 2.9 3.9 1.9 1.9 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: quiet_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: rfpa_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: flash_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: usb_pwr_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CPU-HIGH hotHysteresis: [0 0 1.9 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: DEVICE-SCREEN-AOD-OFF-HINT hotHysteresis: [0 0.5 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: charging_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-SOC-EXTREME hotHysteresis: [0 0 0 0 0.9 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CPU-ODPM hotHysteresis: [0 0 1.9 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-SOC hotHysteresis: [0 0 1.9 1.9 1.9 1.4 1.9 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-USB-THROTTLING hotHysteresis: [0 0 0 0 0.9 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-SPEAKER hotHysteresis: [0 1.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-OVER-35C-TRIGGER hotHysteresis: [0 2 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CHARGE-BOOST hotHysteresis: [0 0 0.9 0.9 0.9 0.9 1.9 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN hotHysteresis: [0 1.9 1.9 1.9 1.4 1.9 1.9 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CPU-MID hotHysteresis: [0 0 1.9 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: north_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CPU-LIGHT-ODPM hotHysteresis: [0 0 1.9 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: disp0_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-USB-UI hotHysteresis: [0 0 0 0 0 0.9 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: BG-TASKS-THROTTLING-HINT hotHysteresis: [0 0.5 0.5 0.5 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: cellular-emergency hotHysteresis: [0 0 0 0 0 1.9 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-HINT hotHysteresis: [0 1.9 1.9 1.9 1.4 1.9 1.9 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+ Name: soc_therm hotHysteresis: [0 2.9 0 0 0 0 0 ] coldHysteresis: [0 0 0 0 0 0 0 ]
+getCallbacks:
+ Total: 4
+ IsFilter: 1 Type: USB_PORT
+ IsFilter: 1 Type: UNKNOWN
+ IsFilter: 0 Type: UNKNOWN
+ IsFilter: 0 Type: UNKNOWN
+sendCallback:
+  Enabled List: EARLY-WARNING-SENSOR DEVICE-SCREEN-AOD-OFF-HINT VIRTUAL-SKIN-SPEAKER VIRTUAL-SKIN VIRTUAL-USB-UI BG-TASKS-THROTTLING-HINT cellular-emergency 
+sendPowerHint:
+  Enabled List: STATS-UPDATOR BG-TASKS-THROTTLING-HINT VIRTUAL-SKIN-HINT 
+getVirtualSensorInfo:
+ Name: EARLY-WARNING-SENSOR
+  LinkedSensorName: [EARLY-EMERGENCY-WARNING-SENSOR EARLY-SHUTDOWN-WARNING-SENSOR ]
+  LinkedSensorCoefficient: [1.0 2.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: WEIGHTED_AVG
+ Name: EARLY-SHUTDOWN-WARNING-SENSOR
+  LinkedSensorName: [VT-FORECAST-30SEC ]
+  LinkedSensorCoefficient: [55000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: EARLY-EMERGENCY-WARNING-SENSOR
+  LinkedSensorName: [VT-FORECAST-60SEC ]
+  LinkedSensorCoefficient: [52000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: EXTREME-CONDITION-POWER-MONITOR-46C
+  LinkedSensorName: [EXTREME_WORKLOAD_ODPM ]
+  LinkedSensorCoefficient: [VIRTUAL-SKIN-46C ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-44C
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [44000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VT-FORECAST-ERROR-NOW
+  LinkedSensorName: [VT-FORECAST-NOW VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 -1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-45C
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [45000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VT-FORECAST-60SEC-BACK
+  LinkedSensorName: [VIRTUAL-SKIN-PREDICTION-MODEL ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: VIRTUAL-SKIN-EQ
+  LinkedSensorName: [VIRTUAL-SKIN-MODEL-UPDATED VIRTUAL-SKIN-LEGACY ]
+  LinkedSensorCoefficient: [1.0 VIRTUAL-SKIN-LEGACY-SHUTDOWN ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: MAXIMUM
+ Name: EXTREME-CONDITION-POWER-MONITOR-45C
+  LinkedSensorName: [EXTREME_WORKLOAD_ODPM ]
+  LinkedSensorCoefficient: [VIRTUAL-SKIN-45C ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VT_LEGACY_WEIGHT
+  LinkedSensorName: [VIRTUAL-SKIN-MODEL-LEGACY-DIFF VIRTUAL-SKIN-LEGACY-MODEL-DIFF ]
+  LinkedSensorCoefficient: [10000 7000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-MODEL-CLAMPED
+  LinkedSensorName: [20000 VIRTUAL-SKIN-MODEL-UPPER-CLAMPED ]
+  LinkedSensorCoefficient: [1.0 1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: MAXIMUM
+ Name: VIRTUAL-SKIN-MODEL-UPPER-CLAMPED
+  LinkedSensorName: [55000 VIRTUAL-SKIN-MODEL ]
+  LinkedSensorCoefficient: [1.0 1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: MINIMUM
+ Name: VIRTUAL-SKIN-CHARGE-PERSIST
+  LinkedSensorName: [VIRTUAL-SKIN-CHARGE ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm quiet_therm 
+  Formula: WEIGHTED_AVG
+ Name: STATS-UPDATOR
+  LinkedSensorName: [VIRTUAL-SKIN-PREDICTION-MODEL VT-FORECAST-ERROR-60SEC VT-FORECAST-ERROR-30SEC VT-FORECAST-ERROR-NOW EXTREME-CONDITION-POWER-MONITOR-44C EXTREME-CONDITION-POWER-MONITOR-45C EXTREME-CONDITION-POWER-MONITOR-46C ]
+  LinkedSensorCoefficient: [0.0 0.0 0.0 0.0 0.0 0.0 0.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: WEIGHTED_AVG
+ Name: VT-FORECAST-NOW
+  LinkedSensorName: [VIRTUAL-SKIN-PREDICTION-MODEL ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: VIRTUAL-SKIN-CHARGE-WIRED
+  LinkedSensorName: [VIRTUAL-SKIN-CHARGE ]
+  LinkedSensorCoefficient: [NO_WLC ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm quiet_therm 
+  Formula: WEIGHTED_AVG
+ Name: NO_WLC
+  LinkedSensorName: [WLC_CHECK ]
+  LinkedSensorCoefficient: [-2 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: WLC_CHECK
+  LinkedSensorName: [thb_hda thb_hda ]
+  LinkedSensorCoefficient: [1 -51 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-SUB-7
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.0080000000000000002 0.025999999999999999 0.012999999999999999 0.121 0.317 0.192 0.32100000000000001 0.002 ]
+  Offset: 295
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-SUB-6
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.10000000000000001 0.083000000000000004 0.0040000000000000001 0.624 0.060999999999999999 0.010999999999999999 0.086999999999999994 0.029000000000000001 ]
+  Offset: 552
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-46C
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [46000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-SUB-5
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.23999999999999999 0.028000000000000001 0.002 0.24199999999999999 0.254 0.098000000000000004 0.13400000000000001 0.001 ]
+  Offset: 21
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VT-FORECAST-30SEC
+  LinkedSensorName: [VIRTUAL-SKIN-PREDICTION-MODEL ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: VIRTUAL-SKIN-SUB-4
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.069000000000000006 0.010999999999999999 0.16200000000000001 0.18099999999999999 0.35399999999999998 0.14499999999999999 0.044999999999999998 0.032000000000000001 ]
+  Offset: 61
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-LEGACY
+  LinkedSensorName: [VIRTUAL-SKIN-SUB-0 VIRTUAL-SKIN-SUB-1 VIRTUAL-SKIN-SUB-2 VIRTUAL-SKIN-SUB-3 VIRTUAL-SKIN-SUB-4 VIRTUAL-SKIN-SUB-5 VIRTUAL-SKIN-SUB-6 VIRTUAL-SKIN-SUB-7 ]
+  LinkedSensorCoefficient: [1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: MAXIMUM
+ Name: VIRTUAL-SKIN-SUB-3
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.123 0.0070000000000000001 0.0060000000000000001 0.26000000000000001 0.308 0.014 0.254 0.029000000000000001 ]
+  Offset: 313
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-SUB-2
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.029000000000000001 0.123 0.021000000000000001 0.254 0.32900000000000001 0.048000000000000001 0.19700000000000001 0.001 ]
+  Offset: 404
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-SUB-1
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.040000000000000001 0.28100000000000003 0.058000000000000003 0.045999999999999999 0.29999999999999999 0.253 0.021000000000000001 0.002 ]
+  Offset: 28
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-SUB-0
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.01 0.042000000000000003 0.021999999999999999 0.35099999999999998 0.0040000000000000001 0.40100000000000002 0.14299999999999999 0.035000000000000003 ]
+  Offset: 855
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-CHARGE
+  LinkedSensorName: [VIRTUAL-SKIN-EQ ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 500
+  Trigger Sensor: north_therm charging_therm disp0_therm quiet_therm 
+  Formula: MAXIMUM
+ Name: VIRTUAL-SKIN-LEGACY-SHUTDOWN
+  LinkedSensorName: [VIRTUAL-SKIN-LEGACY ]
+  LinkedSensorCoefficient: [55000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: BG_TASKS_THROTTLING_LEVEL_BASE
+  LinkedSensorName: [battery_capacity VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: VT_MODEL_WEIGHT
+  LinkedSensorName: [1 VT_LEGACY_WEIGHT ]
+  LinkedSensorCoefficient: [1.0 -1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: IS_BG_TASKS_THROTTLING_ACTIVE
+  LinkedSensorName: [IS_EXP_BG_TASKS_THROTTLING_ACTIVE IS_CHARGE_BOOST ]
+  LinkedSensorCoefficient: [1 1 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: MAXIMUM
+ Name: IS_CHARGING
+  LinkedSensorName: [thb_hda ]
+  LinkedSensorCoefficient: [1 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-CPU-HIGH
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: DEVICE-SCREEN-AOD-OFF-HINT
+  LinkedSensorName: [AA_ACTIVE_PROPERTY VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 39000 ]
+  Offset: 0
+  Trigger Sensor: VIRTUAL-SKIN-OVER-35C-TRIGGER 
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-SOC-EXTREME
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [EXTREME_THROTTLE ]
+  Offset: 0
+  Trigger Sensor: VIRTUAL-SKIN 
+  Formula: MAXIMUM
+ Name: CHARGE_BOOST_LEVEL
+  LinkedSensorName: [IS_CHARGE_BOOST ]
+  LinkedSensorCoefficient: [2.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-CPU-ODPM
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: EXTREME_CONDITION
+  LinkedSensorName: [EXTREME_POWER_VSKIN CONCURRENT_USE_POWER ]
+  LinkedSensorCoefficient: [2 4 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: EXTREME_POWER_VSKIN
+  LinkedSensorName: [VIRTUAL-SKIN PARTIAL_SYSTEM_POWER PARTIAL_SYSTEM_POWER ]
+  LinkedSensorCoefficient: [46000 3000 4000 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-SOC
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: VIRTUAL-SKIN-SPEAKER-SUB-0
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.047 0.045999999999999999 0.075999999999999998 0.49199999999999999 0.017999999999999999 0.29099999999999998 0.0070000000000000001 0.021999999999999999 ]
+  Offset: 126
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-USB-THROTTLING
+  LinkedSensorName: [usb_pwr_therm usb_pwr_therm USB-MINUS-CHARGING ]
+  LinkedSensorCoefficient: [57000.0 52000.0 2000.0 ]
+  Offset: 0
+  Trigger Sensor: usb_pwr_therm 
+  Formula: COUNT_THRESHOLD
+ Name: BG_TASKS_THROTTLING_LEVEL
+  LinkedSensorName: [BG_TASKS_THROTTLING_LEVEL_BASE CHARGE_BOOST_LEVEL ]
+  LinkedSensorCoefficient: [1 1 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: MAXIMUM
+ Name: USB-MINUS-CHARGING
+  LinkedSensorName: [usb_pwr_therm charging_therm ]
+  LinkedSensorCoefficient: [1.0 -1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: IS_EXP_BG_TASKS_THROTTLING_ACTIVE
+  LinkedSensorName: [BG_TASKS_THROTTLING_COUNT ]
+  LinkedSensorCoefficient: [2 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-SPEAKER
+  LinkedSensorName: [VIRTUAL-SKIN-SPEAKER-SUB-0 VIRTUAL-SKIN-SPEAKER-SUB-1 ]
+  LinkedSensorCoefficient: [1.0 1.0 ]
+  Offset: 1000
+  Trigger Sensor: north_therm flash_therm soc_therm rfpa_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: VIRTUAL-SKIN-OVER-35C-TRIGGER
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-SPEAKER-SUB-1
+  LinkedSensorName: [rfpa_therm quiet_therm charging_therm usb_pwr_therm flash_therm disp0_therm north_therm soc_therm ]
+  LinkedSensorCoefficient: [0.024 0.028000000000000001 0.016 0.34699999999999998 0.34300000000000003 0.20000000000000001 0.02 0.023 ]
+  Offset: 158
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: CONCURRENT_USE_POWER
+  LinkedSensorName: [S8S_VDD_GMC VIRTUAL_CPU_POWER S7M_VDD_TPU S2S_VDD_GPU ]
+  LinkedSensorCoefficient: [450.0 700.0 400.0 100.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-MODEL-UPDATED
+  LinkedSensorName: [VIRTUAL-SKIN-LEGACY VIRTUAL-SKIN-MODEL-CLAMPED ]
+  LinkedSensorCoefficient: [VT_LEGACY_WEIGHT VT_MODEL_WEIGHT ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-CHARGE-BOOST
+  LinkedSensorName: [VIRTUAL-SKIN-CHARGE ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm quiet_therm 
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN
+  LinkedSensorName: [VIRTUAL-SKIN-EQ ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: VIRTUAL-SKIN-CPU-MID
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: BG_TASKS_THROTTLING_COUNT
+  LinkedSensorName: [IS_CHARGING BG-TASKS-THROTTLING-EXP-PROPERTY ]
+  LinkedSensorCoefficient: [1 1 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-BTS-WINDOW-PARTIAL
+  LinkedSensorName: [flash_therm ]
+  LinkedSensorCoefficient: [0.012 ]
+  Offset: 1155
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VT-FORECAST-ERROR-30SEC
+  LinkedSensorName: [VT-FORECAST-30SEC-BACK VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 -1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-CPU-LIGHT-ODPM
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: VT-FORECAST-ERROR-60SEC
+  LinkedSensorName: [VT-FORECAST-60SEC-BACK VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 -1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-SKIN-MODEL-LEGACY-DIFF
+  LinkedSensorName: [VIRTUAL-SKIN-MODEL VIRTUAL-SKIN-LEGACY ]
+  LinkedSensorCoefficient: [1.0 -1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: VIRTUAL-USB-UI
+  LinkedSensorName: [usb_pwr_therm usb_pwr_therm USB-MINUS-CHARGING ]
+  LinkedSensorCoefficient: [59000.0 54000.0 2000.0 ]
+  Offset: 0
+  Trigger Sensor: usb_pwr_therm 
+  Formula: COUNT_THRESHOLD
+ Name: BG-TASKS-THROTTLING-HINT
+  LinkedSensorName: [BG_TASKS_THROTTLING_LEVEL ]
+  LinkedSensorCoefficient: [IS_BG_TASKS_THROTTLING_ACTIVE ]
+  Offset: 0
+  Trigger Sensor: VIRTUAL-SKIN-OVER-35C-TRIGGER 
+  Formula: WEIGHTED_AVG
+ Name: EXTREME-CONDITION-POWER-MONITOR-44C
+  LinkedSensorName: [EXTREME_WORKLOAD_ODPM ]
+  LinkedSensorCoefficient: [VIRTUAL-SKIN-44C ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+ Name: cellular-emergency
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: VIRTUAL-SKIN-PREDICTION-MODEL
+  LinkedSensorName: [north_therm flash_therm soc_therm rfpa_therm charging_therm disp0_therm usb_pwr_therm quiet_therm VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: EXTREME_THROTTLE
+  LinkedSensorName: [EXTREME_CONDITION ]
+  LinkedSensorCoefficient: [2.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: COUNT_THRESHOLD
+ Name: VIRTUAL-SKIN-MODEL
+  LinkedSensorName: [charging_therm disp0_therm flash_therm north_therm quiet_therm rfpa_therm soc_therm usb_pwr_therm ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: VIRTUAL-SKIN-HINT
+  LinkedSensorName: [VIRTUAL-SKIN ]
+  LinkedSensorCoefficient: [1.0 ]
+  Offset: 0
+  Trigger Sensor: north_therm charging_therm disp0_therm 
+  Formula: MAXIMUM
+ Name: VT-FORECAST-60SEC
+  LinkedSensorName: [VIRTUAL-SKIN-PREDICTION-MODEL ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: VT-FORECAST-30SEC-BACK
+  LinkedSensorName: [VIRTUAL-SKIN-PREDICTION-MODEL ]
+  LinkedSensorCoefficient: []
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: NONE
+ Name: VIRTUAL-SKIN-LEGACY-MODEL-DIFF
+  LinkedSensorName: [VIRTUAL-SKIN-LEGACY VIRTUAL-SKIN-MODEL ]
+  LinkedSensorCoefficient: [1.0 -1.0 ]
+  Offset: 0
+  Trigger Sensor: N/A
+  Formula: WEIGHTED_AVG
+getCoolingDeviceInfo:
+ Name: chg_mdis
+  Type: BATTERY CurrentValue: 25 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: aurora
+  Type: NPU CurrentValue: 299000 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: usbc-port
+  Type: BATTERY CurrentValue: 0 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: tpu
+  Type: NPU CurrentValue: 7964000 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: thermal-uclamp-7
+  Type: CPU CurrentValue: 0 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: thermal-uclamp-0
+  Type: CPU CurrentValue: 0 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: gpu
+  Type: GPU CurrentValue: 4798000 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: cpufreq-cpu0
+  Type: CPU CurrentValue: 489000 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: thermal-uclamp-5
+  Type: CPU CurrentValue: 0 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: big_and_big_mid
+  Type: CPU CurrentValue: 3277000 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: thermal-uclamp-2
+  Type: CPU CurrentValue: 0 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+ Name: cpufreq-cpu2
+  Type: CPU CurrentValue: 1345000 powerLimitMw: -1 powerMw: 0 timeWindowMs: 0
+getVtEstimatorInfo:
+ Sensor Name: VIRTUAL-SKIN-PREDICTION-MODEL
+  Sample Interval: 0 ms
+  Max Sample Interval: 2147483647 ms
+  Prev Samples Order: 11
+  Output Label Count: 10
+  Current Values: 41710.9, 41761, 41804.5, 41849.8, 41900.4, 41950, 42002.3, 42055.6, 42110.2, 42159.7, 
+  Model Path: "vendor/etc/future_vt_prediction_model.tflite"
+ Sensor Name: VIRTUAL-SKIN-MODEL
+  Sample Interval: 10000 ms
+  Max Sample Interval: 15000 ms
+  Prev Samples Order: 3
+  Output Label Count: 1
+  Current Values: 41679.3, 
+  Model Path: "vendor/etc/vt_estimation_model.tflite"
+getThrottlingInfo:
+ Name: VIRTUAL-SKIN-CHARGE-PERSIST
+  PID Info:
+   K_po: [nan nan 93 nan nan nan nan ]
+   K_pu: [nan nan 500 nan nan nan nan ]
+   K_io: [nan nan 149 nan nan nan nan ]
+   K_iu: [nan nan 25 nan nan nan nan ]
+   K_d: [nan nan 0 nan nan nan nan ]
+   i_max: [nan nan 2115 nan nan nan nan ]
+   max_alloc_power: [nan nan 3710 nan nan nan nan ]
+   min_alloc_power: [nan nan 0 nan nan nan nan ]
+   s_power: [nan nan 1595 nan nan nan nan ]
+   i_cutoff: [nan nan 4 nan nan nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: chg_mdis
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 25 25 26 26 26 26 ]
+    Hard limit: [0 0 1 1 26 26 26 ]
+ Name: VIRTUAL-SKIN-CHARGE-WIRED
+  PID Info:
+   K_po: [nan nan 181 nan nan nan nan ]
+   K_pu: [nan nan 304 nan nan nan nan ]
+   K_io: [nan nan 149 nan nan nan nan ]
+   K_iu: [nan nan 149 nan nan nan nan ]
+   K_d: [nan nan 0 nan nan nan nan ]
+   i_max: [nan nan 1268 nan nan nan nan ]
+   max_alloc_power: [nan nan 3710 nan nan nan nan ]
+   min_alloc_power: [nan nan 0 nan nan nan nan ]
+   s_power: [nan nan 2493 nan nan nan nan ]
+   i_cutoff: [nan nan 4 nan nan nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: chg_mdis
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 25 25 25 26 26 26 ]
+    Hard limit: [0 0 1 1 1 26 26 ]
+ Name: VIRTUAL-SKIN-CPU-HIGH
+  PID Info:
+   K_po: [nan nan 400 nan nan nan nan ]
+   K_pu: [nan nan 400 nan nan nan nan ]
+   K_io: [nan nan 5 nan nan nan nan ]
+   K_iu: [nan nan 5 nan nan nan nan ]
+   K_d: [nan nan 0 nan nan nan nan ]
+   i_max: [nan nan 1000 nan nan nan nan ]
+   max_alloc_power: [nan nan 1600 nan nan nan nan ]
+   min_alloc_power: [nan nan 0 nan nan nan nan ]
+   s_power: [nan nan 600 nan nan nan nan ]
+   i_cutoff: [nan nan 4 nan nan nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: thermal-uclamp-7
+    WeightForPID: [0.261 0.261 0.261 0.261 0.261 0.261 0.261 ]
+    Ceiling: [0 18 18 18 18 18 18 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+   Cooling device name: thermal-uclamp-5
+    WeightForPID: [0.217 0.217 0.217 0.217 0.217 0.217 0.217 ]
+    Ceiling: [0 18 18 18 18 18 18 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+   Cooling device name: thermal-uclamp-2
+    WeightForPID: [0.285 0.285 0.285 0.285 0.285 0.285 0.285 ]
+    Ceiling: [0 18 18 18 18 18 18 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+   Cooling device name: thermal-uclamp-0
+    WeightForPID: [0.093 0.093 0.093 0.093 0.093 0.093 0.093 ]
+    Ceiling: [0 16 16 16 16 16 16 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-SOC-EXTREME
+  PID Info:
+   K_po: [nan nan nan nan 300 nan nan ]
+   K_pu: [nan nan nan nan 300 nan nan ]
+   K_io: [nan nan nan nan 5 nan nan ]
+   K_iu: [nan nan nan nan 5 nan nan ]
+   K_d: [nan nan nan nan 0 nan nan ]
+   i_max: [nan nan nan nan 1200 nan nan ]
+   max_alloc_power: [nan nan nan nan 1800 nan nan ]
+   min_alloc_power: [nan nan nan nan 600 nan nan ]
+   s_power: [nan nan nan nan 600 nan nan ]
+   i_cutoff: [nan nan nan nan 2 nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: tpu
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 15 15 15 15 15 15 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S7M_VDD_TPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: gpu
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 11 11 14 14 14 14 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S2S_VDD_GPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: big_and_big_mid
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 22 22 22 22 22 22 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S2M_VDD_CPU2
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu2
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 11 11 18 22 22 22 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S3M_VDD_CPU1
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu0
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 8 8 16 21 21 21 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S4M_VDD_CPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+ Name: VIRTUAL-SKIN-CPU-ODPM
+  PID Info:
+   K_po: [nan nan 1000 nan nan nan nan ]
+   K_pu: [nan nan 1000 nan nan nan nan ]
+   K_io: [nan nan 5 nan nan nan nan ]
+   K_iu: [nan nan 5 nan nan nan nan ]
+   K_d: [nan nan 0 nan nan nan nan ]
+   i_max: [nan nan 2000 nan nan nan nan ]
+   max_alloc_power: [nan nan 3800 nan nan nan nan ]
+   min_alloc_power: [nan nan 800 nan nan nan nan ]
+   s_power: [nan nan 800 nan nan nan nan ]
+   i_cutoff: [nan nan 2 nan nan nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: big_and_big_mid
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 4 4 20 20 20 10 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S2M_VDD_CPU2
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu2
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 4 4 18 18 18 18 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S3M_VDD_CPU1
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu0
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 6 6 16 16 16 16 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S4M_VDD_CPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+ Name: VIRTUAL-SKIN-SOC
+  PID Info:
+   K_po: [nan nan nan nan 300 nan nan ]
+   K_pu: [nan nan nan nan 300 nan nan ]
+   K_io: [nan nan nan nan 5 nan nan ]
+   K_iu: [nan nan nan nan 5 nan nan ]
+   K_d: [nan nan nan nan 0 nan nan ]
+   i_max: [nan nan nan nan 3120 nan nan ]
+   max_alloc_power: [nan nan nan nan 4680 nan nan ]
+   min_alloc_power: [nan nan nan nan 960 nan nan ]
+   s_power: [nan nan nan nan 960 nan nan ]
+   i_cutoff: [nan nan nan nan 8 nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: tpu
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 13 13 13 13 14 15 ]
+    Hard limit: [0 0 0 0 0 0 15 ]
+    Binded power rail: S7M_VDD_TPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: gpu
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 7 7 11 14 14 14 ]
+    Hard limit: [0 0 0 0 0 0 14 ]
+    Binded power rail: S2S_VDD_GPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: big_and_big_mid
+    WeightForPID: [0.65 0.65 0.65 0.65 0.65 0.65 0.65 ]
+    Ceiling: [0 4 4 4 22 22 22 ]
+    Hard limit: [0 0 0 0 0 0 22 ]
+    Binded power rail: S2M_VDD_CPU2
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu2
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 4 4 4 18 18 22 ]
+    Hard limit: [0 0 0 0 0 0 22 ]
+    Binded power rail: S3M_VDD_CPU1
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu0
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 6 6 6 16 16 21 ]
+    Hard limit: [0 0 0 0 0 0 21 ]
+    Binded power rail: S4M_VDD_CPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+ Name: VIRTUAL-USB-THROTTLING
+  Binded CDEV Info:default
+   Cooling device name: usbc-port
+    Ceiling: [1 1 1 1 1 1 1 ]
+    Hard limit: [0 0 0 0 1 1 1 ]
+ Name: VIRTUAL-SKIN-CHARGE-BOOST
+  PID Info:
+   K_po: [nan nan nan nan nan 400 nan ]
+   K_pu: [nan nan nan nan nan 500 nan ]
+   K_io: [nan nan nan nan nan 149 nan ]
+   K_iu: [nan nan nan nan nan 25 nan ]
+   K_d: [nan nan nan nan nan 0 nan ]
+   i_max: [nan nan nan nan nan 2115 nan ]
+   max_alloc_power: [nan nan nan nan nan 3710 nan ]
+   min_alloc_power: [nan nan nan nan nan 0 nan ]
+   s_power: [nan nan nan nan nan 1595 nan ]
+   i_cutoff: [nan nan nan nan nan 4 nan ]
+  Binded CDEV Info:default
+   Cooling device name: chg_mdis
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [26 26 26 26 26 26 26 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN
+  Binded CDEV Info:default
+   Cooling device name: aurora
+    Ceiling: [15 15 15 15 15 15 15 ]
+    Hard limit: [0 0 0 0 0 15 15 ]
+ Name: VIRTUAL-SKIN-CPU-MID
+  PID Info:
+   K_po: [nan nan 400 nan nan nan nan ]
+   K_pu: [nan nan 400 nan nan nan nan ]
+   K_io: [nan nan 5 nan nan nan nan ]
+   K_iu: [nan nan 5 nan nan nan nan ]
+   K_d: [nan nan 0 nan nan nan nan ]
+   i_max: [nan nan 2150 nan nan nan nan ]
+   max_alloc_power: [nan nan 2850 nan nan nan nan ]
+   min_alloc_power: [nan nan 0 nan nan nan nan ]
+   s_power: [nan nan 700 nan nan nan nan ]
+   i_cutoff: [nan nan 4 nan nan nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: thermal-uclamp-7
+    WeightForPID: [0.44 0.44 0.44 0.44 0.44 0.44 0.44 ]
+    Ceiling: [0 4 4 16 16 16 16 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+   Cooling device name: thermal-uclamp-5
+    WeightForPID: [0.4 0.4 0.4 0.4 0.4 0.4 0.4 ]
+    Ceiling: [0 4 4 16 16 16 16 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+   Cooling device name: thermal-uclamp-2
+    WeightForPID: [0.56 0.56 0.56 0.56 0.56 0.56 0.56 ]
+    Ceiling: [0 4 4 15 15 15 15 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+   Cooling device name: thermal-uclamp-0
+    WeightForPID: [0.145 0.145 0.145 0.145 0.145 0.145 0.145 ]
+    Ceiling: [0 6 6 13 13 13 13 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+ Name: VIRTUAL-SKIN-CPU-LIGHT-ODPM
+  PID Info:
+   K_po: [nan nan 400 nan nan nan nan ]
+   K_pu: [nan nan 400 nan nan nan nan ]
+   K_io: [nan nan 5 nan nan nan nan ]
+   K_iu: [nan nan 5 nan nan nan nan ]
+   K_d: [nan nan 0 nan nan nan nan ]
+   i_max: [nan nan 2933 nan nan nan nan ]
+   max_alloc_power: [nan nan 6133 nan nan nan nan ]
+   min_alloc_power: [nan nan 1066 nan nan nan nan ]
+   s_power: [nan nan 1066 nan nan nan nan ]
+   i_cutoff: [nan nan 2 nan nan nan nan ]
+  Binded CDEV Info:default
+   Cooling device name: big_and_big_mid
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 4 4 10 10 10 10 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S2M_VDD_CPU2
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu2
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 4 4 11 11 11 11 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S3M_VDD_CPU1
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+   Cooling device name: cpufreq-cpu0
+    WeightForPID: [1 1 1 1 1 1 1 ]
+    Ceiling: [0 6 6 8 8 8 8 ]
+    Hard limit: [0 0 0 0 0 0 0 ]
+    Binded power rail: S4M_VDD_CPU
+    Power threshold: [nan nan nan nan nan nan nan ]
+    Floor with PowerLink: [0 0 0 0 0 0 0 ]
+    Release logic: NONE
+    high_power_check: false
+    throttling_with_power_link: false
+getThrottlingRequestStatus:
+ Name: VIRTUAL-SKIN-CPU-MID
+  power budget request state
+   thermal-uclamp-0: 2147483647
+   thermal-uclamp-2: 2147483647
+   thermal-uclamp-5: 2147483647
+   thermal-uclamp-7: 2147483647
+  pid cdev request state
+   thermal-uclamp-0: 0
+   thermal-uclamp-2: 0
+   thermal-uclamp-5: 0
+   thermal-uclamp-7: 0
+  hard limit cdev request state
+   thermal-uclamp-0: 0
+   thermal-uclamp-2: 0
+   thermal-uclamp-5: 0
+   thermal-uclamp-7: 0
+  cdev request state
+   thermal-uclamp-0: 0
+   thermal-uclamp-2: 0
+   thermal-uclamp-5: 0
+   thermal-uclamp-7: 0
+ Name: VIRTUAL-USB-THROTTLING
+  hard limit cdev request state
+   usbc-port: 0
+  cdev request state
+   usbc-port: 0
+ Name: VIRTUAL-SKIN-CPU-HIGH
+  power budget request state
+   thermal-uclamp-0: 2147483647
+   thermal-uclamp-2: 2147483647
+   thermal-uclamp-5: 2147483647
+   thermal-uclamp-7: 2147483647
+  pid cdev request state
+   thermal-uclamp-0: 0
+   thermal-uclamp-2: 0
+   thermal-uclamp-5: 0
+   thermal-uclamp-7: 0
+  hard limit cdev request state
+   thermal-uclamp-0: 0
+   thermal-uclamp-2: 0
+   thermal-uclamp-5: 0
+   thermal-uclamp-7: 0
+  cdev request state
+   thermal-uclamp-0: 0
+   thermal-uclamp-2: 0
+   thermal-uclamp-5: 0
+   thermal-uclamp-7: 0
+ Name: VIRTUAL-SKIN-CPU-ODPM
+  power budget request state
+   cpufreq-cpu0: 2147483647
+   cpufreq-cpu2: 2147483647
+   big_and_big_mid: 2147483647
+  pid cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+  hard limit cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+  cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+ Name: VIRTUAL-SKIN-CHARGE-WIRED
+  power budget request state
+   chg_mdis: 2703
+  pid cdev request state
+   chg_mdis: 8
+  hard limit cdev request state
+   chg_mdis: 1
+  cdev request state
+   chg_mdis: 8
+ Name: VIRTUAL-SKIN
+  hard limit cdev request state
+   aurora: 0
+  cdev request state
+   aurora: 0
+ Name: VIRTUAL-SKIN-CHARGE-BOOST
+  power budget request state
+   chg_mdis: 3710
+  pid cdev request state
+   chg_mdis: 0
+  hard limit cdev request state
+   chg_mdis: 0
+  cdev request state
+   chg_mdis: 0
+ Name: VIRTUAL-SKIN-SOC
+  power budget request state
+   cpufreq-cpu0: 609
+   cpufreq-cpu2: 1561
+   big_and_big_mid: 3277
+   gpu: 4798
+   tpu: 2147483647
+  pid cdev request state
+   cpufreq-cpu0: 2
+   cpufreq-cpu2: 1
+   big_and_big_mid: 3
+   gpu: 0
+   tpu: 0
+  hard limit cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+   gpu: 0
+   tpu: 0
+  cdev request state
+   cpufreq-cpu0: 2
+   cpufreq-cpu2: 1
+   big_and_big_mid: 3
+   gpu: 0
+   tpu: 0
+ Name: VIRTUAL-SKIN-SOC-EXTREME
+  power budget request state
+   cpufreq-cpu0: 2147483647
+   cpufreq-cpu2: 2147483647
+   big_and_big_mid: 2147483647
+   gpu: 2147483647
+   tpu: 2147483647
+  pid cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+   gpu: 0
+   tpu: 0
+  hard limit cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+   gpu: 0
+   tpu: 0
+  cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+   gpu: 0
+   tpu: 0
+ Name: VIRTUAL-SKIN-CPU-LIGHT-ODPM
+  power budget request state
+   cpufreq-cpu0: 492
+   cpufreq-cpu2: 1386
+   big_and_big_mid: 3798
+  pid cdev request state
+   cpufreq-cpu0: 3
+   cpufreq-cpu2: 2
+   big_and_big_mid: 1
+  hard limit cdev request state
+   cpufreq-cpu0: 0
+   cpufreq-cpu2: 0
+   big_and_big_mid: 0
+  cdev request state
+   cpufreq-cpu0: 3
+   cpufreq-cpu2: 2
+   big_and_big_mid: 1
+ Name: VIRTUAL-SKIN-CHARGE-PERSIST
+  power budget request state
+   chg_mdis: 1165
+  pid cdev request state
+   chg_mdis: 26
+  hard limit cdev request state
+   chg_mdis: 1
+  cdev request state
+   chg_mdis: 25
+getPowerRailInfo:
+ Power Rail: EXTREME_WORKLOAD_ODPM
+  Power Sample Count: 5
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 4906.55 mW
+  Formula=WEIGHTED_AVG
+  Linked power rail S1M_VDD_AMB
+   Coefficient=1
+   Power Samples: (T=27199, uWs=5598898) (T=34242, uWs=7466410) (T=41272, uWs=8720270) (T=48299, uWs=9676665) (T=55331, uWs=10530609) 
+  Linked power rail S2M_VDD_CPU2
+   Coefficient=1
+   Power Samples: (T=27199, uWs=45717219) (T=34242, uWs=58916923) (T=41272, uWs=63257121) (T=48299, uWs=65100801) (T=55331, uWs=66077294) 
+  Linked power rail S3M_VDD_CPU1
+   Coefficient=1
+   Power Samples: (T=27199, uWs=25384131) (T=34242, uWs=36241257) (T=41272, uWs=41308165) (T=48299, uWs=43978397) (T=55331, uWs=45151164) 
+  Linked power rail S4M_VDD_CPU
+   Coefficient=1
+   Power Samples: (T=27199, uWs=16881579) (T=34242, uWs=23697758) (T=41272, uWs=28650715) (T=48299, uWs=32494332) (T=55331, uWs=35938295) 
+  Linked power rail S7M_VDD_TPU
+   Coefficient=1
+   Power Samples: (T=27199, uWs=4466) (T=34242, uWs=7703) (T=41272, uWs=7703) (T=48299, uWs=7703) (T=55331, uWs=7703) 
+  Linked power rail S8M_LLDO2
+   Coefficient=1
+   Power Samples: (T=27199, uWs=6823890) (T=34242, uWs=8783745) (T=41272, uWs=10495662) (T=48299, uWs=12031285) (T=55331, uWs=13366167) 
+  Linked power rail S9M_VDD_TPU_M
+   Coefficient=1
+   Power Samples: (T=27199, uWs=58665) (T=34242, uWs=93308) (T=41272, uWs=93308) (T=48299, uWs=93308) (T=55331, uWs=93308) 
+  Linked power rail S11M_VDD_CPU_M
+   Coefficient=1
+   Power Samples: (T=27199, uWs=5307275) (T=34242, uWs=7490769) (T=41272, uWs=8991690) (T=48299, uWs=10120556) (T=55331, uWs=11092127) 
+  Linked power rail S12M_VDD_CPU1_M
+   Coefficient=1
+   Power Samples: (T=27199, uWs=1658146) (T=34242, uWs=2278081) (T=41272, uWs=2561629) (T=48299, uWs=2708625) (T=55331, uWs=2793892) 
+  Linked power rail VSYS_PWR_WLAN_BT
+   Coefficient=1
+   Power Samples: (T=27199, uWs=3784314) (T=34242, uWs=5205448) (T=41272, uWs=6461528) (T=48299, uWs=7975344) (T=55331, uWs=9105430) 
+  Linked power rail S2S_VDD_GPU
+   Coefficient=1
+   Power Samples: (T=27199, uWs=9999394) (T=34242, uWs=10518840) (T=41272, uWs=10833047) (T=48299, uWs=10861889) (T=55331, uWs=10889866) 
+  Linked power rail S4S_VDD2H_MEM
+   Coefficient=1
+   Power Samples: (T=27199, uWs=6921669) (T=34242, uWs=9871466) (T=41272, uWs=11585420) (T=48299, uWs=12889496) (T=55331, uWs=13893396) 
+  Linked power rail S7S_MLDO
+   Coefficient=1
+   Power Samples: (T=27199, uWs=2232717) (T=34242, uWs=3038203) (T=41272, uWs=3490984) (T=48299, uWs=3847100) (T=55331, uWs=4156312) 
+  Linked power rail S8S_VDD_GMC
+   Coefficient=1
+   Power Samples: (T=27199, uWs=8781579) (T=34242, uWs=12090629) (T=41272, uWs=14125441) (T=48299, uWs=15646430) (T=55331, uWs=16955398) 
+  Linked power rail VSYS_PWR_RFFE
+   Coefficient=1
+   Power Samples: (T=27199, uWs=791672) (T=34242, uWs=885634) (T=41272, uWs=1443130) (T=48299, uWs=1863942) (T=55331, uWs=2134611) 
+  Linked power rail VSYS_PWR_MODEM
+   Coefficient=1
+   Power Samples: (T=27199, uWs=10488342) (T=34242, uWs=12560731) (T=41272, uWs=16235725) (T=48299, uWs=19401137) (T=55331, uWs=20884590) 
+  Linked power rail VSYS_PWR_DISP_G1
+   Coefficient=1
+   Power Samples: (T=27199, uWs=4309889) (T=34242, uWs=5651287) (T=41272, uWs=5945583) (T=48299, uWs=5967668) (T=55331, uWs=5988789) 
+  Linked power rail VSYS_PWR_DISP_G2
+   Coefficient=1
+   Power Samples: (T=27199, uWs=1593455) (T=34242, uWs=2088083) (T=41272, uWs=2199197) (T=48299, uWs=2221040) (T=55331, uWs=2241084) 
+ Power Rail: PARTIAL_SYSTEM_POWER
+  Power Sample Count: 5
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 4906.55 mW
+  Formula=WEIGHTED_AVG
+  Linked power rail S1M_VDD_AMB
+   Coefficient=1
+   Power Samples: (T=27199, uWs=5598898) (T=34242, uWs=7466410) (T=41272, uWs=8720270) (T=48299, uWs=9676665) (T=55331, uWs=10530609) 
+  Linked power rail S2M_VDD_CPU2
+   Coefficient=1
+   Power Samples: (T=27199, uWs=45717219) (T=34242, uWs=58916923) (T=41272, uWs=63257121) (T=48299, uWs=65100801) (T=55331, uWs=66077294) 
+  Linked power rail S3M_VDD_CPU1
+   Coefficient=1
+   Power Samples: (T=27199, uWs=25384131) (T=34242, uWs=36241257) (T=41272, uWs=41308165) (T=48299, uWs=43978397) (T=55331, uWs=45151164) 
+  Linked power rail S4M_VDD_CPU
+   Coefficient=1
+   Power Samples: (T=27199, uWs=16881579) (T=34242, uWs=23697758) (T=41272, uWs=28650715) (T=48299, uWs=32494332) (T=55331, uWs=35938295) 
+  Linked power rail S7M_VDD_TPU
+   Coefficient=1
+   Power Samples: (T=27199, uWs=4466) (T=34242, uWs=7703) (T=41272, uWs=7703) (T=48299, uWs=7703) (T=55331, uWs=7703) 
+  Linked power rail S8M_LLDO2
+   Coefficient=1
+   Power Samples: (T=27199, uWs=6823890) (T=34242, uWs=8783745) (T=41272, uWs=10495662) (T=48299, uWs=12031285) (T=55331, uWs=13366167) 
+  Linked power rail S9M_VDD_TPU_M
+   Coefficient=1
+   Power Samples: (T=27199, uWs=58665) (T=34242, uWs=93308) (T=41272, uWs=93308) (T=48299, uWs=93308) (T=55331, uWs=93308) 
+  Linked power rail S11M_VDD_CPU_M
+   Coefficient=1
+   Power Samples: (T=27199, uWs=5307275) (T=34242, uWs=7490769) (T=41272, uWs=8991690) (T=48299, uWs=10120556) (T=55331, uWs=11092127) 
+  Linked power rail S12M_VDD_CPU1_M
+   Coefficient=1
+   Power Samples: (T=27199, uWs=1658146) (T=34242, uWs=2278081) (T=41272, uWs=2561629) (T=48299, uWs=2708625) (T=55331, uWs=2793892) 
+  Linked power rail VSYS_PWR_WLAN_BT
+   Coefficient=1
+   Power Samples: (T=27199, uWs=3784314) (T=34242, uWs=5205448) (T=41272, uWs=6461528) (T=48299, uWs=7975344) (T=55331, uWs=9105430) 
+  Linked power rail S2S_VDD_GPU
+   Coefficient=1
+   Power Samples: (T=27199, uWs=9999394) (T=34242, uWs=10518840) (T=41272, uWs=10833047) (T=48299, uWs=10861889) (T=55331, uWs=10889866) 
+  Linked power rail S4S_VDD2H_MEM
+   Coefficient=1
+   Power Samples: (T=27199, uWs=6921669) (T=34242, uWs=9871466) (T=41272, uWs=11585420) (T=48299, uWs=12889496) (T=55331, uWs=13893396) 
+  Linked power rail S7S_MLDO
+   Coefficient=1
+   Power Samples: (T=27199, uWs=2232717) (T=34242, uWs=3038203) (T=41272, uWs=3490984) (T=48299, uWs=3847100) (T=55331, uWs=4156312) 
+  Linked power rail S8S_VDD_GMC
+   Coefficient=1
+   Power Samples: (T=27199, uWs=8781579) (T=34242, uWs=12090629) (T=41272, uWs=14125441) (T=48299, uWs=15646430) (T=55331, uWs=16955398) 
+  Linked power rail VSYS_PWR_RFFE
+   Coefficient=1
+   Power Samples: (T=27199, uWs=791672) (T=34242, uWs=885634) (T=41272, uWs=1443130) (T=48299, uWs=1863942) (T=55331, uWs=2134611) 
+  Linked power rail VSYS_PWR_MODEM
+   Coefficient=1
+   Power Samples: (T=27199, uWs=10488342) (T=34242, uWs=12560731) (T=41272, uWs=16235725) (T=48299, uWs=19401137) (T=55331, uWs=20884590) 
+  Linked power rail VSYS_PWR_DISP_G1
+   Coefficient=1
+   Power Samples: (T=27199, uWs=4309889) (T=34242, uWs=5651287) (T=41272, uWs=5945583) (T=48299, uWs=5967668) (T=55331, uWs=5988789) 
+  Linked power rail VSYS_PWR_DISP_G2
+   Coefficient=1
+   Power Samples: (T=27199, uWs=1593455) (T=34242, uWs=2088083) (T=41272, uWs=2199197) (T=48299, uWs=2221040) (T=55331, uWs=2241084) 
+ Power Rail: VIRTUAL_CPU_POWER
+  Power Sample Count: 1
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 795.396 mW
+  Formula=WEIGHTED_AVG
+  Linked power rail S2M_VDD_CPU2
+   Coefficient=1
+   Power Samples: (T=55331, uWs=66077294) 
+  Linked power rail S3M_VDD_CPU1
+   Coefficient=1
+   Power Samples: (T=55331, uWs=45151164) 
+  Linked power rail S4M_VDD_CPU
+   Coefficient=1
+   Power Samples: (T=55331, uWs=35938295) 
+ Power Rail: S4M_VDD_CPU
+  Power Sample Count: 1
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 489.756 mW
+  Power Samples: (T=55331, uWs=35938295) 
+ Power Rail: S2S_VDD_GPU
+  Power Sample Count: 1
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 3.97853 mW
+  Power Samples: (T=55331, uWs=10889866) 
+ Power Rail: S2M_VDD_CPU2
+  Power Sample Count: 1
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 138.864 mW
+  Power Samples: (T=55331, uWs=66077294) 
+ Power Rail: S3M_VDD_CPU1
+  Power Sample Count: 1
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 166.776 mW
+  Power Samples: (T=55331, uWs=45151164) 
+ Power Rail: S8S_VDD_GMC
+  Power Sample Count: 1
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 186.144 mW
+  Power Samples: (T=55331, uWs=16955398) 
+ Power Rail: S7M_VDD_TPU
+  Power Sample Count: 1
+  Power Sample Delay: 7000
+  Last Updated AVG Power: 0 mW
+  Power Samples: (T=55331, uWs=7703) 
+getThermalStatsInfo:
+ Sensor Temp Stats Info:
+  Sensor Name: EXTREME-CONDITION-POWER-MONITOR-44C
+   Max Temp: 1.17549e-38, TimeStamp: -9223372036854
+   Min Temp: 0, TimeStamp: 1790661162
+   Record by Threshold: [500 1000 1500 2000 2500 3000 3500 4000 4500 5000 ]
+    Logging Name: EXTREME-CONDITION-MONITOR-44C
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [55129 0 0 0 0 0 0 0 0 0 0 ]
+  Sensor Name: VT-FORECAST-ERROR-60SEC
+   Max Temp: 1.17549e-38, TimeStamp: -9223372036854
+   Min Temp: -2530.13, TimeStamp: 1790661162
+   Record by Threshold: [-4500 -4000 -3500 -3000 -2500 -2000 -1500 -1000 -500 0 500 1000 1500 2000 2500 3000 3500 4000 4500 ]
+    Logging Name: VT-FORECAST-ERROR-60SEC
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [55123 0 0 0 6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ]
+  Sensor Name: VIRTUAL-SKIN-MODEL-LEGACY-DIFF
+   Max Temp: 546.152, TimeStamp: 1790661161
+   Min Temp: -1839.57, TimeStamp: 1790661135
+   Record by Threshold: [-4500 -4000 -3500 -3000 -2500 -2000 -1500 -1000 -500 0 500 1000 1500 2000 2500 3000 3500 4000 4500 ]
+    Logging Name: MODEL-LEGACY-0.5
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [40 0 0 0 0 0 5640 11212 19624 6144 11227 1236 0 0 0 0 0 0 0 0 ]
+   Record by Threshold: [-13000 -12000 -11000 -10000 -9000 -8000 -7000 -6000 -5000 -4000 4000 5000 6000 7000 8000 9000 10000 11000 12000 ]
+    Logging Name: MODEL-LEGACY-1
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [40 0 0 0 0 0 0 0 0 0 55089 0 0 0 0 0 0 0 0 0 ]
+  Sensor Name: VT-FORECAST-ERROR-30SEC
+   Max Temp: 46.4766, TimeStamp: 1790661162
+   Min Temp: 46.4766, TimeStamp: 1790661162
+   Record by Threshold: [-4500 -4000 -3500 -3000 -2500 -2000 -1500 -1000 -500 0 500 1000 1500 2000 2500 3000 3500 4000 4500 ]
+    Logging Name: VT-FORECAST-ERROR-30SEC
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [55123 0 0 0 0 0 0 0 0 0 6 0 0 0 0 0 0 0 0 0 ]
+  Sensor Name: VIRTUAL-SKIN-MODEL
+   Max Temp: 41.6793, TimeStamp: 1790661156
+   Min Temp: 38.4379, TimeStamp: 1790661104
+   Record by Threshold: [31 33 35 37 39 41 43 45 47 49 51 53 55 ]
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [39 0 0 0 7207 23445 24437 0 0 0 0 0 0 0 ]
+  Sensor Name: VIRTUAL-SKIN
+   Max Temp: 41.5839, TimeStamp: 1790661161
+   Min Temp: 38.4379, TimeStamp: 1790661104
+   Record by Threshold: [31 33 35 37 39 41 43 45 47 49 55 ]
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [40 0 0 0 21642 20263 13183 0 0 0 0 0 ]
+   Record by Severity:
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [21682 33446 0 0 0 0 0 ]
+  Sensor Name: VIRTUAL-SKIN-SPEAKER
+   Max Temp: 40.9274, TimeStamp: 1790661138
+   Min Temp: 38.5447, TimeStamp: 1790661104
+   Record by Threshold: [31 33 35 37 39 41 43 45 47 49 51 53 55 ]
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [40 0 0 0 5426 49663 0 0 0 0 0 0 0 0 ]
+  Sensor Name: EXTREME-CONDITION-POWER-MONITOR-46C
+   Max Temp: 1.17549e-38, TimeStamp: -9223372036854
+   Min Temp: 0, TimeStamp: 1790661162
+   Record by Threshold: [500 1000 1500 2000 2500 3000 3500 4000 4500 5000 ]
+    Logging Name: EXTREME-CONDITION-MONITOR-46C
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [55129 0 0 0 0 0 0 0 0 0 0 ]
+  Sensor Name: VIRTUAL-SKIN-LEGACY
+   Max Temp: 42.4532, TimeStamp: 1790661138
+   Min Temp: 38.4379, TimeStamp: 1790661104
+   Record by Threshold: [31 33 35 37 39 41 43 45 47 49 51 53 55 ]
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [39 0 0 0 5426 13875 35788 0 0 0 0 0 0 0 ]
+  Sensor Name: VT-FORECAST-ERROR-NOW
+   Max Temp: 168.938, TimeStamp: 1790661162
+   Min Temp: 168.938, TimeStamp: 1790661162
+   Record by Threshold: [-4500 -4000 -3500 -3000 -2500 -2000 -1500 -1000 -500 0 500 1000 1500 2000 2500 3000 3500 4000 4500 ]
+    Logging Name: VT-FORECAST-ERROR-NOW
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [55122 0 0 0 0 0 0 0 0 0 6 0 0 0 0 0 0 0 0 0 ]
+  Sensor Name: EXTREME-CONDITION-POWER-MONITOR-45C
+   Max Temp: 1.17549e-38, TimeStamp: -9223372036854
+   Min Temp: 0, TimeStamp: 1790661162
+   Record by Threshold: [500 1000 1500 2000 2500 3000 3500 4000 4500 5000 ]
+    Logging Name: EXTREME-CONDITION-MONITOR-45C
+    Time Since Last Stats Report: 0 mins
+    Time in State ms: [55129 0 0 0 0 0 0 0 0 0 0 ]
+ Sensor Cdev Request Stats Info:
+getAIDLPowerHalInfo:
+ All services connected: true
+ PowerHal Connected: true
+ PowerHal Ext connected: true
+ PowerBudget connected: true
