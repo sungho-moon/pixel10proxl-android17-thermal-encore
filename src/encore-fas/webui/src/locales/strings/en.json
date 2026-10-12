@@ -199,6 +199,6 @@
     "game_lite_desc": "Lower frequency requests for this game.",
     "save_error": "Could not save; your change was not applied. Reload and retry.",
     "health": "Controller / native observer",
-    "supported": "Pixel 10 Pro XL · CP41"
+    "supported": "Pixel Tensor · Android 17"
   }
 }

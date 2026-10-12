@@ -195,6 +195,6 @@
     "game_lite_desc": "此游戏使用较低的频率请求。",
     "save_error": "保存失败，改动未生效。请重新加载后再试。",
     "health": "控制器 / 原生监听",
-    "supported": "Pixel 10 Pro XL · CP41"
+    "supported": "Pixel Tensor · Android 17"
   }
 }
