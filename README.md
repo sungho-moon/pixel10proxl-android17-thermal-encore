@@ -38,10 +38,12 @@
 
 ## 兼容范围
 
+本模块没有 Pixel 10 Pro XL 专属白名单，也不读取 `ro.product.model`、`ro.product.device`、设备代号或固定系统指纹来拒绝其他 Pixel 10 变体。`encore_pixel_cp41` 只是现有配置目录和模块 ID，为了升级兼容性保留，不代表只支持 CP41/Pro XL。
+
 基础调度检查以下条件：
 
 1. Android SDK 必须是 `37`；
-2. CPU、GPU 或其他频率域必须通过运行时能力检查；
+2. 当前设备为 arm64，且 CPU、GPU 或其他频率域必须通过运行时能力检查；
 3. Thermal JSON 必须通过本机 schema 检查。
 
 集成温控使用 v1.7.2-soc-smooth 的参数，按完整系统指纹重新建立 stock 缓存，自动发现唯一的 `thermal_info_config*.json`，并校验虚拟皮肤传感器和冷却设备。SOC 第 4/5 档采用有效离散频率平滑降级，SOC-EXTREME 的阈值与 Ceiling 保持原厂。未知结构会隔离温控 overlay，调度继续运行；若开机后才发现校验失败，温控恢复原厂需要下次重启。
@@ -57,7 +59,7 @@
 
 请先停用其他会写入相同 `debug_min_freq`、uclamp 或温控 JSON 的模块。集成包同时负责 Encore 调度和 Thermal JSON 温控，避免与独立温控或调度模块叠加。
 
-当前实机验证设备为 Pixel 10 Pro XL、Android 17 SDK 37。其他 Pixel Tensor 设备会按运行时频率节点和 Thermal JSON 重新发现；`libgui.so` 符号解析失败只停用 FAS 帧探针，不影响基础调度。集成包仍需安装后的开机验证。
+当前实机验证设备为 Pixel 10 Pro XL、Android 17 SDK 37。Pixel 10 全系可按“运行时能力校验”方式尝试安装；其他变体仍需分别确认 CPU policy、GPU/DSU/IRM devfreq 节点和 Thermal JSON 冷却设备是否存在。`libgui.so` 符号解析失败只停用 FAS 帧探针，不影响基础调度；频率或温控能力不匹配时会安全停用对应后端，不写入未经校验的节点。集成包仍需安装后的开机验证。
 
 详细步骤见 [兼容性与安装说明](docs/兼容性与安装.md)。
 
