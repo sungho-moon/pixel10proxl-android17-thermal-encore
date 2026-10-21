@@ -18,6 +18,7 @@ MODULE = BASE / "module"
 OUTPUTS = BASE.parent.parent / "outputs"
 BINARY = BASE / "pixel-control-fas-v024-android17-generic"
 SOURCE = BASE / "pixel-control-fas-v024-android17-generic.cpp"
+GUARDIAN_SOURCE = BASE.parent.parent / "work/guardian-build"
 BASELINE = BASE.parent / "encore-pixel/artifacts/Encore-Pixel-CP41-v0.1.6-source.zip"
 FAS_SOURCE = OUTPUTS / "fas-rs-v4.9.1-source.zip"
 
@@ -176,6 +177,11 @@ def build_source_bundle(version: str, module: Path, outputs: Path) -> Path | Non
 
     items: list[tuple[Path, str]] = [(SOURCE, "source/" + SOURCE.name), (BASE / "package.py", "source/package.py")]
     items.extend(present)
+    items.extend(
+        (path, "source/guardian-build/" + path.name)
+        for path in sorted(GUARDIAN_SOURCE.iterdir())
+        if path.is_file() and path.suffix in {".c", ".h", ".sh", ".md"}
+    )
     items.extend(
         (path, "source/module/" + path.relative_to(module).as_posix())
         for path in module_files(module)

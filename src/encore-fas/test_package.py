@@ -145,6 +145,8 @@ class PackageTest(unittest.TestCase):
         with zipfile.ZipFile(path) as archive:
             self.assertEqual(archive.read("baseline/baseline.zip"), b"baseline")
             self.assertIn("source/package.py", archive.namelist())
+            self.assertIn("source/guardian-build/elf-offset.h", archive.namelist())
+            self.assertIn("source/guardian-build/guardian.c", archive.namelist())
 
     def test_invalid_properties_fail_without_zip(self) -> None:
         for properties in ("version=../unsafe\nversionCode=750\n", "version=0.7.5\nversionCode=invalid\n"):

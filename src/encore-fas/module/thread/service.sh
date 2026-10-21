@@ -56,6 +56,7 @@ while ! stopped; do
   wait "$SCAN_PID" 2>/dev/null
   "$MODDIR/bin/guardian" --restore "$STATE" >> "$STATE/recovery.log" 2>&1
   [ "$result" -eq 0 ] || echo "guardian_exit=$result" >> "$STATE/recovery.log"
+  [ "$result" -eq 17 ] && break
   [ "$("$TOYBOX" wc -c < "$STATE/recovery.log" 2>/dev/null)" -gt 32768 ] && mv "$STATE/recovery.log" "$STATE/recovery.previous.log"
   "$TOYBOX" sleep 1
 done

@@ -6,6 +6,7 @@
 #include "fork-watch.h"
 #include "policy.h"
 #include "targets.h"
+#include "elf-offset.h"
 #include <sys/stat.h>
 #include <sys/file.h>
 #define LIMIT 2048
@@ -158,6 +159,11 @@ static int selftest(const char*binary){
 }
 int main(int argc,char**argv){
  umask(0077);setvbuf(stdout,0,_IOLBF,0);signal(SIGINT,stop);signal(SIGTERM,stop);prctl(PR_SET_PDEATHSIG,SIGTERM);
+ if(argc==3&&!strcmp(argv[1],"--resolve-offset")){
+  uint64_t offset;
+  if(queuebuffer_offset(argv[2],&offset)){fprintf(stderr,"PROBE_DISABLED ELF symbol resolution failed\n");return 17;}
+  printf("%llu\n",(unsigned long long)offset);return 0;
+ }
  if(argc==3&&(!strcmp(argv[1],"--restore")||!strcmp(argv[1],"--selftest"))){
   if(strlen(argv[2])>=sizeof(directory))return 2;
   strcpy(directory,argv[2]);
@@ -168,6 +174,9 @@ int main(int argc,char**argv){
  if(argc!=6){fprintf(stderr,"Usage: guardian PID SAMPLER MODULE_DIR SECONDS TARGET_FPS\n");return 2;}
  int target=atoi(argv[5]); int automatic=target==0;if(target!=0&&(target<24||target>240))return 2;
  int pid=atoi(argv[1]),seconds=atoi(argv[4]);if(pid<=1||seconds<1||seconds>300||strlen(argv[3])>700)return 2;
+ uint64_t offset;
+ if(queuebuffer_offset("/system/lib64/libgui.so",&offset)){fprintf(stderr,"PROBE_DISABLED ELF symbol resolution failed\n");return 17;}
+ char offset_text[32];snprintf(offset_text,sizeof(offset_text),"%llu",(unsigned long long)offset);
  snprintf(directory,sizeof(directory),"%s/state",argv[3]);
  if(session_lock()){puts("SESSION_ALREADY_ACTIVE");return 75;}
  load();if(restore_all())return 3;count=0;if(save())return 3;
@@ -180,7 +189,7 @@ int main(int argc,char**argv){
  if(!worker){
   prctl(PR_SET_PDEATHSIG,SIGKILL);if(getppid()==1)_exit(1);
   close_watch(&w);close(pipefd[0]);dup2(pipefd[1],1);close(pipefd[1]);
-  execl(argv[2],argv[2],argv[1],"1220304",argv[4],argv[5],(char*)0);_exit(127);
+  execl(argv[2],argv[2],argv[1],offset_text,argv[4],argv[5],(char*)0);_exit(127);
  }
  close(pipefd[1]);fcntl(pipefd[0],F_SETFL,O_NONBLOCK);
  char path[900];snprintf(path,sizeof(path),"%s/guardian.pid",directory);FILE*f=fopen(path,"w");if(f){fprintf(f,"%d\n",getpid());fclose(f);}

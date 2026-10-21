@@ -1,5 +1,8 @@
 #include <assert.h>
 #include <stdio.h>
+#ifndef DYNAMIC_TIDS_PATH
+#define DYNAMIC_TIDS_PATH "dynamic-tids-test"
+#endif
 #include "targets.h"
 int main(void){
  FILE *f=fopen("dynamic-tids-test","w");assert(f);fputs("23411\n23412\n23413\n23414\n",f);fclose(f);
