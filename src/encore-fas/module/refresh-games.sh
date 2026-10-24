@@ -33,7 +33,6 @@ migrate_targets() {
     [ -n "$pkg" ] || continue
     sed -i "/\"$pkg\": {/,/\"target_fps\"/s/\"target_fps\": 0/\"target_fps\": $rate/" "$tmp"
   done < "$PRESETS"
-  sed -i 's/"target_fps": 0/"target_fps": 60/g' "$tmp"
   if valid_list "$tmp" && chmod 0600 "$tmp"; then mv -f "$tmp" "$LIST"; else rm -f "$tmp"; return 1; fi
 }
 

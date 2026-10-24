@@ -8,10 +8,11 @@ fail() { printf '%s\n' "$1" > "$MODDIR/state/blocked-reason"; touch "$MODDIR/ski
 mkdir -p "$MODDIR/profiles" "$MODDIR/state" "$MODDIR/system/vendor/etc"
 source_file=''; config_name=''
 old=/data/adb/modules/pixel_game_thermal_cp41
-if [ "$old" != "$MODDIR" ] && [ -r "$old/profiles/stock.json" ]; then
-  [ -r "$old/state/config.env" ] && . "$old/state/config.env" || true
-  [ -n "${CONFIG_NAME:-}" ] || CONFIG_NAME=$(find "$old/system/vendor/etc" -maxdepth 1 -type f -name 'thermal_info_config*.json' 2>/dev/null | head -n 1 | sed 's#.*/##')
-  if [ -n "${CONFIG_NAME:-}" ] && "$BUILDER" probe "$old/profiles/stock.json" >/dev/null 2>&1; then
+if [ "$old" != "$MODDIR" ] && [ -r "$old/profiles/stock.json" ] && [ -r "$old/state/config.env" ]; then
+  . "$old/state/config.env" || true
+  if [ "${BUILD_FINGERPRINT:-}" = "$(getprop ro.build.fingerprint)" ] \
+      && [ -n "${CONFIG_NAME:-}" ] \
+      && "$BUILDER" probe "$old/profiles/stock.json" >/dev/null 2>&1; then
     source_file="$old/profiles/stock.json"; config_name="$CONFIG_NAME"
   fi
 fi

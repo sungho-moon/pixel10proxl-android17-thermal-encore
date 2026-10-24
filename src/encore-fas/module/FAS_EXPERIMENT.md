@@ -38,10 +38,11 @@ Targets are configured in the WebUI game page. It stores `target_fps` in
     com.tencent.tmgp.dfm 120
 
 The installer creates these two entries only when the file does not exist.
-Choose 30, 60, or 120 FPS in WebUI. New games are assigned 120 FPS only when
-their package is in the maintained competitive FPS/MOBA preset table;
-otherwise they receive 60 FPS. FAS never infers a target from a temporary
-drop in measured frame rate; it only feeds back against the configured target.
+Choose Auto, 30, 60, 90, or 120 FPS in WebUI. Auto locks to a supported tier
+after consecutive measurement windows. New games are assigned 120 FPS only
+when their package is in the maintained competitive FPS/MOBA preset table;
+otherwise they receive 60 FPS. Explicit targets are never changed by a
+temporary drop in measured frame rate.
 
 The detector follows the game's dominant queueBuffer thread and uses a
 clipped, one-sided frame-deficit CUSUM with 5% tolerance. After acquisition,

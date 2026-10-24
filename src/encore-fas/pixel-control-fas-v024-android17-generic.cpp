@@ -61,6 +61,7 @@ static bool elf_queuebuffer_offset(const char* filename, std::string& offset_tex
     const auto* bytes = static_cast<const unsigned char*>(mapping);
     const auto* header = reinterpret_cast<const Elf64_Ehdr*>(bytes);
     bool found = false;
+    bool bad = false;
     uint64_t found_value = 0;
     do {
         if (memcmp(header->e_ident, ELFMAG, SELFMAG) != 0
@@ -81,19 +82,9 @@ static bool elf_queuebuffer_offset(const char* filename, std::string& offset_tex
             break;
         }
         const auto* programs = reinterpret_cast<const Elf64_Phdr*>(bytes + header->e_phoff);
-        const auto executable_value = [&](uint64_t value) {
-            for (uint16_t program_index = 0; program_index < header->e_phnum; ++program_index) {
-                const auto& program = programs[program_index];
-                if (program.p_type == PT_LOAD && (program.p_flags & PF_X)
-                    && value >= program.p_vaddr
-                    && value - program.p_vaddr < program.p_memsz)
-                    return true;
-            }
-            return false;
-        };
         const auto* sections = reinterpret_cast<const Elf64_Shdr*>(bytes + header->e_shoff);
         const uint64_t section_count = header->e_shnum;
-        for (uint64_t section_index = 0; section_index < section_count && !found; ++section_index) {
+        for (uint64_t section_index = 0; section_index < section_count && !bad; ++section_index) {
             const auto& symbols_section = sections[section_index];
             if (symbols_section.sh_type != SHT_DYNSYM && symbols_section.sh_type != SHT_SYMTAB)
                 continue;
@@ -116,8 +107,7 @@ static bool elf_queuebuffer_offset(const char* filename, std::string& offset_tex
                 const auto* symbol = reinterpret_cast<const Elf64_Sym*>(symbols + symbol_offset);
                 if (symbol->st_name >= strings_section.sh_size || symbol->st_shndx == SHN_UNDEF
                     || symbol->st_value == 0 || symbol->st_size < 4
-                    || (symbol->st_value & 3) != 0 || ELF64_ST_TYPE(symbol->st_info) != STT_FUNC
-                    || !executable_value(symbol->st_value))
+                    || (symbol->st_value & 3) != 0 || ELF64_ST_TYPE(symbol->st_info) != STT_FUNC)
                     continue;
                 const char* name = strings + symbol->st_name;
                 const size_t remaining = strings_section.sh_size - symbol->st_name;
@@ -130,28 +120,53 @@ static bool elf_queuebuffer_offset(const char* filename, std::string& offset_tex
                 // spelling changes while excluding hook_queueBuffer_DEPRECATE.
                 if (symbol_name.find("_ZN7android7Surface16hook_queueBuffer") == 0
                     && symbol_name.find("_DEPRECATE") == std::string_view::npos) {
-                    found_value = symbol->st_value;
-                    found = true;
-                    break;
+                    bool mapped = false;
+                    for (uint16_t program_index = 0; program_index < header->e_phnum; ++program_index) {
+                        const auto& program = programs[program_index];
+                        if (program.p_type != PT_LOAD || !(program.p_flags & PF_X)
+                            || symbol->st_value < program.p_vaddr)
+                            continue;
+                        const uint64_t delta = symbol->st_value - program.p_vaddr;
+                        if (delta > program.p_filesz || 4 > program.p_filesz - delta
+                            || !elf_range(file_size, program.p_offset, program.p_filesz))
+                            continue;
+                        const uint64_t offset = program.p_offset + delta;
+                        if (offset & 3) continue;
+                        if (found && found_value != offset) bad = true;
+                        found_value = offset;
+                        found = mapped = true;
+                    }
+                    if (!mapped) bad = true;
                 }
             }
         }
     } while (false);
     munmap(mapping, file_size);
-    if (!found) return false;
+    if (!found || bad) return false;
     std::ostringstream value;
     value << "0x" << std::hex << found_value;
     offset_text = value.str();
     return true;
 }
+static std::string regex_escape_package(const std::string& package) {
+    static constexpr std::string_view special = R"(.^$|()[]*+?\\{})";
+    std::string escaped;
+    escaped.reserve(package.size() * 2);
+    for (char ch : package) {
+        if (special.find(ch) != std::string_view::npos) escaped.push_back('\\');
+        escaped.push_back(ch);
+    }
+    return escaped;
+}
 static int configured_target(const std::string& package) {
     const std::string games = readstr(cfg + "/gamelist.json");
-    const std::regex entry("\\\"" + package + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)\\s*[,}]");
+    const std::regex entry("\\\"" + regex_escape_package(package) + "\\\"\\s*:\\s*\\{[^}]*\\\"target_fps\\\"\\s*:\\s*(\\d+)\\s*[,}]");
     std::smatch match;
-    if (!std::regex_search(games, match, entry) || match.size() < 2) return 60;
+    if (!std::regex_search(games, match, entry) || match.size() < 2) return 0;
     const std::string rate = match[1].str();
+    if (rate == "0") return 0;
     if (rate == "30" || rate == "60" || rate == "90" || rate == "120") return std::atoi(rate.c_str());
-    return 60;
+    return 0;
 }
 static long number(const std::string& p) {
     std::istringstream s(readstr(p)); long n = -1; s >> n; return n;
@@ -187,13 +202,13 @@ static int smooth_thermal_cap(int current, long temp) {
     if (current < 0 || current > 3) current = 3;
     // Temperature is reported in deci-degrees Celsius. Escalation is
     // aggressive; recovery requires a 1 C margin to prevent oscillation.
+    if (current == 0 && temp <= 410) return 1;
+    if (current <= 1 && temp <= 400) return 2;
+    if (current <= 2 && temp <= 390) return 3;
     if (temp >= 430) return 0;
     if (temp >= 420) return std::min(current, 0);
     if (temp >= 410) return std::min(current, 1);
     if (temp >= 400) return std::min(current, 2);
-    if (current == 0 && temp <= 410) return 1;
-    if (current <= 1 && temp <= 400) return 2;
-    if (current <= 2 && temp <= 390) return 3;
     return current;
 }
 struct Node {
@@ -860,6 +875,10 @@ static int selftest() {
     ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 0 && pending_raise == 1;
     ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 3 && pending_raise == 0;
     ok &= fas_upshift_hysteresis(3, 9, pending_raise) == 3 && pending_raise == 0;
+    ok &= smooth_thermal_cap(3, 420) == 0;
+    ok &= smooth_thermal_cap(0, 410) == 1;
+    ok &= smooth_thermal_cap(1, 400) == 2;
+    ok &= smooth_thermal_cap(2, 390) == 3;
     std::string queuebuffer_offset;
     ok &= elf_queuebuffer_offset("/system/lib64/libgui.so", queuebuffer_offset)
         && queuebuffer_offset.size() > 2 && queuebuffer_offset.rfind("0x", 0) == 0;

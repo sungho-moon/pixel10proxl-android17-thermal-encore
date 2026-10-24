@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/Rem01Gaming/encore",
-  "version": "0.8.2-thread-elf",
+  "version": "0.8.3-thread-elf",
   "commit": "v0.7.4-qpr3-android17 + local WebUI/FAS/thermal merge",
   "rapidjson": "24b5e7a8b27f42fa16b96fc70aade9106cf7102f",
   "spdlog": "1685e694c5cd8328280c48f8b94b1281c17c6fee",
@@ -9,8 +9,9 @@
   "binder_resolver_apk_sha256": "beb99604cf31649102ebc9174e35250087f44296dfca1622846e5c5cefc8c20c",
   "binaries": {
     "encored": "174e00ca15bffd150673177bbc8a56dc709ea3e4874b58b7c02e1266bdaf37d9",
-    "pixel-control": "a234c9c7952e7306590291c951a1bfdfb17a57af710e68d08a183c93a7b6ba1b",
-    "guardian": "ef0c3e626fd318da884c7407d5f7a58dd3ce062d292864d3495d7ccb32135f51"
+    "pixel-control": "c45f7f6b8acede481b28d7fe8fcbe82a79dcbba2b79e567e1934e07235b3de34",
+    "guardian": "fc09f45c69822352d8b1d339d9cbb7054640ceaa2ea9c86f06881df513325435",
+    "thermal-profile-builder": "3fe71d73d76ef4d8fca80fcca9b671b7b32d418ccf4316017a76ea418e50c45b"
   },
   "frame_feedback": {
     "type": "Encore single-writer FAS with independently implemented fas-rs proportional adviser",
@@ -31,7 +32,7 @@
   },
   "thread_frame_probe": {
     "source": "work/guardian-build/guardian.c and elf-offset.h",
-    "ndk": "r27c, Android API 35, 16 KiB maximum page size",
+    "ndk": "r30, Android API 35, 16 KiB maximum page size",
     "resolution": "runtime ELF64 symbol lookup with executable PT_LOAD virtual-address to file-offset translation",
     "failure": "exit 17 disables the thread backend without using a fixed offset"
   }

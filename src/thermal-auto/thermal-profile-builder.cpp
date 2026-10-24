@@ -62,40 +62,49 @@ static Value& one_cdev(Value& sensor, const char* request) {
     return *found;
 }
 
-static void threshold(Value& sensor, size_t index, double value) {
+static int threshold(Value& sensor, size_t index, double value) {
     if (!sensor.HasMember("HotThreshold") || !sensor["HotThreshold"].IsArray()
-        || sensor["HotThreshold"].Size() <= index) return;
+        || sensor["HotThreshold"].Size() <= index)
+        throw std::runtime_error("threshold_missing");
     Value& array = sensor["HotThreshold"];
-    if (!array[static_cast<rapidjson::SizeType>(index)].IsNumber()) return;
+    if (!array[static_cast<rapidjson::SizeType>(index)].IsNumber())
+        throw std::runtime_error("threshold_shape");
     double old = array[static_cast<rapidjson::SizeType>(index)].GetDouble();
-    if (old >= 25.0 && old <= 60.0) array[static_cast<rapidjson::SizeType>(index)].SetDouble(value);
+    if (!std::isfinite(old) || old < 25.0 || old > 60.0)
+        throw std::runtime_error("threshold_range");
+    array[static_cast<rapidjson::SizeType>(index)].SetDouble(value);
+    return 1;
 }
 
-static void polling(Value& sensor) {
+static int polling(Value& sensor) {
     if (!sensor.HasMember("PollingDelay") || !sensor["PollingDelay"].IsInt64())
         throw std::runtime_error("polling_missing");
     long long old = sensor["PollingDelay"].GetInt64();
     if (old < 1000 || old > 600000) throw std::runtime_error("polling_range");
     sensor["PollingDelay"].SetInt(5000);
+    return 1;
 }
 
-static void levels(Value& sensor, const char* request, const char* key,
-                   const std::vector<size_t>& indexes, long long target) {
+static int levels(Value& sensor, const char* request, const char* key,
+                  const std::vector<size_t>& indexes, long long target) {
     Value& cdev = one_cdev(sensor, request);
     if (!cdev.HasMember(key) || !cdev[key].IsArray())
         throw std::runtime_error(std::string("array_shape:") + key);
     Value& array = cdev[key];
     size_t changed = 0;
     for (size_t i : indexes) {
-        if (i >= array.Size()) continue;
+        if (i >= array.Size()) throw std::runtime_error(std::string("array_shape:") + key);
         Value& slot = array[static_cast<rapidjson::SizeType>(i)];
-        if (!slot.IsInt64() && !slot.IsUint64()) continue;
+        if (!slot.IsInt64() && !slot.IsUint64())
+            throw std::runtime_error(std::string("array_shape:") + key);
         long long old = slot.IsInt64() ? slot.GetInt64() : static_cast<long long>(slot.GetUint64());
-        if (old <= 0 || old > 5000000000LL) continue;
+        if (old <= 0 || old > 5000000000LL)
+            throw std::runtime_error(std::string("array_range:") + key);
         slot.SetInt64(target);
         ++changed;
     }
     if (changed == 0) throw std::runtime_error(std::string("array_shape:") + key);
+    return static_cast<int>(changed);
 }
 
 static int apply_profile(Document& doc) {
@@ -107,45 +116,46 @@ static int apply_profile(Document& doc) {
     Value& soc = one_sensor(doc, "VIRTUAL-SKIN-SOC");
     Value& extreme = one_sensor(doc, "VIRTUAL-SKIN-SOC-EXTREME");
 
-    threshold(hint, 1, 39.0); polling(hint);
+    int changes = 0;
+    changes += threshold(hint, 1, 39.0); changes += polling(hint);
 
-    threshold(light, 1, 40.0); threshold(light, 2, 42.0); polling(light);
-    levels(light, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, 1881000);
-    levels(light, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, 2534000);
-    levels(light, "big_and_big_mid", "CdevCeiling", {1, 2}, 4);
+    changes += threshold(light, 1, 40.0); changes += threshold(light, 2, 42.0); changes += polling(light);
+    changes += levels(light, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, 1881000);
+    changes += levels(light, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, 2534000);
+    changes += levels(light, "big_and_big_mid", "CdevCeiling", {1, 2}, 4);
 
-    threshold(mid, 1, 42.0); threshold(mid, 2, 44.0); polling(mid);
-    levels(mid, "thermal-uclamp-0", "CdevCeilingFrequency", {1, 2}, 1881000);
-    levels(mid, "thermal-uclamp-2", "CdevCeilingFrequency", {1, 2}, 2534000);
-    levels(mid, "thermal-uclamp-5", "CdevCeilingFrequency", {1, 2}, 2534000);
-    levels(mid, "thermal-uclamp-7", "CdevCeilingFrequency", {1, 2}, 2937000);
+    changes += threshold(mid, 1, 42.0); changes += threshold(mid, 2, 44.0); changes += polling(mid);
+    changes += levels(mid, "thermal-uclamp-0", "CdevCeilingFrequency", {1, 2}, 1881000);
+    changes += levels(mid, "thermal-uclamp-2", "CdevCeilingFrequency", {1, 2}, 2534000);
+    changes += levels(mid, "thermal-uclamp-5", "CdevCeilingFrequency", {1, 2}, 2534000);
+    changes += levels(mid, "thermal-uclamp-7", "CdevCeilingFrequency", {1, 2}, 2937000);
 
-    threshold(odpm, 1, 42.0); threshold(odpm, 2, 44.0); polling(odpm);
-    levels(odpm, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, 1881000);
-    levels(odpm, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, 2534000);
-    levels(odpm, "big_and_big_mid", "CdevCeiling", {1, 2}, 4);
+    changes += threshold(odpm, 1, 42.0); changes += threshold(odpm, 2, 44.0); changes += polling(odpm);
+    changes += levels(odpm, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2}, 1881000);
+    changes += levels(odpm, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2}, 2534000);
+    changes += levels(odpm, "big_and_big_mid", "CdevCeiling", {1, 2}, 4);
 
-    threshold(high, 1, 44.0); threshold(high, 2, 46.0); polling(high);
+    changes += threshold(high, 1, 44.0); changes += threshold(high, 2, 46.0); changes += polling(high);
 
-    polling(soc);
-    levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, 1881000);
-    levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {4}, 1632000);
-    levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {5}, 1363000);
-    levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, 2534000);
-    levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {4}, 2188000);
-    levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {5}, 1670000);
-    levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
-    levels(soc, "big_and_big_mid", "CdevCeiling", {4}, 8);
-    levels(soc, "big_and_big_mid", "CdevCeiling", {5}, 14);
+    changes += polling(soc);
+    changes += levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {1, 2, 3}, 1881000);
+    changes += levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {4}, 1632000);
+    changes += levels(soc, "cpufreq-cpu0", "CdevCeilingFrequency", {5}, 1363000);
+    changes += levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {1, 2, 3}, 2534000);
+    changes += levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {4}, 2188000);
+    changes += levels(soc, "cpufreq-cpu2", "CdevCeilingFrequency", {5}, 1670000);
+    changes += levels(soc, "big_and_big_mid", "CdevCeiling", {1, 2, 3}, 4);
+    changes += levels(soc, "big_and_big_mid", "CdevCeiling", {4}, 8);
+    changes += levels(soc, "big_and_big_mid", "CdevCeiling", {5}, 14);
     // Keep the 748 MHz ceiling through the first high-temperature states.
     // Derate in two smaller steps only at the upper protection states.
-    levels(soc, "gpu", "CdevCeilingFrequency", {1, 2, 3, 4}, 748000000);
-    levels(soc, "gpu", "CdevCeilingFrequency", {5}, 633000000);
-    levels(soc, "gpu", "CdevCeilingFrequency", {6}, 512000000);
+    changes += levels(soc, "gpu", "CdevCeilingFrequency", {1, 2, 3, 4}, 748000000);
+    changes += levels(soc, "gpu", "CdevCeilingFrequency", {5}, 633000000);
+    changes += levels(soc, "gpu", "CdevCeilingFrequency", {6}, 512000000);
     // Preserve every EXTREME ceiling and threshold. Faster observation only
     // ensures the unchanged emergency policy activates and recovers promptly.
-    polling(extreme);
-    return 48;
+    changes += polling(extreme);
+    return changes;
 }
 
 static void atomic_write(const std::string& path, const std::string& data) {

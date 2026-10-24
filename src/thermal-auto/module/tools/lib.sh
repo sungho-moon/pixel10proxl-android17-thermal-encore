@@ -32,9 +32,9 @@ pgt_config() {
   "$1/bin/thermal-profile-builder" probe "$1/profiles/game.json" >/dev/null 2>&1 || { pgt_reason game_profile_schema; return 1; }
 }
 pgt_active_file() {
-  _m=$1; . "$_m/state/config.env"
-  [ -s "/vendor/etc/$CONFIG_NAME" ] || { pgt_reason active_config_missing; return 1; }
-  _sha=$(pgt_sha "/vendor/etc/$CONFIG_NAME")
+  _m=$1; _vendor=${2:-/vendor/etc}; . "$_m/state/config.env"
+  [ -s "$_vendor/$CONFIG_NAME" ] || { pgt_reason active_config_missing; return 1; }
+  _sha=$(pgt_sha "$_vendor/$CONFIG_NAME")
   [ "$_sha" = "$GAME_SHA" ] || [ "$_sha" = "$STOCK_SHA" ] || { pgt_reason active_config_unrecognized; return 1; }
 }
 pgt_hardware() {
@@ -52,7 +52,7 @@ pgt_hardware() {
 pgt_check() {
   _module=$1; _vendor=${2:-/vendor/etc}; _modules=${3:-/data/adb/modules}; _pending=${4:-/data/adb/modules_update}
   [ -r "$_module/state/config.env" ] || { pgt_reason metadata_missing; return 1; }
-  pgt_platform || return 1; pgt_config "$_module" || return 1; pgt_active_file "$_module" || return 1
+  pgt_platform || return 1; pgt_config "$_module" || return 1; pgt_active_file "$_module" "$_vendor" || return 1
   pgt_hardware || return 1; pgt_conflicts "$_modules" "$_pending" || return 1
   printf '%s\n' PGT_CHECK=pass
 }

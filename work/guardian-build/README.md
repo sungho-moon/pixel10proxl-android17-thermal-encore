@@ -8,10 +8,11 @@ service then stops this backend instead of falling back to an old offset.
 
 ## Build
 
-With Android NDK r27c on Linux or WSL:
+With Android NDK r27c or newer on Linux or WSL. The current v0.8.3 build uses
+NDK r30:
 
 ```sh
-export ANDROID_NDK_HOME=/path/to/android-ndk-r27c
+export ANDROID_NDK_HOME=/path/to/android-ndk-r30
 sh work/guardian-build/build.sh /path/to/guardian
 ```
 

@@ -26,7 +26,7 @@ def archive(path: Path, root: Path, prefix: str = "") -> None:
             name = (Path(prefix) / p.relative_to(root)).as_posix()
             info = zipfile.ZipInfo(name)
             info.compress_type = zipfile.ZIP_DEFLATED
-            executable = p.suffix == ".sh" or "/bin/" in "/" + name
+            executable = p.suffix == ".sh" or "/bin/" in "/" + name or p.name == "update-binary"
             info.external_attr = (0o100755 if executable else 0o100644) << 16
             z.writestr(info, p.read_bytes())
 

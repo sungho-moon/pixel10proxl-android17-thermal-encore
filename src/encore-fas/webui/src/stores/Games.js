@@ -79,7 +79,7 @@ export const useGamesStore = defineStore('games', () => {
       currentConfig[packageName] = {
         lite_mode: !!config.lite_mode,
         enable_dnd: !!config.enable_dnd,
-        target_fps: Number.isInteger(config.target_fps) && config.target_fps >= 24 && config.target_fps <= 240 ? config.target_fps : 0,
+        target_fps: [0, 30, 60, 90, 120].includes(config.target_fps) ? config.target_fps : 0,
       }
     } else {
       delete currentConfig[packageName]

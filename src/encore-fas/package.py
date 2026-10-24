@@ -216,7 +216,14 @@ def main() -> int:
         provenance = module / "PROVENANCE.json"
         if provenance.is_file():
             data = json.loads(provenance.read_text(encoding="utf-8"))
-            data.setdefault("binaries", {})["pixel-control"] = sha256(destination)
+            binaries = data.setdefault("binaries", {})
+            for name, path in {
+                "pixel-control": destination,
+                "thermal-profile-builder": module / "bin/thermal-profile-builder",
+                "guardian": module / "thread/bin/guardian",
+            }.items():
+                if path.is_file():
+                    binaries[name] = sha256(path)
             provenance.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
 
         for name in ("update-binary", "updater-script"):
