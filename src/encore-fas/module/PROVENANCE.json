@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/Rem01Gaming/encore",
-  "version": "0.8.3-thread-elf",
+  "version": "0.8.4-thread-elf",
   "commit": "v0.7.4-qpr3-android17 + local WebUI/FAS/thermal merge",
   "rapidjson": "24b5e7a8b27f42fa16b96fc70aade9106cf7102f",
   "spdlog": "1685e694c5cd8328280c48f8b94b1281c17c6fee",

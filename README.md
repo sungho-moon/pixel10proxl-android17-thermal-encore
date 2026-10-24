@@ -19,7 +19,7 @@
 
 当前构建包含：
 
-- `0.8.3-thread-elf`：修复 uprobe ELF 文件偏移解析、自动帧率策略、温控恢复迟滞和严格温控配置校验；以 Android NDK r30 重建原生组件，并通过 Pixel 10 Pro XL Android 17 实机验证。
+- `0.8.4-thread-elf`：在 0.8.3 的基础上修复 Thermal OTA 重发现、候选配置歧义、游戏包名迁移转义和异常温度保护；以 Android NDK r30 重建原生组件，并通过 Pixel 10 Pro XL Android 17 实机验证。
 - `0.8.2-thread-elf`：线程帧采样器改为从当前 `libgui.so` 动态解析入口和文件偏移，修复系统更新后持续 `samples=0`；解析失败时停用线程后端。源码、构建脚本和 ELF 回归测试位于 `work/guardian-build/`。
 - 通用兼容性构建 `0.8.1-generic`：温控和调度合并为一个模块；安装提示中英双语。
 - 安装时音量上键放宽温控（推荐），音量下键保留原厂温控；10 秒无操作默认放宽。安装前停用独立温控模块。
