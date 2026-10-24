@@ -60,5 +60,8 @@ pgt_log() { _m=$1; shift; mkdir -p "$_m/state"; printf '%s %s\n' "$(date +%s)" "
 pgt_quarantine() {
   _m=$1; _why=$2; . "$_m/state/config.env" 2>/dev/null || true
   [ -n "${CONFIG_NAME:-}" ] && rm -f "$_m/system/vendor/etc/$CONFIG_NAME" 2>/dev/null || true
-  touch "$_m/skip_mount" "$_m/disable"; printf '%s\n' "$_why" > "$_m/state/blocked-reason"; pgt_log "$_m" "quarantined=$_why"
+  touch "$_m/skip_mount" "$_m/disable" "$_m/state/auto-disabled"
+  printf '%s\n' "$_why" > "$_m/state/blocked-reason"
+  printf '%s\n' "$(getprop ro.build.fingerprint)" > "$_m/state/blocked-fingerprint"
+  pgt_log "$_m" "quarantined=$_why"
 }

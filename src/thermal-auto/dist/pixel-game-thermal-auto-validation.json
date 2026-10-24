@@ -1,7 +1,7 @@
 {
   "version": "1.7.2-soc-smooth",
-  "package_sha256": "23031df53fd4187c04febe1cfd0b52c4b45ef811f96eca66608db213eb42f16f",
-  "source_sha256": "bf5f862c836929454f0f068556a73d07fe99607a58671b490893e9e3b393554d",
+  "package_sha256": "62595246ac1d30506b3fddcdc6092c12953832c358e9a3a2ae00bd3f0a7d0889",
+  "source_sha256": "61e7f39f18f33330deae18e12919bb3a0f2cbc503e4f76ea0e774620adadf28f",
   "schema": "VIRTUAL-SKIN-HINT/CPU-LIGHT-ODPM/CPU-MID/CPU-ODPM/CPU-HIGH/SOC/SOC-EXTREME",
   "changes": 57,
   "discovery": "native RapidJSON probe across thermal_info_config*.json",

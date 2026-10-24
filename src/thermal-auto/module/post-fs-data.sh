@@ -1,6 +1,31 @@
 #!/system/bin/sh
 MODDIR=${0%/*}
 . "$MODDIR/tools/lib.sh"
+# A quarantine is automatic only when auto-disabled is present. Keep a manual
+# KernelSU disable intact, but retry an automatic quarantine after an OTA.
+if [ -f "$MODDIR/state/auto-disabled" ]; then
+  blocked_fingerprint=$(cat "$MODDIR/state/blocked-fingerprint" 2>/dev/null)
+  current_fingerprint=$(getprop ro.build.fingerprint)
+  if [ -n "$blocked_fingerprint" ] && [ "$blocked_fingerprint" != "$current_fingerprint" ]; then
+    rm -f "$MODDIR/disable" "$MODDIR/skip_mount" "$MODDIR/state/auto-disabled" \
+      "$MODDIR/state/blocked-fingerprint" "$MODDIR/state/blocked-reason"
+    rm -f "$(pgt_marker_dir)/thermal-disabled"
+  fi
+fi
+# Re-discover after an OTA before honoring a quarantine marker. Otherwise a
+# stale fingerprint can permanently prevent this hook from reaching discovery.
+if [ -r "$MODDIR/state/config.env" ]; then
+  . "$MODDIR/state/config.env"
+  if [ "${BUILD_FINGERPRINT:-}" != "$(getprop ro.build.fingerprint)" ]; then
+    rm -f "$MODDIR/state/config.env" "$MODDIR/state/runtime.env" \
+      "$MODDIR/state/applied-mode" "$MODDIR/state/blocked-reason" \
+      "$MODDIR/system/vendor/etc"/thermal_info_config*.json
+    if [ -f "$MODDIR/disable" ] && [ -f "$MODDIR/state/auto-disabled" ]; then
+      rm -f "$MODDIR/disable" "$MODDIR/skip_mount" "$MODDIR/state/auto-disabled"
+      rm -f "$(pgt_marker_dir)/thermal-disabled" "$MODDIR/state/blocked-fingerprint"
+    fi
+  fi
+fi
 [ -e "$MODDIR/disable" ] && exit 0
 [ -e "$MODDIR/remove" ] && exit 0
 [ ! -r "$MODDIR/state/config.env" ] && sh "$MODDIR/tools/discover.sh" "$MODDIR"

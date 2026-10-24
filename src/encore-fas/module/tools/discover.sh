@@ -7,20 +7,23 @@ chmod 0755 "$BUILDER" 2>/dev/null || true
 fail() { pgt_disable "$MODDIR" "$1"; exit 1; }
 [ -x "$BUILDER" ] || fail builder_missing
 mkdir -p "$MODDIR/profiles" "$MODDIR/state" "$MODDIR/system/vendor/etc"
-source_file=''; config_name=''
+source_file=''; source_real=''; config_name=''
 # Run before module mounts and only cache the current system's config. A
 # retired module's stock cache may belong to an older OTA with the same schema.
 pgt_platform || fail unsupported_sdk
 pgt_conflicts /data/adb/modules /data/adb/modules_update || fail conflicting_thermal_module
 if [ -z "$source_file" ]; then
   for dir in /data/adb/magisk/mirror/vendor/etc /sbin/.magisk/mirror/vendor/etc /vendor/etc /system/vendor/etc; do
-    [ -z "$source_file" ] || continue
     [ -d "$dir" ] || continue
     for candidate in "$dir"/thermal_info_config*.json; do
       [ -r "$candidate" ] || continue
       if "$BUILDER" probe "$candidate" >/dev/null 2>&1; then
-        [ -z "$source_file" ] || fail ambiguous_thermal_config
-        source_file="$candidate"; config_name="${candidate##*/}"
+        candidate_real=$(readlink -f "$candidate" 2>/dev/null || printf '%s' "$candidate")
+        if [ -n "$source_file" ]; then
+          [ "$candidate_real" = "$source_real" ] || fail ambiguous_thermal_config
+          continue
+        fi
+        source_file="$candidate"; source_real="$candidate_real"; config_name="${candidate##*/}"
       fi
     done
   done

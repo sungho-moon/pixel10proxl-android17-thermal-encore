@@ -3,10 +3,16 @@ MODDIR=${1:-${0%/*}/..}
 . "$MODDIR/tools/lib.sh"
 BUILDER="$MODDIR/bin/thermal-profile-builder"
 chmod 0755 "$BUILDER" 2>/dev/null || true
-fail() { printf '%s\n' "$1" > "$MODDIR/state/blocked-reason"; touch "$MODDIR/skip_mount" "$MODDIR/disable"; pgt_log "$MODDIR" "discovery_failed=$1"; exit 1; }
+fail() {
+  printf '%s\n' "$1" > "$MODDIR/state/blocked-reason"
+  printf '%s\n' "$(getprop ro.build.fingerprint)" > "$MODDIR/state/blocked-fingerprint"
+  touch "$MODDIR/skip_mount" "$MODDIR/disable" "$MODDIR/state/auto-disabled"
+  pgt_log "$MODDIR" "discovery_failed=$1"
+  exit 1
+}
 [ -x "$BUILDER" ] || fail builder_missing
 mkdir -p "$MODDIR/profiles" "$MODDIR/state" "$MODDIR/system/vendor/etc"
-source_file=''; config_name=''
+source_file=''; source_real=''; config_name=''
 old=/data/adb/modules/pixel_game_thermal_cp41
 if [ "$old" != "$MODDIR" ] && [ -r "$old/profiles/stock.json" ] && [ -r "$old/state/config.env" ]; then
   . "$old/state/config.env" || true
@@ -18,13 +24,16 @@ if [ "$old" != "$MODDIR" ] && [ -r "$old/profiles/stock.json" ] && [ -r "$old/st
 fi
 if [ -z "$source_file" ]; then
   for dir in /data/adb/magisk/mirror/vendor/etc /sbin/.magisk/mirror/vendor/etc /vendor/etc /system/vendor/etc; do
-    [ -z "$source_file" ] || continue
     [ -d "$dir" ] || continue
     for candidate in "$dir"/thermal_info_config*.json; do
       [ -r "$candidate" ] || continue
       if "$BUILDER" probe "$candidate" >/dev/null 2>&1; then
-        [ -z "$source_file" ] || fail ambiguous_thermal_config
-        source_file="$candidate"; config_name="${candidate##*/}"
+        candidate_real=$(readlink -f "$candidate" 2>/dev/null || printf '%s' "$candidate")
+        if [ -n "$source_file" ]; then
+          [ "$candidate_real" = "$source_real" ] || fail ambiguous_thermal_config
+          continue
+        fi
+        source_file="$candidate"; source_real="$candidate_real"; config_name="${candidate##*/}"
       fi
     done
   done

@@ -6,7 +6,7 @@ ui_print "Schema discovery will run after the complete module is extracted"
 capacity=$(cat /sys/class/power_supply/battery/capacity 2>/dev/null || echo 0)
 [ "$capacity" -ge 15 ] || abort "Charge battery to at least 15%"
 mkdir -p "$MODPATH/state" "$MODPATH/profiles" "$MODPATH/system/vendor/etc"
-rm -f "$MODPATH/disable" "$MODPATH/skip_mount" "$MODPATH/state/blocked-reason" "$MODPATH/state/config.env" "$MODPATH/state/runtime.env"
+rm -f "$MODPATH/disable" "$MODPATH/skip_mount" "$MODPATH/state/blocked-reason" "$MODPATH/state/auto-disabled" "$MODPATH/state/blocked-fingerprint" "$MODPATH/state/config.env" "$MODPATH/state/runtime.env"
 printf '%s\n' game > "$MODPATH/requested-mode"
 printf '%s\n' pending > "$MODPATH/state/discovery"
 # No static thermal overlay is shipped. post-fs-data creates the file after

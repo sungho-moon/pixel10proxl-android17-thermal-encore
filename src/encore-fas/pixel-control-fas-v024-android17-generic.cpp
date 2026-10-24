@@ -200,6 +200,7 @@ static void log(const std::string& s) {
 }
 static int smooth_thermal_cap(int current, long temp) {
     if (current < 0 || current > 3) current = 3;
+    if (temp < 0 || temp > 600) return current;
     // Temperature is reported in deci-degrees Celsius. Escalation is
     // aggressive; recovery requires a 1 C margin to prevent oscillation.
     if (current == 0 && temp <= 410) return 1;
@@ -879,6 +880,7 @@ static int selftest() {
     ok &= smooth_thermal_cap(0, 410) == 1;
     ok &= smooth_thermal_cap(1, 400) == 2;
     ok &= smooth_thermal_cap(2, 390) == 3;
+    ok &= smooth_thermal_cap(0, -1) == 0;
     std::string queuebuffer_offset;
     ok &= elf_queuebuffer_offset("/system/lib64/libgui.so", queuebuffer_offset)
         && queuebuffer_offset.size() > 2 && queuebuffer_offset.rfind("0x", 0) == 0;

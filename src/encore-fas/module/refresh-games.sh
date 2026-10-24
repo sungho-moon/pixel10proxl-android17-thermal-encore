@@ -31,7 +31,8 @@ migrate_targets() {
   while read -r rate pkg; do
     case "$rate" in 30|60|90|120) ;; *) continue;; esac
     [ -n "$pkg" ] || continue
-    sed -i "/\"$pkg\": {/,/\"target_fps\"/s/\"target_fps\": 0/\"target_fps\": $rate/" "$tmp"
+    escaped_pkg=$(printf '%s' "$pkg" | sed 's/[.]/\\./g')
+    sed -i "/\"$escaped_pkg\": {/,/\"target_fps\"/s/\"target_fps\": 0/\"target_fps\": $rate/" "$tmp"
   done < "$PRESETS"
   if valid_list "$tmp" && chmod 0600 "$tmp"; then mv -f "$tmp" "$LIST"; else rm -f "$tmp"; return 1; fi
 }

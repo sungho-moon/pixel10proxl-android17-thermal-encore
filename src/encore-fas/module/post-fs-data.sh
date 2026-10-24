@@ -5,9 +5,6 @@ export PGT_SELF_ID=encore_pixel_cp41
 . "$MODDIR/tools/lib.sh"
 C=$(pgt_marker_dir)
 
-if [ -e "$MODDIR/disable" ] || [ -e "$MODDIR/remove" ]; then
-  exit 0
-fi
 # An OTA must regenerate both profiles from the new, not-yet-overlaid vendor.
 if [ -r "$MODDIR/state/config.env" ]; then
   . "$MODDIR/state/config.env"
@@ -16,6 +13,9 @@ if [ -r "$MODDIR/state/config.env" ]; then
       "$MODDIR/state/applied-mode" "$MODDIR/system/vendor/etc"/thermal_info_config*.json \
       "$C/thermal-disabled"
   fi
+fi
+if [ -e "$MODDIR/disable" ] || [ -e "$MODDIR/remove" ]; then
+  exit 0
 fi
 [ -e "$C/thermal-disabled" ] && exit 0
 [ -r "$MODDIR/state/config.env" ] || sh "$MODDIR/tools/discover.sh" "$MODDIR"
