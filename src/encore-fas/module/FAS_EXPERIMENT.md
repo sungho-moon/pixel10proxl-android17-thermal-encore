@@ -24,7 +24,7 @@ Preview2 adds Android 17 hook symbol resolution and keeps thread discovery
 active during janked startup. Empty thread observations use the upstream
 all-core fallback. All changes to upstream are recorded in UPSTREAM.json.
 
-Seven Rust tests and the existing IPC/helper-lifecycle tests pass. On the
+Nine Rust tests and the existing IPC/helper-lifecycle tests pass. On the
 connected Pixel 10 Pro XL the eBPF probe attaches and isolated PUBG sampling
 receives real frame events, matches Auto to 120 FPS and exports changing CPU
 requests. The isolated tests do not write frequencies. Full-loop installation,
@@ -34,3 +34,10 @@ A 120-only candidate retains the upstream minimum matching threshold: below
 110 observed FPS the target can clear, restarting warm-up. Auto may instead
 match a lower candidate. Configuration write durability and automatic
 corrupt-list recovery are separate outstanding work.
+
+Preview3 corrects proc stat CPU-time parsing for thread names containing spaces
+and parentheses, with malformed-data tests and saturating tick subtraction.
+Probe and isolated device capture pass; complete active-loop validation of
+this change is pending. Auto target switches still reset the upstream buffer
+and can interrupt requests during warm-up. No smoothing or target-lock policy
+is added in this revision.

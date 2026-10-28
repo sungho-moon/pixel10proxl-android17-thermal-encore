@@ -5,7 +5,7 @@ and has not yet been validated as a complete feedback loop in an Android 17 matc
 
 The bridge compiles upstream frame-time buffers, target matching,
 proportional control, utilization tracking and CPU frequency calculation.
-Two documented CPU-controller patches keep thread discovery active during
+Documented CPU-controller patches keep thread discovery active during
 janked startup and use the upstream all-core fallback before observations.
 UPSTREAM.json records source revisions and hashes. Frame capture uses the
 upstream frame-analyzer 0.3.4 eBPF implementation. Its build script and inherited
@@ -47,3 +47,10 @@ Upstream target matching treats even a single fixed candidate as conditional:
 with a 120-only list it may clear the target below 110 observed FPS, resetting
 the warm-up buffer. Auto [60,90,120] avoids that single-candidate threshold, but
 may choose a lower target. No custom recovery inference is added here.
+
+Preview3 fixes process_monitor parsing for comm names containing spaces or
+parentheses in /proc/PID/task/TID/stat. A Pixel PUBG thread named TQM free m(dwt)
+was observed with nonzero CPU time but zero in the old parser. Nine Rust tests
+pass; the patched helper passes the device probe and isolated frame capture.
+It has not been installed as the active helper or shown to improve stutter.
+The upstream Auto target switching/reset policy is unchanged.

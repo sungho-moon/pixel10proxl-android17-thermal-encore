@@ -21,7 +21,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use libc::{_SC_CLK_TCK, sysconf};
 
 #[derive(Debug, Clone, Copy)]
@@ -49,7 +49,7 @@ impl UsageTracker {
         let new_cputime = get_thread_cpu_time(self.pid, self.tid)?;
         let elapsed_ticks = self.read_timer.elapsed().as_secs_f64() * tick_per_sec as f64;
         self.read_timer = Instant::now();
-        let cputime_slice = new_cputime - self.last_cputime;
+        let cputime_slice = new_cputime.saturating_sub(self.last_cputime);
         self.last_cputime = new_cputime;
         self.current_usage = cputime_slice as f64 / elapsed_ticks;
         Ok(self.current_usage)
@@ -163,8 +163,38 @@ fn get_thread_ids(pid: i32) -> Result<Vec<i32>> {
 fn get_thread_cpu_time(pid: i32, tid: i32) -> Result<u64> {
     let stat_path = format!("/proc/{pid}/task/{tid}/stat");
     let stat_content = fs::read_to_string(stat_path)?;
-    let parts: Vec<&str> = stat_content.split_whitespace().collect();
-    let utime = parts[13].parse::<u64>().unwrap_or(0);
-    let stime = parts[14].parse::<u64>().unwrap_or(0);
-    Ok(utime + stime)
+    parse_thread_cpu_time(&stat_content)
+}
+
+// /proc stat comm is parenthesized and can contain spaces and parentheses.
+// Count fields only after its final closing parenthesis: utime/stime are
+// fields 14/15, or indexes 11/12 after the comm field.
+fn parse_thread_cpu_time(stat: &str) -> Result<u64> {
+    let end = stat.rfind(')').context("Missing stat comm terminator")?;
+    let mut fields = stat[end + 1..].split_whitespace();
+    let utime = fields.nth(11).context("Missing stat utime")?.parse::<u64>()?;
+    let stime = fields.next().context("Missing stat stime")?.parse::<u64>()?;
+    utime.checked_add(stime).context("Stat CPU time overflow")
+}
+
+#[cfg(test)]
+mod pixel_bridge_stat_tests {
+    use super::*;
+    fn stat(name: &str, utime: &str, stime: &str) -> String {
+        format!("123 ({name}) R 1 2 3 4 5 6 7 8 9 10 {utime} {stime} 0 0")
+    }
+    #[test]
+    fn parses_spaces_and_parentheses_in_thread_names() {
+        for name in ["RHIThread", "RenderThread 2", "TQM free m(dwt)", "a ) ( b"] {
+            assert_eq!(parse_thread_cpu_time(&stat(name, "123", "45")).unwrap(), 168);
+        }
+    }
+    #[test]
+    fn rejects_incomplete_invalid_and_overflowing_cpu_times() {
+        for input in ["no comm".into(), "123 (short) R".into(),
+            stat("thread", "bad", "1"), stat("thread", "-1", "1"),
+            stat("thread", "18446744073709551615", "1")] {
+            assert!(parse_thread_cpu_time(&input).is_err());
+        }
+    }
 }

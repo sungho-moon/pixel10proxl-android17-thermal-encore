@@ -1,6 +1,6 @@
 {
   "upstream": "https://github.com/Rem01Gaming/encore",
-  "version": "0.8.5-fasrs-preview2",
+  "version": "0.8.5-fasrs-preview3",
   "commit": "v0.7.4-qpr3-android17 + local WebUI/FAS/thermal merge",
   "rapidjson": "24b5e7a8b27f42fa16b96fc70aade9106cf7102f",
   "spdlog": "1685e694c5cd8328280c48f8b94b1281c17c6fee",
@@ -12,7 +12,7 @@
     "pixel-control": "02215e64a32e0605903605d0be0ec32e8cb18345f7c8ec1712ca96680fba8659",
     "guardian": "fc09f45c69822352d8b1d339d9cbb7054640ceaa2ea9c86f06881df513325435",
     "thermal-profile-builder": "3fe71d73d76ef4d8fca80fcca9b671b7b32d418ccf4316017a76ea418e50c45b",
-    "pixel-fas-rs-bridge": "2e8002b3169d0d511e65d353d25ddbed645ac06d39ac0714f10da6c9deeea3fc"
+    "pixel-fas-rs-bridge": "588106ccf975f55ef8bc1259fe78a9245c722fe9ca9eb4832ae1f3691297ed55"
   },
   "frame_feedback": {
     "type": "Experimental separately linked upstream fas-rs v4.9.1 bridge",
@@ -23,7 +23,8 @@
     "old_guardian_enabled": false,
     "integration_patches": [
       "Android 17 hook symbol fallback",
-      "thread discovery during janked startup and empty-observation fallback"
+      "thread discovery during janked startup and empty-observation fallback",
+      "parse proc stat CPU time correctly for thread names containing spaces and parentheses"
     ]
   },
   "thermal_backend": {
