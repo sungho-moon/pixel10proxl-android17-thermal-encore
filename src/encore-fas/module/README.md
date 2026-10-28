@@ -1,6 +1,8 @@
-# 0.8.5 fas-rs preview
+# 0.8.5 fas-rs preview2
 
-Experimental upstream fas-rs bridge; no Android 17 match validation yet.
+Experimental upstream fas-rs bridge; Android 17 isolated frame capture passes.
+Full controller feedback and long-match performance remain unverified.
+Preview2 fixes hook-symbol resolution and thread discovery during janked startup.
 Old frame observer/adviser and guardian loop are disabled. Auto uses upstream
 per-game candidates; explicit targets remain advanced overrides. The Pixel
 writer retains thermal limits and restoration. Later text describes the prior

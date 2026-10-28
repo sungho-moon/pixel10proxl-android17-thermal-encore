@@ -4,7 +4,6 @@
     "tag": "v4.9.1",
     "commit": "eb883c534e92107f536ae8ebc343c99243f5ee4d",
     "unchanged_files_sha256": {
-      "src/cpu_common/mod.rs": "831938447736d641cd79d7f5e97069dd2333a5442ea9a2f1956d1cfec6dfae66",
       "src/cpu_common/cpu_info.rs": "63643fd2b9d723fa33726744d8ee12195d267cffc1c5c7ff6b3b571ba214c6b0",
       "src/cpu_common/extra_policy.rs": "bf6e75e01abb9a0a07fd03703a1c4660e55176fdc0cdfa8d3e358177dffa0e0a",
       "src/cpu_common/process_monitor.rs": "500524eac02753779181c425b88c59b54a4131fbf3a8dadd6c0e4c167c225105",
@@ -12,6 +11,16 @@
       "src/framework/scheduler/looper/buffer/calculate.rs": "f60f543a54c7797cf7addc9e3b1264b3a3a25b3e20615835daad1bb7a1f39201",
       "src/framework/scheduler/looper/policy/mod.rs": "7a63db34b0dedc8283c23ea927db9d6a4cca7b810a8ee475580e9a3b31d844a1",
       "src/framework/scheduler/looper/policy/controll.rs": "01c4633536e56f5959b2818b205d197297eb5777b606119824a47d08cc15bfcf"
+    },
+    "modified_files": {
+      "src/cpu_common/mod.rs": {
+        "upstream_sha256": "831938447736d641cd79d7f5e97069dd2333a5442ea9a2f1956d1cfec6dfae66",
+        "integration_changes": [
+          "sample process/thread utilization during janked windows as well as normal windows",
+          "return no observation for an empty thread set so the upstream all-core fallback applies",
+          "regression tests for janked startup and missing thread observations"
+        ]
+      }
     }
   },
   "frame_analyzer": {
@@ -20,7 +29,8 @@
     "version": "0.3.4",
     "integration_changes": [
       "explicit prebuilt BPF input build.rs",
-      "inherited Cargo package metadata expanded to standalone values"
+      "inherited Cargo package metadata expanded to standalone values",
+      "resolve Android 17 exported Surface::hook_queueBuffer as a fallback after both legacy queueBuffer signatures"
     ]
   }
 }

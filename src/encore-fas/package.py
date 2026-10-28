@@ -228,6 +228,7 @@ def main() -> int:
             binaries = data.setdefault("binaries", {})
             for name, path in {
                 "pixel-control": destination,
+                "pixel-fas-rs-bridge": module / "bin/pixel-fas-rs-bridge",
                 "thermal-profile-builder": module / "bin/thermal-profile-builder",
                 "guardian": module / "thread/bin/guardian",
             }.items():

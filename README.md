@@ -17,7 +17,7 @@
 
 ## 本地实验分支
 
-`experiment/fas-rs-backend` 提供 `0.8.5-fasrs-preview`：使用固定版本的上游 fas-rs 与 eBPF 帧采集，替换自定义猜档/建议器。尚未完成 Android 17 实机对局验证，不能视为正式版或性能改善。说明和来源见 `src/fas-rs-bridge/README.md`。
+`experiment/fas-rs-backend` 提供 `0.8.5-fasrs-preview2`：使用固定版本的上游 fas-rs 与 eBPF 帧采集，替换自定义猜档/建议器。已通过 Android 17 探针和游戏隔离采集；完整调度闭环和长时间性能仍未验证，不能视为正式版或性能改善。说明和来源见 `src/fas-rs-bridge/README.md`。
 
 ## 最新更新
 

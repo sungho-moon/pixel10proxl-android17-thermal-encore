@@ -20,7 +20,17 @@ switch is removed. Missing/failed bridge or stale output yields baseline
 scheduling only, with no custom inference fallback.
 
 Source, upstream revisions and build instructions: src/fas-rs-bridge.
-Matching, request-sink, IPC and helper-lifecycle tests pass on the host; Android
-executables and eBPF compile. No device probe, match test or performance
-improvement has yet been established for this preview. Configuration write
-durability and automatic corrupt-list recovery are separate outstanding work.
+Preview2 adds Android 17 hook symbol resolution and keeps thread discovery
+active during janked startup. Empty thread observations use the upstream
+all-core fallback. All changes to upstream are recorded in UPSTREAM.json.
+
+Seven Rust tests and the existing IPC/helper-lifecycle tests pass. On the
+connected Pixel 10 Pro XL the eBPF probe attaches and isolated PUBG sampling
+receives real frame events, matches Auto to 120 FPS and exports changing CPU
+requests. The isolated tests do not write frequencies. Full-loop installation,
+long-match performance, power and audio remain unverified for preview2.
+
+A 120-only candidate retains the upstream minimum matching threshold: below
+110 observed FPS the target can clear, restarting warm-up. Auto may instead
+match a lower candidate. Configuration write durability and automatic
+corrupt-list recovery are separate outstanding work.

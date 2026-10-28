@@ -1,6 +1,6 @@
 id=encore_pixel_cp41
 name=Encore Pixel Tensor
-version=0.8.5-fasrs-preview
-versionCode=850
+version=0.8.5-fasrs-preview2
+versionCode=851
 author=Rem01Gaming (upstream), Pixel Tensor adaptation
-description=Device-independent Android 17 controller with integrated Thermal JSON discovery, runtime frequency discovery, thread uclamp, and guarded FAS feedback.
+description=Device-independent Android 17 controller with integrated Thermal JSON discovery, runtime frequency discovery, and experimental fas-rs feedback.

@@ -54,6 +54,16 @@ impl UprobeHandler {
                 "/system/lib64/libgui.so",
                 Some(pid),
             )
+        }).or_else(|_legacy_error| {
+            // Android 17 routes ANativeWindow submissions through this exported
+            // hook; legacy Surface::queueBuffer signatures may be absent.
+            // Aya resolves the symbol and ELF file offset on the current build.
+            program.attach(
+                Some("_ZN7android7Surface16hook_queueBufferEP13ANativeWindowP19ANativeWindowBufferi"),
+                0,
+                "/system/lib64/libgui.so",
+                Some(pid),
+            )
         })?;
 
         Ok(Self { bpf })

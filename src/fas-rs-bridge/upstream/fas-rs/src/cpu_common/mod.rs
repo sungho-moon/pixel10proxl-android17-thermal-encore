@@ -216,10 +216,12 @@ impl Controller {
             .max()
             .unwrap_or_default();
 
+        // Pixel bridge: discover active threads even when the first usable
+        // window is already janked. Otherwise no critical CPU policy is
+        // populated and every exported minimum stays at the idle floor.
+        self.update_util_max();
         if is_janked {
             self.util_max = None;
-        } else {
-            self.update_util_max();
         }
 
         self.cpu_infos
@@ -309,6 +311,10 @@ impl Controller {
             .top_threads()
             .filter_map(|tid| sched_getaffinity(Pid::from_raw(tid)).ok())
             .collect();
+        // No observations yet: let the caller use its all-core fallback.
+        if top_threads_cpu_sets.is_empty() {
+            return None;
+        }
 
         let mut counts = HashMap::new();
         for cpu_set in top_threads_cpu_sets.iter().copied() {
@@ -429,4 +435,30 @@ fn no_extra_policy() -> bool {
         .unwrap()
         .values()
         .all(|policy| *policy.lock() == ExtraPolicy::None)
+}
+
+#[cfg(test)]
+mod pixel_bridge_tests {
+    use super::*;
+    fn controller_without_sysfs() -> Controller {
+        Controller {
+            max_freq: 0, cpu_infos: Vec::new(),
+            file_handler: FileHandler::new(),
+            process_monitor: ProcessMonitor::new(), util_max: None,
+        }
+    }
+    #[test]
+    fn no_observed_threads_uses_all_core_fallback() {
+        assert!(controller_without_sysfs().top_used_cores().is_none());
+    }
+    #[test]
+    fn janked_start_still_discovers_threads() {
+        let mut controller = controller_without_sysfs();
+        controller.process_monitor.set_pid(Some(std::process::id() as i32));
+        thread::sleep(Duration::from_millis(1100));
+        controller.compute_target_frequencies(0, true);
+        assert!(controller.process_monitor.top_threads().count() > 0);
+        assert!(controller.top_used_cores().is_some());
+        assert!(controller.util_max.is_none());
+    }
 }
