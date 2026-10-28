@@ -1,3 +1,11 @@
+# 0.8.5 fas-rs preview
+
+Experimental upstream fas-rs bridge; no Android 17 match validation yet.
+Old frame observer/adviser and guardian loop are disabled. Auto uses upstream
+per-game candidates; explicit targets remain advanced overrides. The Pixel
+writer retains thermal limits and restoration. Later text describes the prior
+release and is retained as historical context.
+
 # Encore Pixel Tensor Android 17 — 0.8.0 Integrated Thermal + Dynamic ELF FAS
 
 This build keeps Encore as the only frequency-request writer and adds a

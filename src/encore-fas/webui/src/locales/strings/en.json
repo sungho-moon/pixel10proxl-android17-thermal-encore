@@ -87,8 +87,9 @@
     "launch_app": "Launch",
     "app_info": "App info",
     "target_fps": "Target FPS",
-    "target_fps_auto": "Auto",
-    "target_fps_description": "Feedback target only; does not change in-game FPS settings. Auto when unset."
+    "target_fps_auto": "fas-rs default",
+    "target_fps_description": "Default uses per-game fas-rs candidates. Optional fixed target must match your game settings.",
+    "advanced_fps": "Advanced: fixed FPS override"
   },
   "language_selection": {
     "title": "Language",
@@ -178,11 +179,11 @@
     "state": "Current state",
     "package": "Foreground app",
     "foreground_game": "Foreground game",
-    "fas": "FAS frame feedback",
-    "fas_desc": "Enable Encore's frame feedback controller. When disabled, FAS requests are released.",
+    "fas": "fas-rs frame feedback",
+    "fas_desc": "Use upstream fas-rs frame capture and CPU control through Pixel frequency votes. Off releases feedback requests.",
     "fas_rs_advisor": "fas-rs adviser",
     "fas_rs_advisor_desc": "Enable the fas-rs proportional adviser while keeping Encore's own frame feedback active.",
-    "fas_level": "FAS level",
+    "fas_level": "Frame feedback active (0/1)",
     "battery": "Battery temperature",
     "fps_policy": "Default game FPS policy",
     "fps_released": "Default limit disabled",

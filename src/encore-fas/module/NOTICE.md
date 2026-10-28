@@ -210,3 +210,13 @@ The following third-party components are used in this project:
 ---
 
 This file must be included with all distributions of Encore Tweaks.
+
+
+## fas-rs preview integration
+
+The separately linked pixel-fas-rs-bridge uses fas-rs v4.9.1 and frame-analyzer
+0.3.4, under GPL-3.0-or-later. Full source, original headers and license are
+in src/fas-rs-bridge in the project repository and local source bundle.
+UPSTREAM.json pins revisions. The CPU write sink and daemon glue are adapted;
+this is not the unmodified official daemon. The Apache Pixel controller uses
+a pipe protocol; no GPL Rust objects are linked into pixel-control.

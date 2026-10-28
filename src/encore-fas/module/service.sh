@@ -29,7 +29,9 @@ fi
 PID=$!
 THREAD_PID=
 WATCH_PID=
-if [ -x "$MODPATH/thread/service.sh" ]; then
+# The old guardian has an independent FPS inference/boost loop. Do not run
+# that loop alongside the upstream bridge during this experiment.
+if [ ! -x "$MODPATH/bin/pixel-fas-rs-bridge" ] && [ -x "$MODPATH/thread/service.sh" ]; then
   "$MODPATH/thread/service.sh" >> "$C/thread-service.log" 2>&1 &
   THREAD_PID=$!
 fi

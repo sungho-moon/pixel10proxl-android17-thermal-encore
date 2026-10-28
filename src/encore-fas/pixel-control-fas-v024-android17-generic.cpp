@@ -21,6 +21,8 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <regex>
+#include <map>
+#include "fas-rs-frequency.h"
 #include <sys/file.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
@@ -334,18 +336,28 @@ public:
         std::vector<long> choices;
         long value;
         std::istringstream table(readstr(n.table));
-        while (table >> value && value <= ceiling) choices.push_back(value);
-        if (choices.empty()) return 0;
-        return std::min(requested, choices.back());
+        while (table >> value) choices.push_back(value);
+        return pixel_quantize_floor(std::move(choices), requested, ceiling);
     }
-    bool apply(bool lite, int boost_level = 0) {
+    bool apply(bool lite, int boost_level = 0, const std::map<int, long>* upstream = nullptr, int thermal_cap = 3) {
         for (auto& n : nodes) {
             if (n.blocked) continue;
             long cur = number(n.path), ceiling = number(n.maximum);
             if (cur < 0 || ceiling < 0) { restore(); return false; }
             if (n.active && cur != n.last) { n.active = false; n.blocked = true; save(); log("YIELD external writer " + n.path); continue; }
             if (!n.active) n.original = cur;
-            long floor = lite ? n.lite : staged_floor(n, boost_level);
+            long floor = lite ? n.lite : staged_floor(n, upstream ? 0 : boost_level);
+            if (!lite && upstream && n.path.find("/cpu/cpufreq/policy") != std::string::npos) {
+                auto at = n.path.find("/policy") + 7;
+                int policy = std::atoi(n.path.c_str() + at);
+                auto request = upstream->find(policy);
+                if (request != upstream->end()) {
+                    // Upstream computes kHz; Pixel enforces the existing bounded
+                    // boost envelope, thermal cap, journal, and current HAL ceiling.
+                    long top = staged_floor(n, thermal_cap);
+                    floor = std::clamp(request->second, n.lite, std::max(n.lite, top));
+                }
+            }
             long requested = std::max(n.original, floor);
             long want = clamp_floor(n, requested, ceiling);
             // Dynamic clamping: keep a valid floor at the thermal ceiling
@@ -535,313 +547,7 @@ static bool conflict() {
     }
     return false;
 }
-// Reimplements fas-rs 4.9.1's proportional frame-error control in Encore's
-// single-writer path. Upstream uses kp=0.0003 on normalized nanosecond error;
-// its direct cpufreq writer is deliberately not used here.
-static int fas_rs_advice_level(double frame_seconds, int target_fps, long span_khz) {
-    if (!std::isfinite(frame_seconds) || frame_seconds <= 0 || target_fps <= 0 || span_khz <= 0) return 0;
-    double error_khz = (frame_seconds * static_cast<double>(target_fps) - 1.0) * 300000.0;
-    if (error_khz <= 0) return 0;
-    return static_cast<int>(std::clamp(std::ceil(error_khz * 3.0 / static_cast<double>(span_khz)), 1.0, 3.0));
-}
-static int combine_fas_rs_advice(int base_level, int advice_level) {
-    // Aggressive profile: react to the first proportional deficit and allow
-    // a severe deficit to add two OPP steps. Thermal caps still apply later.
-    int extra = advice_level >= 3 ? 2 : advice_level >= 1 ? 1 : 0;
-    return std::clamp(base_level + extra, 0, 3);
-}
-// Frame-signal samples are collected in two-second windows.  A single noisy
-// tail window can therefore request one extra boost step even when the
-// sustained FPS is unchanged.  Require two consecutive upward requests before
-// applying a higher level; a request that falls back to the current level
-// cancels the pending raise.  Downward requests keep the existing three-window
-// relaxation below, so a 2/3 oscillation cannot complete in adjacent samples.
-static int fas_upshift_hysteresis(int current, int requested, int& pending_windows,
-                                  int confirm_windows = 2) {
-    current = std::clamp(current, 0, 3);
-    requested = std::clamp(requested, 0, 3);
-    confirm_windows = std::max(confirm_windows, 1);
-    if (requested <= current) {
-        pending_windows = 0;
-        return current;
-    }
-    pending_windows = std::min(pending_windows + 1, confirm_windows);
-    if (pending_windows < confirm_windows) return current;
-    pending_windows = 0;
-    return requested;
-}
-// Experimental userspace adaptation of encore_fas' frame-signal concept.
-// tracefs observes libgui calls; this controller remains the only vote writer.
-class FrameObserver {
-    static constexpr const char* trace = "/sys/kernel/tracing";
-    static constexpr const char* group = "encore_pixel_fas";
-    static constexpr const char* instance = "/sys/kernel/tracing/instances/encore_pixel_fas";
-    static constexpr const char* event = "/sys/kernel/tracing/instances/encore_pixel_fas/events/encore_pixel_fas/qb_hook/enable";
-    static constexpr const char* marker = "/data/adb/.config/encore_pixel_cp41/fas-probe-owner";
-    std::string boot, pending;
-    std::deque<double> frame_intervals;
-    int pipefd = -1, game_pid = 0, render_tid = 0, warm = 0, good = 0, quiet = 0, relax = 0;
-    int target_fps = 0, candidate_tier = 0, candidate_windows = 0, last_advice = 0;
-    int upshift_windows = 0;
-    bool fixed_target = false;
-    int user_target = 0;
-    bool owned = false, blocked = false, armed = false, boosted = false, degraded = false, verbose = false;
-    int boost_level = 0;
-    double last = 0, last_frame = 0, pressure = 0, filtered_fps = 0;
-    static double nowsec() {
-        timespec t{}; clock_gettime(CLOCK_MONOTONIC, &t);
-        return static_cast<double>(t.tv_sec) + static_cast<double>(t.tv_nsec) / 1e9;
-    }
-    static int nearest_tier(double fps) {
-        constexpr int rates[] = {30, 60, 90, 120};
-        if (!std::isfinite(fps) || fps < 15.0) return 0;
-        int best = rates[0];
-        double distance = std::abs(std::log(fps / best));
-        for (int rate : rates) {
-            double d = std::abs(std::log(fps / rate));
-            if (d < distance) { best = rate; distance = d; }
-        }
-        return best;
-    }
-    static bool emit(const std::string& path, const std::string& value, bool append = false) {
-        int fd = open(path.c_str(), O_WRONLY | O_CLOEXEC | (append ? O_APPEND : 0));
-        if (fd < 0) return false;
-        bool ok = write(fd, value.data(), value.size()) == static_cast<ssize_t>(value.size());
-        close(fd); return ok;
-    }
-    static std::string path(const char* suffix) { return std::string(instance) + suffix; }
-    static std::unordered_set<int> threads(int pid) {
-        std::unordered_set<int> out;
-        DIR* d = opendir(("/proc/" + std::to_string(pid) + "/task").c_str());
-        if (!d) return out;
-        while (auto* e = readdir(d)) {
-            char* end = nullptr; long n = strtol(e->d_name, &end, 10);
-            if (*e->d_name && *end == '\0' && n > 0 && n <= INT32_MAX) out.insert(static_cast<int>(n));
-        }
-        closedir(d); return out;
-    }
-    void clean() {
-        if (!owned) return;
-        emit(path("/tracing_on"), "0\n");
-        emit(event, "0\n");
-        if (pipefd >= 0) { close(pipefd); pipefd = -1; }
-        emit(std::string(trace) + "/uprobe_events", std::string("-:") + group + "/qb_hook\n", true);
-        rmdir(instance);
-        if (access(instance, F_OK) != 0 && access((std::string(trace) + "/events/" + group).c_str(), F_OK) != 0) unlink(marker);
-        owned = false; pending.clear(); frame_intervals.clear(); game_pid = render_tid = 0; warm = good = quiet = relax = 0;
-        armed = boosted = degraded = false; boost_level = 0;
-        last = last_frame = pressure = filtered_fps = 0;
-        target_fps = candidate_tier = candidate_windows = last_advice = 0;
-        upshift_windows = 0; fixed_target = false;
-    }
-    bool start(int pid, const std::string& package) {
-        if (blocked || access(instance, F_OK) == 0 || access((std::string(trace) + "/events/" + group).c_str(), F_OK) == 0) return false;
-        std::string hook_offset;
-        if (!elf_queuebuffer_offset("/system/lib64/libgui.so", hook_offset)) {
-            log("FAS observer ELF symbol resolution failed; disabled");
-            blocked = true;
-            return false;
-        }
-        if (!atomicfile(marker, boot + "\n")) return false;
-        owned = true;
-        if (mkdir(instance, 0700) != 0 || !emit(path("/tracing_on"), "0\n")
-            || !emit(path("/buffer_size_kb"), "256\n")
-            || !emit(std::string(trace) + "/uprobe_events", std::string("p:") + group + "/qb_hook /system/lib64/libgui.so:" + hook_offset + "\n", true)
-            || !emit(event, "1\n") || !emit(path("/trace"), "\n")
-            || (pipefd = open(path("/trace_pipe").c_str(), O_RDONLY | O_NONBLOCK | O_CLOEXEC)) < 0
-            || !emit(path("/tracing_on"), "1\n")) {
-            log("FAS observer attach failed; disabled for this game session"); clean(); blocked = true; return false;
-        }
-        game_pid = pid; last = nowsec();
-        // The WebUI stores the per-game target in gamelist.json. Missing or
-        // zero means automatic inference; there is no module-wide fallback.
-        user_target = target_fps = configured_target(package); fixed_target = target_fps > 0;
-        log("FAS observer attached pid=" + std::to_string(pid) + " ELF offset=" + hook_offset); return true;
-    }
-    int drain(const std::unordered_set<int>& tids, std::unordered_map<int, std::vector<double>>& streams) {
-        int count = 0; size_t bytes = 0; char buf[8192];
-        while (true) {
-            ssize_t n = read(pipefd, buf, sizeof(buf));
-            if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) break;
-            if (n <= 0) return -1;
-            bytes += static_cast<size_t>(n);
-            if (bytes > 1024 * 1024) return -1;
-            pending.append(buf, static_cast<size_t>(n));
-            if (pending.size() > 1024 * 1024) return -1;
-            size_t pos;
-            while ((pos = pending.find('\n')) != std::string::npos) {
-                std::string line = pending.substr(0, pos); pending.erase(0, pos + 1);
-                if (line.find(": qb_hook:") == std::string::npos) continue;
-                size_t bracket = line.find('[');
-                if (bracket == std::string::npos) continue;
-                size_t dash = line.rfind('-', bracket);
-                if (dash == std::string::npos) continue;
-                char* end = nullptr; long tid = strtol(line.c_str() + dash + 1, &end, 10);
-                if (end == line.c_str() + dash + 1 || tid <= 0 || tid > INT32_MAX) continue;
-                if (!tids.count(static_cast<int>(tid))) continue;
-                size_t hook = line.find(": qb_hook:");
-                size_t space = line.rfind(' ', hook);
-                if (space == std::string::npos) continue;
-                char* stamp_end = nullptr;
-                double stamp = strtod(line.c_str() + space + 1, &stamp_end);
-                if (stamp_end != line.c_str() + hook || !std::isfinite(stamp)) continue;
-                streams[static_cast<int>(tid)].push_back(stamp);
-                ++count;
-            }
-        }
-        return count;
-    }
-public:
-    explicit FrameObserver(std::string id, bool log_samples = false) : boot(std::move(id)), verbose(log_samples) {
-        // A controller crash can leave a tracefs event. Only remove our own
-        // same-boot event when the durable ownership marker matches.
-        if (readstr(marker) == boot + "\n") { owned = true; clean(); }
-    }
-    ~FrameObserver() { clean(); }
-    void stop() { clean(); blocked = false; }
-    int sample(int pid, bool eligible, const std::string& package = "", long cpu_span_khz = 0) {
-        if (!eligible || pid <= 0) { stop(); return 0; }
-        if (game_pid != 0 && (game_pid != pid || user_target != configured_target(package))) stop();
-        if (!owned && !start(pid, package)) return 0;
-        auto tids = threads(pid);
-        if (tids.empty()) { log("FAS observer game threads missing"); stop(); return 0; }
-        std::unordered_map<int, std::vector<double>> streams;
-        int count = drain(tids, streams);
-        if (count < 0) { log("FAS observer trace overflow/read failure"); clean(); blocked = true; return 0; }
-        double now = nowsec(), span = now - last; last = now;
-        if (span > 8.0) { boosted = degraded = false; boost_level = 0; upshift_windows = 0; pressure = filtered_fps = 0; return 0; }
-        if (span < 1.0) return boost_level;
-        if (render_tid == 0 || !streams.count(render_tid)) {
-            int selected = 0; size_t most = 0;
-            for (const auto& [tid, stamps] : streams) if (stamps.size() > most) { selected = tid; most = stamps.size(); }
-            if (selected != 0 && selected != render_tid) {
-                render_tid = selected; last_frame = pressure = filtered_fps = 0;
-                frame_intervals.clear();
-                degraded = boosted = armed = false; boost_level = 0;
-                warm = good = quiet = relax = last_advice = 0;
-                candidate_tier = candidate_windows = 0;
-                upshift_windows = 0;
-                // A render-thread handoff does not prove the user changed the
-                // in-game FPS setting. Keep the session target latched.
-                log("FAS render thread=" + std::to_string(render_tid));
-            }
-        }
-        const auto stream = streams.find(render_tid);
-        size_t frames = stream == streams.end() ? 0 : stream->second.size();
-        if (stream != streams.end()) for (double stamp : stream->second) {
-            if (last_frame > 0 && stamp > last_frame) {
-                double interval = stamp - last_frame;
-                if (interval >= 1.0) { pressure = 0; degraded = false; }
-                else if (!degraded && target_fps > 0) {
-                    // Upstream FAS' clipped, one-sided frame-deficit CUSUM.
-                    pressure = std::max(0.0, pressure + std::min(interval * target_fps, 1.5) - 1.05);
-                    if (pressure >= 1.0) { degraded = true; pressure = 0; }
-                }
-                if (interval > 0 && interval < 1.0) {
-                    frame_intervals.push_back(interval);
-                    size_t limit = static_cast<size_t>(std::max(target_fps, 24) * 5);
-                    while (frame_intervals.size() > limit) frame_intervals.pop_front();
-                }
-            }
-            last_frame = stamp;
-        }
-        double fps = static_cast<double>(frames) / span;
-        filtered_fps = filtered_fps > 0 ? 0.3 * filtered_fps + 0.7 * fps : fps;
-        if (verbose) printf("FAS_SAMPLE pid=%d tid=%d frames=%zu seconds=%.3f fps=%.2f target=%d deficit=%d\n", pid, render_tid, frames, span, fps, target_fps, degraded);
-        if (target_fps == 0) {
-            int tier = nearest_tier(fps);
-            if (tier != 0) {
-                if (candidate_tier == tier) ++candidate_windows;
-                else { candidate_tier = tier; candidate_windows = 1; }
-            } else candidate_tier = candidate_windows = 0;
-            if (candidate_windows >= 2) {
-                target_fps = tier; armed = true; degraded = false; pressure = 0;
-                candidate_tier = candidate_windows = 0;
-                log("FAS auto target=" + std::to_string(target_fps));
-            }
-            return 0;
-        }
-        double minimum_active = std::max(12.0, target_fps * 0.55);
-        if (!armed) {
-            if (fps >= minimum_active && fps <= target_fps * 1.45) ++warm;
-            else warm = 0;
-            if (warm >= 2) {
-                armed = true; degraded = false; pressure = 0;
-                log("FAS observer armed target=" + std::to_string(target_fps));
-            }
-            return 0;
-        }
-        if (fps < std::max(8.0, target_fps * 0.35)) ++quiet; else quiet = 0;
-        if (quiet >= 2) {
-            armed = boosted = degraded = false; boost_level = last_advice = 0;
-            upshift_windows = 0;
-            pressure = filtered_fps = 0; good = quiet = warm = 0;
-            // A quiet menu is not evidence of a lower game FPS setting.
-            return 0;
-        }
-        if (!fixed_target && !boosted) {
-            int tier = nearest_tier(fps);
-            bool upward = tier > target_fps && fps > target_fps * 1.12;
-            if (upward) {
-                if (candidate_tier == tier) ++candidate_windows;
-                else { candidate_tier = tier; candidate_windows = 1; }
-                if (candidate_windows >= 2) {
-                    target_fps = tier; degraded = false; pressure = 0; good = 0;
-                    candidate_tier = candidate_windows = 0;
-                    log("FAS auto target switch=" + std::to_string(target_fps));
-                }
-            } else candidate_tier = candidate_windows = 0;
-        }
-        if (fps >= target_fps * 0.98) ++good; else good = 0;
-        if (degraded && good >= 3) { degraded = false; pressure = 0; }
-        int next_level = 0;
-        double boost_floor = std::max(12.0, target_fps * (fixed_target ? 0.40 : 0.55));
-        if (degraded && fps >= boost_floor && fps < target_fps * 0.95) {
-            double error = 1.0 - filtered_fps / target_fps;
-            next_level = error >= 0.28 ? 3 : error >= 0.14 ? 2 : 1;
-        }
-        int base_level = next_level;
-        int advice = 0;
-        if (access((cfg + "/disable-fas-rs-advisor").c_str(), F_OK) != 0
-            && degraded && fps >= boost_floor && fps < target_fps * 0.98
-            && frame_intervals.size() >= 30) {
-            // A shorter history cuts initial response latency roughly in half
-            // at 60 FPS while retaining a tail-percentile noise filter.
-            size_t count = std::min(frame_intervals.size(), static_cast<size_t>(60));
-            std::vector<double> recent(frame_intervals.end() - count, frame_intervals.end());
-            std::sort(recent.begin(), recent.end());
-            double p90 = recent[(count - 1) * 9 / 10];
-            advice = fas_rs_advice_level(p90, target_fps, cpu_span_khz);
-            // Add one step for any deficit and two for a severe one. Encore
-            // still owns every vote and enforces its level-3 ceiling.
-            next_level = combine_fas_rs_advice(base_level, advice);
-        }
-        if (next_level > boost_level) {
-            // A single p90/advisor spike should not immediately add another
-            // OPP step.  Require two consecutive samples before raising the
-            // level; a non-raising sample cancels the pending transition.
-            next_level = fas_upshift_hysteresis(boost_level, next_level, upshift_windows);
-        } else {
-            upshift_windows = 0;
-        }
-        if (next_level < boost_level && fps < target_fps * 0.98) {
-            if (++relax < 3) next_level = boost_level;
-            else { next_level = std::max(next_level, boost_level - 1); relax = 0; }
-        } else relax = 0;
-        if (advice != last_advice) {
-            log("FAS_RS_ADVICE level=" + std::to_string(advice) + " target=" + std::to_string(target_fps)
-                + " fps=" + std::to_string(static_cast<int>(std::lround(fps)))
-                + " base=" + std::to_string(base_level) + " final=" + std::to_string(next_level));
-            last_advice = advice;
-        }
-        if (next_level != boost_level) {
-            log("FAS adaptive level=" + std::to_string(next_level) + " target="
-                + std::to_string(target_fps) + " fps=" + std::to_string(static_cast<int>(std::lround(fps))));
-        }
-        boost_level = next_level; boosted = next_level > 0;
-        return boost_level;
-    }
-};
+#include "fas-rs-observer.h"
 static int selftest() {
     std::string d = "/data/local/tmp/encore-pixel-selftest." + std::to_string(getpid());
     mkdir(d.c_str(), 0700);
@@ -856,26 +562,6 @@ static int selftest() {
     ok &= b.apply(false, 1) && number(min) == 500;
     ok &= b.apply(false, 3) && number(min) == 600;
     ok &= b.apply(false) && number(min) == 400;
-    ok &= fas_rs_advice_level(1.0 / 120.0, 120, 461000) == 0;
-    ok &= fas_rs_advice_level(0.012, 120, 461000) == 1;
-    ok &= fas_rs_advice_level(1.0 / 60.0, 120, 461000) == 2;
-    ok &= fas_rs_advice_level(0.020, 120, 461000) == 3;
-    ok &= fas_rs_advice_level(0.020, 0, 461000) == 0;
-    ok &= combine_fas_rs_advice(2, 2) == 3;
-    ok &= combine_fas_rs_advice(2, 1) == 3;
-    ok &= combine_fas_rs_advice(1, 3) == 3;
-    ok &= combine_fas_rs_advice(3, 2) == 3;
-    int pending_raise = 0;
-    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 2 && pending_raise == 1;
-    // A one-window spike is cancelled by the next stable request.
-    ok &= fas_upshift_hysteresis(2, 2, pending_raise) == 2 && pending_raise == 0;
-    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 2 && pending_raise == 1;
-    ok &= fas_upshift_hysteresis(2, 3, pending_raise) == 3 && pending_raise == 0;
-    // A large jump is still accepted after confirmation, while levels remain
-    // bounded for malformed advisor output.
-    ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 0 && pending_raise == 1;
-    ok &= fas_upshift_hysteresis(0, 3, pending_raise) == 3 && pending_raise == 0;
-    ok &= fas_upshift_hysteresis(3, 9, pending_raise) == 3 && pending_raise == 0;
     ok &= smooth_thermal_cap(3, 420) == 0;
     ok &= smooth_thermal_cap(0, 410) == 1;
     ok &= smooth_thermal_cap(1, 400) == 2;
@@ -1022,7 +708,7 @@ int main(int argc, char** argv) {
         atomicfile(cfg + "/status", report.str());
         if (state + sc.package != previous) { log(report.str()); previous = state + sc.package; }
         if (!observe) {
-            bool frequency_ok = game ? requests.apply(reduced, frame_boost) : requests.restore();
+            bool frequency_ok = game ? requests.apply(reduced, frame_boost, &frame_observer.cpu_requests(), thermal_cap) : requests.restore();
             // An opt-out file immediately restores the original frame policy.
             bool high_fps = game && frequency_ok && access((cfg + "/disable-high-fps").c_str(), F_OK) != 0;
             bool frame_ok = high_fps ? frame_policy.apply() : frame_policy.restore();

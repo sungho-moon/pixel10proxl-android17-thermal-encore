@@ -1,0 +1,23 @@
+[package]
+name = "frame-analyzer"
+readme = "README.md"
+edition = "2024"
+version = "0.3.4"
+authors = ["shadow3aaa@github.com"]
+description = "Track Android frame times"
+documentation = "https://shadow3aaa.github.io/frame-analyzer-ebpf"
+repository = "https://github.com/shadow3aaa/frame-analyzer-ebpf"
+license = "GPL-3.0"
+
+[dependencies]
+aya = "0.13.1"
+frame-analyzer-ebpf-common = { path = "../frame-analyzer-ebpf-common", features = ["user"], version = "0" }
+anyhow = "1"
+libc = "0.2"
+thiserror = "2.0.11"
+ctor = "0.4.0"
+ctrlc = "3.4.4"
+mio = { version = "1.0.3", features = ["os-ext"] }
+
+[build-dependencies]
+anyhow = "1.0.96"

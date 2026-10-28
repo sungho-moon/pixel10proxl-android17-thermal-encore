@@ -30,7 +30,6 @@ const entries=[
   {path:'/settings/lite_mode',title:'pixel.lite',description:'pixel.lite_desc',icon:Feather},
   {path:'/settings/disable_tweaks',title:'pixel.disabled',description:'pixel.disabled_desc',icon:Tune},
   {path:'/settings/fas',title:'pixel.fas',description:'pixel.fas_desc',icon:Tune},
-  {path:'/settings/fas_rs_advisor',title:'pixel.fas_rs_advisor',description:'pixel.fas_rs_advisor_desc',icon:Games},
   {path:'/settings/language',title:'settings_page.language.title',description:'settings_page.language.title',icon:Language},
   {path:'/settings/log_level',title:'settings_page.log_level.title',description:'settings_page.log_level.description',icon:Text},
 ]

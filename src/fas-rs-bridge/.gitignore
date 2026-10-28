@@ -1,0 +1,5 @@
+/target/
+/upstream/frame-analyzer/target/
+/upstream/frame-analyzer/frame-analyzer-ebpf/target/
+
+!upstream/frame-analyzer/frame-analyzer-ebpf/Cargo.lock

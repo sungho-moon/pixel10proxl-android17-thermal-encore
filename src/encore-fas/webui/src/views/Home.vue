@@ -95,7 +95,6 @@
         <div class="bg-surface-container mb-4 p-5 rounded-xl text-on-surface space-y-4">
           <div><p class="text-xs text-on-surface-variant">{{ $t('pixel.foreground_game') }}</p><p class="text-sm break-all allow-copy mt-1">{{ homeStore.foregroundPackage || homeStore.packageName || '—' }}</p></div>
           <div class="flex justify-between"><span>{{ $t('pixel.fas') }}</span><span>{{ homeStore.fasDisabled ? $t('common.disabled') : $t('common.enabled') }}</span></div>
-          <div class="flex justify-between"><span>{{ $t('pixel.fas_rs_advisor') }}</span><span>{{ homeStore.fasAdvisorDisabled ? $t('common.disabled') : $t('common.enabled') }}</span></div>
 <div class="flex justify-between"><span>{{ $t('pixel.fas_level') }}</span><span>{{ homeStore.fasLevel >= 0 ? homeStore.fasLevel : '—' }}</span></div>
           <div class="flex justify-between"><span>{{ $t('pixel.battery') }}</span><span>{{ homeStore.batteryC || '—' }} °C</span></div>
           <div><p class="text-xs text-on-surface-variant">{{ $t('pixel.fps_policy') }}</p><p class="text-sm mt-1">{{ $t(homeStore.defaultDisabled ? 'pixel.fps_released' : 'pixel.fps_original') }}</p></div>

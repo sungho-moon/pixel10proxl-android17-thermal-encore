@@ -1,80 +1,26 @@
-# Encore Pixel Tensor Android 17 0.8.0 Integrated Thermal + Dynamic ELF FAS adviser
+# fas-rs upstream bridge preview
 
-This is a userspace adaptation of the frame-deficit concept in
-https://github.com/rem01project/encore_fas, pinned at commit
-46d5af8e8756467b636a1da0c2227ee74abd1225. It does not include a
-kernel module. Only the existing Pixel controller writes frequency requests.
-The tracefs uprobe resolves `Surface::hook_queueBuffer` at runtime from the ELF64 `.dynsym` and `.dynstr` tables in `libgui.so`. It validates the AArch64 ELF header, symbol type, and executable `PT_LOAD` range before using its symbol value as the uprobe offset. Unknown or stripped builds fail closed: FAS is disabled for that session and the baseline Encore controller continues running.
+This preview replaces the previous custom FrameObserver, nearest-tier target
+inference and proportional adviser with a separate GPL Rust program using
+fas-rs v4.9.1 source. Frame capture uses frame-analyzer 0.3.4 eBPF.
 
-The proportional adviser independently reimplements the frame-error equation
-from fas-rs v4.9.1: `control_khz = 300000 * (frame_seconds * target_fps - 1)`.
-It uses the 90th-percentile interval among 30–60 recent frames after a sustained
-deficit is detected. Advice levels 1–2 add one Encore OPP step; advice level 3
-can add two steps. The combined result remains bounded to levels 0–3, and the
-raised tiered temperature cap is applied afterward. Encore alone applies and journals
-the seven minimum-frequency votes. The original fas-rs executable is neither
-included nor started by this module. Source:
-https://github.com/shadow3aaa/fas-rs/tree/v4.9.1 .
+Per-game Auto matches upstream candidate rates. Existing fixed settings are
+preserved as optional advanced overrides. Package refresh no longer changes
+Auto to a competitive preset. The old guardian/sampler uclamp controller is
+disabled in the preview to avoid running a second frame-feedback algorithm.
 
-FAS is enabled by default for every game registered in Encore Pixel's game
-list while that game is foreground. It is independent of the separate
-high-frame-rate policy switch. To disable FAS immediately as root:
+The bridge exports minimum CPU requests to Pixel over an anonymous pipe. It
+does not write frequency nodes. Pixel validates PID/start-time identity,
+sequence and timestamps, applies its live OPP and thermal bounds, journals the
+minimum-frequency votes and restores them on exit. GPU/DSU/IRM remain at their
+baseline game floors. Upstream min/max frequency locking is not used.
 
-    touch /data/adb/.config/encore_pixel_cp41/disable-fas
+The FAS switch disables the whole bridge. The old independent fas-rs adviser
+switch is removed. Missing/failed bridge or stale output yields baseline
+scheduling only, with no custom inference fallback.
 
-Remove that file to enable FAS again. The controller reacts in its normal
-2-second loop and releases any short boost when disabled. The WebUI Settings
-page exposes this switch as “FAS frame feedback”.
-
-To disable only the fas-rs adviser while leaving Encore's original FAS detector
-active, create `/data/adb/.config/encore_pixel_cp41/disable-fas-rs-advisor`.
-Remove it to re-enable the adviser; the controller reads it each loop. The
-same marker is available in WebUI Settings as “fas-rs adviser”.
-
-Targets are configured in the WebUI game page. It stores `target_fps` in
-`/data/adb/.config/encore_pixel_cp41/gamelist.json` for each enabled game:
-
-    com.tencent.tmgp.pubgmhd 120
-    com.tencent.tmgp.dfm 120
-
-The installer creates these two entries only when the file does not exist.
-Choose Auto, 30, 60, 90, or 120 FPS in WebUI. Auto locks to a supported tier
-after consecutive measurement windows. New games are assigned 120 FPS only
-when their package is in the maintained competitive FPS/MOBA preset table;
-otherwise they receive 60 FPS. Explicit targets are never changed by a
-temporary drop in measured frame rate.
-
-The detector follows the game's dominant queueBuffer thread and uses a
-clipped, one-sided frame-deficit CUSUM with 5% tolerance. After acquisition,
-a sustained deficit can request a bounded boost when the current rate is
-roughly 40–98% of the configured target.
-The aggressive fas-rs adviser adds one bounded level for any proportional
-error and can add two for a severe error. Global frequency requests use a
-three-window downward hysteresis while the game remains below 98% of target.
-The thread controller's no-gain trial falls back to level 1 for eight windows
-instead of releasing to zero; two severe deficit windows re-enter level 2.
-Quiet scenes disarm the detector.
-
-The highest extra level requests up to CPU policy0 1036 MHz,
-policy2/5 1785 MHz, policy7 1766 MHz, and GPU 691 MHz, with intervening
-levels chosen from each policy's actual OPP table. System and thermal maximum
-limits continue to control actual clocks. Additional FAS levels are capped at
-battery temperatures 40, 41 and 42 C, then released; at 42 C the base request
-switches to Lite. The whole controller remains subject to the existing 43 C
-protection with recovery at 41 C. The probe stops when the game
-leaves foreground, the display sleeps, battery saver is on, Lite mode is
-active, or battery capacity falls below 20%.
-
-The probe event and tracefs instance are removed when FAS stops. A durable
-same-boot marker lets the controller remove a stale event after a crash.
-The frequency journal preserves the original requests and restores them on
-exit; a conflicting external vote is not overwritten.
-
-The adviser and adaptive controller pass ARM64 compilation and synthetic node
-tests. In a 90-second foreground PUBG Mobile test on this CP41 device, two
-advice changes raised Encore's level from 1 to 2; the seven votes and Android
-frame policy restored when the test ended. This establishes a real control
-contribution, **not** an FPS or stability benefit. If a game behaves poorly,
-create `disable-fas-rs-advisor`, then `disable-fas` if needed, or pause the
-module from KernelSU and inspect the controller log.
-
+Source, upstream revisions and build instructions: src/fas-rs-bridge.
+Matching, request-sink, IPC and helper-lifecycle tests pass on the host; Android
+executables and eBPF compile. No device probe, match test or performance
+improvement has yet been established for this preview. Configuration write
+durability and automatic corrupt-list recovery are separate outstanding work.

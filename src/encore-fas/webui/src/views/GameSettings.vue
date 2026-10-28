@@ -103,6 +103,8 @@
                   :disabled="!appSettings.isEnabled || isGlobalLiteModeEnabled || isSaving" @update:model-value="toggleLiteMode" />
               </div>
 
+              <details>
+                <summary class="px-3 py-2 text-sm text-on-surface-variant">{{ $t('game_settings.advanced_fps') }}</summary>
               <div class="flex items-center justify-between" :class="{ 'opacity-50': !appSettings.isEnabled }">
                 <div class="flex items-center gap-1.5">
                   <div class="pl-3 pr-4">
@@ -123,6 +125,7 @@
                   </div>
                 </div>
               </div>
+              </details>
               <p v-if="saveError" role="alert" class="text-red-500 text-sm break-words">{{ saveError }}</p>
             </div>
           </div>

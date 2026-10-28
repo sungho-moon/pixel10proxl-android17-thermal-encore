@@ -67,12 +67,6 @@ const routes = [
     component: FasPreference,
     props: { marker: 'disable-fas', label: 'fas' },
   },
-  {
-    path: '/settings/fas_rs_advisor',
-    name: 'FasRsAdvisorPreference',
-    component: FasPreference,
-    props: { marker: 'disable-fas-rs-advisor', label: 'fas_rs_advisor' },
-  },
 
   { path: '/settings/high_fps', name: 'HighFPS', component: PixelPreference, props: { field: 'high_fps', label: 'high_fps' } },
   // catch-all route

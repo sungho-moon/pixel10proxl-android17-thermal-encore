@@ -95,8 +95,9 @@
     "launch_app": "启动",
     "app_info": "应用信息",
     "target_fps": "目标帧率",
-    "target_fps_auto": "自动判断",
-    "target_fps_description": "用于帧反馈调度目标，不会修改游戏内帧率设置。未选择时自动判断。"
+    "target_fps_auto": "fas-rs 默认",
+    "target_fps_description": "默认按游戏候选帧率由 fas-rs 匹配。可选固定目标应与游戏内设置一致。",
+    "advanced_fps": "高级：固定帧率覆盖"
   },
   "language_selection": {
     "title": "语言",
@@ -174,11 +175,11 @@
     "state": "当前状态",
     "package": "前台应用",
     "foreground_game": "前台游戏",
-    "fas": "FAS 帧反馈",
-    "fas_desc": "启用 Encore 帧反馈控制器。关闭后会释放 FAS 频率请求。",
+    "fas": "fas-rs 帧反馈",
+    "fas_desc": "使用上游 fas-rs 帧采集与 CPU 控制，通过 Pixel 频率投票执行。关闭后释放帧反馈请求。",
     "fas_rs_advisor": "fas-rs 建议算法",
     "fas_rs_advisor_desc": "启用 fas-rs 比例建议器，同时保留 Encore 自身的帧反馈。",
-    "fas_level": "FAS 档位",
+    "fas_level": "帧反馈活跃（0/1）",
     "battery": "电池温度",
     "fps_policy": "默认游戏帧率策略",
     "fps_released": "默认限制已关闭",

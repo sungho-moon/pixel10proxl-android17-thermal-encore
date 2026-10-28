@@ -15,28 +15,6 @@ valid_list() {
   "$MODDIR/bin/encored" validate_gamelist "$1" >/dev/null 2>&1
 }
 
-preset_target() {
-  pkg=$1; target=60
-  while read -r rate name; do
-    case "$rate" in 30|60|90|120) ;; *) continue;; esac
-    [ -n "$name" ] || continue
-    [ "$name" = "$pkg" ] && target=$rate
-  done < "$PRESETS"
-  printf '%s\n' "$target"
-}
-
-migrate_targets() {
-  tmp=$(mktemp "$C/gamelist.preset.XXXXXX") || return 1
-  cp "$LIST" "$tmp" || { rm -f "$tmp"; return 1; }
-  while read -r rate pkg; do
-    case "$rate" in 30|60|90|120) ;; *) continue;; esac
-    [ -n "$pkg" ] || continue
-    escaped_pkg=$(printf '%s' "$pkg" | sed 's/[.]/\\./g')
-    sed -i "/\"$escaped_pkg\": {/,/\"target_fps\"/s/\"target_fps\": 0/\"target_fps\": $rate/" "$tmp"
-  done < "$PRESETS"
-  if valid_list "$tmp" && chmod 0600 "$tmp"; then mv -f "$tmp" "$LIST"; else rm -f "$tmp"; return 1; fi
-}
-
 add_game() {
   pkg=$1
   grep -qF "\"$pkg\"" "$LIST" 2>/dev/null && return 0
@@ -61,7 +39,7 @@ add_game() {
   }
   awk '{ text=text $0 "\n" } END { sub(/}[[:space:]]*$/, "", text); printf "%s", text }' "$LIST" > "$tmp"
   if grep -q '"' "$LIST"; then printf ',\n' >> "$tmp"; fi
-  target=$(preset_target "$pkg")
+  target=0 # Upstream fas-rs matches the supported candidate rates at runtime.
   printf '  "%s": {\n    "lite_mode": false,\n    "enable_dnd": false,\n    "target_fps": %s\n  }\n}\n' "$pkg" "$target" >> "$tmp"
   if valid_list "$tmp" && chmod 0600 "$tmp"; then
     mv -f "$tmp" "$LIST"
@@ -77,7 +55,6 @@ add_game() {
 mkdir -p "$C"
 [ -f "$LIST" ] || printf '{}\n' > "$LIST"
 valid_list "$LIST" || { log 'invalid list; refresh aborted'; exit 1; }
-migrate_targets || { log 'preset migration failed; refresh aborted'; exit 1; }
 
 installed=$(mktemp "$C/installed-packages.XXXXXX") || exit 1
 trap 'rm -f "$installed"' EXIT INT TERM

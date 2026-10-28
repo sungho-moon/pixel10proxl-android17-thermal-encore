@@ -186,6 +186,15 @@ def build_source_bundle(version: str, module: Path, outputs: Path) -> Path | Non
         (path, "source/module/" + path.relative_to(module).as_posix())
         for path in module_files(module)
     )
+    # Include new bridge headers and all corresponding GPL helper sources.
+    for header in sorted(BASE.glob("fas-rs-*.h")):
+        items.append((header, "source/" + header.name))
+    bridge = BASE.parent / "fas-rs-bridge"
+    if bridge.is_dir():
+        for path in sorted(bridge.rglob("*")):
+            relative = path.relative_to(bridge)
+            if path.is_file() and not any(p in {"target", ".git", "__pycache__"} for p in relative.parts):
+                items.append((path, "source/fas-rs-bridge/" + relative.as_posix()))
     archive(source_package, items)
     checksum_file(source_package)
     return source_package
