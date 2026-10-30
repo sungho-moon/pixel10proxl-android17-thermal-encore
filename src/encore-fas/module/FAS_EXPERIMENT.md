@@ -41,3 +41,11 @@ Probe and isolated device capture pass; complete active-loop validation of
 this change is pending. Auto target switches still reset the upstream buffer
 and can interrupt requests during warm-up. No smoothing or target-lock policy
 is added in this revision.
+
+Preview4 retains the last selected target through brief unmatched FPS dips,
+uses a 3 FPS hysteresis band and a two-second confirmation before switching,
+and keeps the rolling frame history and usable controller state across target
+changes. This is intended to prevent repeated warm-up gaps while Auto moves
+between candidate rates. It does not remove CPU thermal caps or boost GPU.
+Twelve Rust tests pass. Preview4 needs a device flash and comparable
+SurfaceFlinger match measurements before its effect can be established.

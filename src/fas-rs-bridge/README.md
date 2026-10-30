@@ -54,3 +54,10 @@ was observed with nonzero CPU time but zero in the old parser. Nine Rust tests
 pass; the patched helper passes the device probe and isolated frame capture.
 It has not been installed as the active helper or shown to improve stutter.
 The upstream Auto target switching/reset policy is unchanged.
+
+Preview4 retains the last selected target through short unmatched FPS dips,
+requires a 3 FPS hysteresis band and two seconds of stable evidence before an
+automatic target change, and preserves buffered frame history across changes.
+This removes target-change warm-up resets; it does not bypass thermal limits or
+add GPU boosts. Twelve Rust tests pass. This build has not yet been installed
+or measured in a match.

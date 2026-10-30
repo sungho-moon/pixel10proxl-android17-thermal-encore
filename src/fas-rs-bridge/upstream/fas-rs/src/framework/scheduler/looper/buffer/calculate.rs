@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License along
 // with fas-rs. If not, see <https://www.gnu.org/licenses/>.
 
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use likely_stable::unlikely;
 #[cfg(debug_assertions)]
@@ -23,6 +23,9 @@ use log::debug;
 
 use super::Buffer;
 use crate::{Extension, api::trigger_target_fps_change, framework::config::TargetFps};
+
+const TARGET_SWITCH_DWELL: Duration = Duration::from_secs(2);
+const TARGET_SWITCH_HYSTERESIS_FPS: f64 = 3.0;
 
 impl Buffer {
     pub fn calculate_current_fps(&mut self) {
@@ -38,8 +41,8 @@ impl Buffer {
 
         self.frametime_state.current_fps_long = current_fps_long;
 
-        let avg_time_short = self
-            .calculate_average_frametime(self.target_fps().map(|target_fps| target_fps as usize));
+        let target_fps = self.target_fps().map(|target_fps| target_fps as usize);
+        let avg_time_short = self.calculate_average_frametime(target_fps);
         #[cfg(debug_assertions)]
         debug!("avg_time_short: {avg_time_short:?}");
 
@@ -74,25 +77,78 @@ impl Buffer {
 
     pub fn calculate_target_fps(&mut self, extension: &Extension) {
         let new_target_fps = self.target_fps();
-        if self.target_fps_state.target_fps != new_target_fps || new_target_fps.is_none() {
-            self.reset_frametime_state();
+        if self.target_fps_state.target_fps != new_target_fps {
             if let Some(target_fps) = new_target_fps {
                 self.trigger_target_fps_change(extension, target_fps);
+                self.target_fps_state.target_fps = Some(target_fps);
+                self.target_fps_state.pending_target_fps = None;
+                self.target_fps_state.pending_target_since = None;
             }
-            self.target_fps_state.target_fps = new_target_fps;
-            self.unusable();
         }
-    }
-
-    fn reset_frametime_state(&mut self) {
-        self.frametime_state.frametimes.clear();
     }
 
     fn trigger_target_fps_change(&self, extension: &Extension, target_fps: u32) {
         trigger_target_fps_change(extension, target_fps, self.package_info.pkg.clone());
     }
 
-    fn target_fps(&self) -> Option<u32> {
+    fn target_fps(&mut self) -> Option<u32> {
+        let candidate = self.matched_target_fps();
+        let Some(current) = self.target_fps_state.target_fps else {
+            self.target_fps_state.pending_target_fps = None;
+            self.target_fps_state.pending_target_since = None;
+            return candidate;
+        };
+
+        let Some(candidate) = candidate else {
+            // Keep the last selected target through brief dips below the
+            // upstream matching floor, so the controller can still respond.
+            self.target_fps_state.pending_target_fps = None;
+            self.target_fps_state.pending_target_since = None;
+            return Some(current);
+        };
+
+        if candidate == current {
+            self.target_fps_state.pending_target_fps = None;
+            self.target_fps_state.pending_target_since = None;
+            return Some(current);
+        }
+
+        let fps = self.frametime_state.current_fps_long;
+        // Add a deadband around the upstream +3 FPS matching edge and require
+        // a stable candidate before changing the target.
+        let switch_threshold = if candidate > current {
+            f64::from(current) + 3.0 + TARGET_SWITCH_HYSTERESIS_FPS
+        } else {
+            f64::from(candidate) + 3.0 - TARGET_SWITCH_HYSTERESIS_FPS
+        };
+        let crossed = if candidate > current {
+            fps >= switch_threshold
+        } else {
+            fps <= switch_threshold
+        };
+
+        if !crossed {
+            self.target_fps_state.pending_target_fps = None;
+            self.target_fps_state.pending_target_since = None;
+            return Some(current);
+        }
+
+        if self.target_fps_state.pending_target_fps != Some(candidate) {
+            self.target_fps_state.pending_target_fps = Some(candidate);
+            self.target_fps_state.pending_target_since = Some(Instant::now());
+            return Some(current);
+        }
+
+        if self.target_fps_state.pending_target_since
+            .is_some_and(|since| since.elapsed() >= TARGET_SWITCH_DWELL)
+        {
+            Some(candidate)
+        } else {
+            Some(current)
+        }
+    }
+
+    fn matched_target_fps(&self) -> Option<u32> {
         let target_fpses = match &self.target_fps_state.target_fps_config {
             TargetFps::Value(t) => vec![*t],
             TargetFps::Array(arr) => arr.clone(),
@@ -113,5 +169,82 @@ impl Buffer {
         }
 
         target_fpses.last().copied()
+    }
+}
+
+#[cfg(test)]
+mod pixel_bridge_tests {
+    use super::*;
+    use super::super::BufferWorkingState;
+    use crate::{Extension, framework::config::TargetFps};
+
+    fn buffer() -> Buffer {
+        Buffer::new(TargetFps::Array(vec![60, 90, 120]), 123, "game.test".into())
+    }
+
+    #[test]
+    fn automatic_switch_uses_hysteresis_and_dwell() {
+        let mut b = buffer();
+        b.target_fps_state.target_fps = Some(90);
+
+        b.frametime_state.current_fps_long = 95.0;
+        assert_eq!(b.target_fps(), Some(90));
+        assert_eq!(b.target_fps_state.pending_target_fps, None);
+
+        b.frametime_state.current_fps_long = 97.0;
+        assert_eq!(b.target_fps(), Some(90));
+        assert_eq!(b.target_fps_state.pending_target_fps, Some(120));
+        assert_eq!(b.target_fps(), Some(90));
+
+        b.target_fps_state.pending_target_since =
+            Some(Instant::now() - TARGET_SWITCH_DWELL - Duration::from_millis(1));
+        b.calculate_target_fps(&Extension);
+        assert_eq!(b.target_fps_state.target_fps, Some(120));
+
+        b.frametime_state.current_fps_long = 92.0;
+        assert_eq!(b.target_fps(), Some(120));
+        assert_eq!(b.target_fps_state.pending_target_fps, None);
+        b.frametime_state.current_fps_long = 89.0;
+        assert_eq!(b.target_fps(), Some(120));
+        assert_eq!(b.target_fps_state.pending_target_fps, Some(90));
+        b.target_fps_state.pending_target_since =
+            Some(Instant::now() - TARGET_SWITCH_DWELL - Duration::from_millis(1));
+        b.calculate_target_fps(&Extension);
+        assert_eq!(b.target_fps_state.target_fps, Some(90));
+    }
+
+    #[test]
+    fn target_change_preserves_recent_frames_and_usable_state() {
+        let mut b = buffer();
+        b.target_fps_state.target_fps = Some(90);
+        b.frametime_state.current_fps_long = 100.0;
+        b.frametime_state
+            .frametimes
+            .extend(std::iter::repeat_n(Duration::from_millis(10), 120));
+        b.state.working_state = BufferWorkingState::Usable;
+        b.target_fps_state.pending_target_fps = Some(120);
+        b.target_fps_state.pending_target_since =
+            Some(Instant::now() - TARGET_SWITCH_DWELL - Duration::from_millis(1));
+
+        b.calculate_target_fps(&Extension);
+
+        assert_eq!(b.target_fps_state.target_fps, Some(120));
+        assert_eq!(b.frametime_state.frametimes.len(), 120);
+        assert_eq!(b.state.working_state, BufferWorkingState::Usable);
+    }
+
+    #[test]
+    fn initial_unmatched_target_does_not_clear_frame_history() {
+        let mut b = buffer();
+        b.frametime_state
+            .frametimes
+            .extend(std::iter::repeat_n(Duration::from_millis(25), 20));
+        b.frametime_state.current_fps_long = 40.0;
+
+        b.calculate_target_fps(&Extension);
+        b.calculate_target_fps(&Extension);
+
+        assert_eq!(b.target_fps_state.target_fps, None);
+        assert_eq!(b.frametime_state.frametimes.len(), 20);
     }
 }

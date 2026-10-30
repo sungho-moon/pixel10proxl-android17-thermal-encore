@@ -66,6 +66,8 @@ impl FrameTimeState {
 pub struct TargetFpsState {
     pub target_fps: Option<u32>,
     target_fps_config: TargetFps,
+    pending_target_fps: Option<u32>,
+    pending_target_since: Option<Instant>,
 }
 
 impl TargetFpsState {
@@ -73,6 +75,8 @@ impl TargetFpsState {
         Self {
             target_fps: None,
             target_fps_config,
+            pending_target_fps: None,
+            pending_target_since: None,
         }
     }
 }

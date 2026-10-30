@@ -60,9 +60,9 @@ mod tests {
         assert_eq!(matched(49.0, vec![60, 90, 120]), None);
     }
     #[test]
-    fn upstream_matching_can_return_to_lobby_rate() {
+    fn low_window_does_not_immediately_drop_auto_target() {
         let mut b = buffer::Buffer::new(TargetFps::Array(vec![60, 90, 120]), 123, "game.test".into());
-        for (fps, expected) in [(118.0, 120), (60.0, 60), (119.0, 120)] {
+        for (fps, expected) in [(118.0, 120), (60.0, 120), (119.0, 120)] {
             b.frametime_state.current_fps_long = fps;
             b.calculate_target_fps(&Extension);
             assert_eq!(b.target_fps_state.target_fps, Some(expected));
