@@ -15,9 +15,17 @@
 - **游戏帧率预设**：已知竞技 FPS/MOBA 游戏预设 120 FPS，其余游戏预设 60 FPS，WebUI 支持自动、30/60/90/120 五档。
 - **平滑帧反馈**：高档试探收益不足时退至轻量 level 1，不再直接清零；严重掉帧可提前退出冷却，全局频率降档增加连续窗口迟滞。
 
-## 最新更新
+## 最新预发布
 
-当前构建包含：
+[v0.8.5-fasrs-preview4](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/releases/tag/v0.8.5-fasrs-preview4) 是 FAS-rs 帧反馈实验版，不替代当前正式版 `v0.8.4-thread-elf`。可安装模块 ZIP 可从发布页获取；源代码和构建说明位于 [`experiment/fas-rs-backend` 分支](https://github.com/sungho-moon/pixel10proxl-android17-thermal-encore/tree/experiment/fas-rs-backend/src/fas-rs-bridge)。
+
+该预览版集成固定版本的 fas-rs 4.9.1 和 frame-analyzer eBPF 采帧；PUBG 自动模式使用 60/90/120 FPS 候选档，短时帧率波动采用 3 FPS 滞回和 2 秒稳定确认，切换目标时保留帧历史。CPU 请求仍由 Pixel 控制器校验进程身份、频率档位和温控上限后统一应用；该版本不增加 GPU 超频或绕过温控的行为。
+
+验证状态：12 项 Rust 测试及 C++ 协议、helper 生命周期和打包测试通过。预览版已在 Pixel 10 Pro XL、Android 17 上安装并进行对局观察；FAS 与 Thermal HAL 保持运行，但后段 SurfaceFlinger 窗口约为 85.5–91.8 FPS，虚拟皮肤温度达到约 43.05°C 并进入 Thermal Moderate。当前没有证据表明它改善了持续掉帧，因此该版本仅供测试，不应视为已解决性能问题的正式修复。
+
+## 正式版更新
+
+当前正式版为 `v0.8.4-thread-elf`，功能更新包括：
 
 - `0.8.4-thread-elf`：在 0.8.3 的基础上修复 Thermal OTA 重发现、候选配置歧义、游戏包名迁移转义和异常温度保护；以 Android NDK r30 重建原生组件，并通过 Pixel 10 Pro XL Android 17 实机验证。
 - `0.8.2-thread-elf`：线程帧采样器改为从当前 `libgui.so` 动态解析入口和文件偏移，修复系统更新后持续 `samples=0`；解析失败时停用线程后端。源码、构建脚本和 ELF 回归测试位于 `work/guardian-build/`。
