@@ -88,7 +88,11 @@ rm -f "$MODPATH/state/config.env" "$MODPATH/state/expected.env" "$MODPATH/state/
 [ -f "$C/gamelist.json" ] || printf '{}\n' > "$C/gamelist.json"
 "$MODPATH/refresh-games.sh" install || abort "已安装游戏列表刷新失败 / Installed game list refresh failed"
 "$MODPATH/bin/encored" check_gamelist || abort "游戏列表无效 / Invalid game list"
-"$MODPATH/bin/pixel-control" probe || abort "Pixel 频率接口检查失败 / Pixel frequency interface check failed"
+if ! "$MODPATH/bin/pixel-control" probe; then
+  ui_print "pixel-control probe 失败，日志："
+  [ -f "$C/controller.log" ] && tail -n 5 "$C/controller.log"
+  abort "Pixel 频率接口检查失败 / Pixel frequency interface check failed"
+fi
 ui_print "请保持 Encore Pixel 模块启用，并停用独立 Uclamp/fas-rs 模块。"
 ui_print "Keep Encore Pixel enabled; disable standalone Uclamp/fas-rs modules."
 ui_print "温控与调度已整合 / Thermal control and scheduling are integrated."

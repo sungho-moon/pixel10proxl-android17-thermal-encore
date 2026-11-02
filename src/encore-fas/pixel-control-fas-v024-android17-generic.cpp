@@ -398,14 +398,23 @@ public:
         }
         return true;
     }
+    static bool can_write(const std::string& path) {
+        int fd = open(path.c_str(), O_WRONLY | O_CLOEXEC);
+        if (fd >= 0) { close(fd); return true; }
+        return faccessat(AT_FDCWD, path.c_str(), W_OK, AT_EACCESS) == 0;
+    }
     bool preflight(bool same_value_write) {
         for (const auto& n : nodes) {
             std::istringstream s(readstr(n.table)); long v;
             bool full = false, lite = false, boost = n.boost == 0;
             while (s >> v) { full |= v == n.full; lite |= v == n.lite; boost |= v == n.boost; }
             long min = number(n.path), max = number(n.maximum);
-            if (!full || !lite || !boost || min < 0 || max < min || access(n.path.c_str(), W_OK) != 0) {
-                log("PREFLIGHT FAILED " + n.path); return false;
+            bool writable = can_write(n.path);
+            if (!full || !lite || !boost || min < 0 || max < min || !writable) {
+                log("PREFLIGHT FAILED " + n.path + " full=" + std::to_string(full) + " lite=" + std::to_string(lite)
+                    + " boost=" + std::to_string(boost) + " min=" + std::to_string(min) + " max=" + std::to_string(max)
+                    + " writable=" + std::to_string(writable));
+                return false;
             }
             if (same_value_write && !writeval(n.path, min)) return false;
             printf("OK %s original=%ld full=%ld lite=%ld max=%ld\n", n.path.c_str(), min, n.full, n.lite, max);
@@ -559,10 +568,13 @@ static Scene scene() {
     return out;
 }
 static bool compatible() {
-    auto sdk = capture({"/system/bin/getprop", "ro.build.version.sdk"});
-    // Device-independent Android 17 gate. Frequency domains are probed at
-    // runtime; unknown libgui builds keep baseline control and disable FAS.
-    return sdk == "37\n";
+    char sdk[PROP_VALUE_MAX]{};
+    __system_property_get("ro.build.version.sdk", sdk);
+    if (std::string(sdk) == "37") return true;
+    auto captured = capture({"/system/bin/getprop", "ro.build.version.sdk"});
+    while (!captured.empty() && (captured.back() == '\n' || captured.back() == '\r' || captured.back() == ' '))
+        captured.pop_back();
+    return captured == "37";
 }
 static bool conflict() {
     for (const auto& id : {"pixel_pubg_uclamp_cp41", "encore", "fas_rs", "fas_rs_pixel_cp41"}) {
@@ -650,7 +662,12 @@ int main(int argc, char** argv) {
     FramePolicy frame_policy(fps_io, cfg + "/frame-policy-journal", requests.boot);
     // Installation uses a read-only probe while the previous controller may run.
     if (command == "probe") {
-        if (!compatible()) return 4;
+        if (!compatible()) {
+            char sdk[PROP_VALUE_MAX]{};
+            __system_property_get("ro.build.version.sdk", sdk);
+            log("PROBE FAILED: incompatible SDK=" + std::string(sdk));
+            return 4;
+        }
         return requests.preflight(false) ? 0 : 1;
     }
     if (command == "fas-observe") {
