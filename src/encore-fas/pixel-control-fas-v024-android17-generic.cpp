@@ -252,20 +252,19 @@ static std::vector<Node> make_nodes() {
     const char* dev[] = {"34f00000.gpu0", "200c0780.dsufreq", "irm_gmc_freq"};
     // Raise only the userspace floor request. Thermal HAL remains authoritative
     // for the actual ceiling; this cannot bypass hardware thermal protection.
-    long df[] = {691000000, 691000000, 844000000};
-    long dl[] = {512000000, 537000000, 672000000};
-    long db[] = {806000000, 806000000, 921000000};
+    long df[] = {512000000, 960000000, 998000000};
+    long dl[] = {448000000, 844000000, 998000000};
+    long db[] = {921000000, 1843000000, 2227000000};
     for (int i = 0; i < 3; ++i) {
         std::string p = "/sys/class/devfreq/" + std::string(dev[i]) + "/";
-        // Match the aggressive thermal profile's 633 MHz GPU ceiling so the
-        // controller does not release the request when Thermal HAL derates.
         // GPU starts near the 512 MHz OPP instead of jumping to 633 MHz.
-        // Sustained frame deficit is handled by staged_floor()/FAS advice.
+        // Sustained frame deficit scales GPU up to 921 MHz and DSU to 1.84 GHz.
         double game_fraction = i == 0 ? .36 : .34;
+        double boost_fraction = i == 0 ? .85 : (i == 1 ? .82 : .70);
         n.push_back({p + "vote_manager/debug_min_freq", p + "available_frequencies", p + "max_freq",
             table_fraction(p + "available_frequencies", game_fraction, df[i]),
             table_fraction(p + "available_frequencies", .32, dl[i]),
-            table_fraction(p + "available_frequencies", .70, db[i])});
+            table_fraction(p + "available_frequencies", boost_fraction, db[i])});
     }
     return n;
 }
@@ -304,17 +303,25 @@ public:
     bool restore() {
         bool ok = true, changed = false;
         for (auto& n : nodes) {
-            if (!n.active) continue;
-            changed = true;
-            long cur = number(n.path);
-            if (cur == n.last || cur == n.prior) {
-                if (!writeval(n.path, n.original)) { log("RESTORE FAILED " + n.path); ok = false; continue; }
-                log("RESTORE " + n.path + "=" + std::to_string(n.original));
-            } else {
-                log("YIELD changed request " + n.path + "=" + std::to_string(cur));
-                n.blocked = true;
+            if (n.active) {
+                changed = true;
+                long cur = number(n.path);
+                if (cur == n.last || cur == n.prior) {
+                    if (!writeval(n.path, n.original)) { log("RESTORE FAILED " + n.path); ok = false; continue; }
+                    log("RESTORE " + n.path + "=" + std::to_string(n.original));
+                } else {
+                    log("YIELD changed request " + n.path + "=" + std::to_string(cur));
+                    n.blocked = true;
+                }
+                n.active = false;
+            } else if (n.blocked) {
+                long cur = number(n.path);
+                if (cur == n.original || cur == 0) {
+                    n.blocked = false;
+                    changed = true;
+                    log("UNBLOCK " + n.path + " restored by external writer");
+                }
             }
-            n.active = false;
         }
         return (changed ? save() : true) && ok;
     }
@@ -365,7 +372,16 @@ public:
         int computed_boost = !lite ? derived_boost(upstream) : 0;
         int effective_boost = std::min(std::max(boost_level, computed_boost), thermal_cap);
         for (auto& n : nodes) {
-            if (n.blocked) continue;
+            if (n.blocked) {
+                long cur = number(n.path);
+                if (cur == n.original || cur == 0) {
+                    n.blocked = false;
+                    save();
+                    log("RE-ENGAGE unblocked node " + n.path);
+                } else {
+                    continue;
+                }
+            }
             long cur = number(n.path), ceiling = number(n.maximum);
             if (cur < 0 || ceiling < 0) { restore(); return false; }
             if (n.active && cur != n.last) { n.active = false; n.blocked = true; save(); log("YIELD external writer " + n.path); continue; }
