@@ -3,7 +3,7 @@ MODPATH=${0%/*}
 C=/data/adb/.config/encore_pixel_cp41
 if [ -f "$C/pause" ]; then
  rm -f "$C/pause"
- echo "Resuming Encore Pixel (25 second startup delay)."
+ echo "Resuming Encore Pixel (polling for service readiness)."
  nohup sh "$MODPATH/service.sh" >/dev/null 2>&1 &
 else
  touch "$C/pause"

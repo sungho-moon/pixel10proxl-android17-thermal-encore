@@ -38,6 +38,10 @@ for flag in pause disable-high-fps; do
 done
 printf 'fas_disabled=%s\n' "$( [ -f "$C/disable-fas" ] && echo 1 || echo 0 )"
 printf 'fas_advisor_disabled=%s\n' "$( [ -f "$C/disable-fas-rs-advisor" ] && echo 1 || echo 0 )"
+if [ -f "$C/thermal-disabled" ]; then printf 'thermal_status=disabled\n';
+elif [ -f "$C/thermal-quarantined" ]; then printf 'thermal_status=quarantined\n';
+elif [ -f "$M/state/runtime.env" ]; then printf 'thermal_status=active\n';
+else printf 'thermal_status=unverified\n'; fi
 printf 'default_fps_disabled=%s\n' "$(getprop debug.graphics.game_default_frame_rate.disabled)"
 for id in 0 2 5 7; do
  D=/sys/devices/system/cpu/cpufreq/policy$id

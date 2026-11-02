@@ -69,5 +69,8 @@ pgt_quarantine() {
   _m=$1; _why=$2; . "$_m/state/config.env" 2>/dev/null || true
   [ -n "${CONFIG_NAME:-}" ] && rm -f "$_m/system/vendor/etc/$CONFIG_NAME" 2>/dev/null || true
   pgt_disable "$_m" "$_why"
+  _dir=$(pgt_marker_dir)
+  printf 'quarantined=%s\n' "$_why" > "$_dir/thermal-quarantined" 2>/dev/null || true
+  chmod 0644 "$_dir/thermal-quarantined" 2>/dev/null || true
   pgt_log "$_m" "thermal_quarantined: stock restored on next reboot; current HAL unchanged"
 }

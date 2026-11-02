@@ -11,7 +11,7 @@ while [ "$(getprop sys.boot_completed)" != 1 ] && [ "$i" -lt 180 ]; do sleep 1; 
 [ "$(getprop sys.boot_completed)" = 1 ] || { pgt_log "$MODDIR" thermal_boot_not_completed; exit 0; }
 sleep 2
 # Discovery is restricted to post-fs-data, before any thermal overlay mounts.
-[ -r "$MODDIR/state/config.env" ] || { pgt_disable "$MODDIR" runtime_metadata_missing; exit 0; }
+[ -r "$MODDIR/state/config.env" ] || { pgt_disable "$MODDIR" runtime_metadata_missing; printf 'reason=metadata_missing\n' > "$C/thermal-quarantined"; exit 0; }
 result=$(pgt_check "$MODDIR" /vendor/etc /data/adb/modules /data/adb/modules_update 2>&1)
 if [ $? -ne 0 ]; then
   pgt_quarantine "$MODDIR" "runtime:$result"

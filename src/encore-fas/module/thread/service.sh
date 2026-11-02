@@ -7,7 +7,7 @@ STATE="$MODDIR/state"
 TOYBOX=/system/bin/toybox
 DYNAMIC_SAMPLER="$MODDIR/bin/thread-sampler"
 mkdir -p "$STATE"
-stopped() { [ -e "$MODDIR/../disable" ] || [ -e "$MODDIR/../remove" ] || [ -e "$STATE/paused" ]; }
+stopped() { [ -e "$MODDIR/../disable" ] || [ -e "$MODDIR/../remove" ] || [ -e "$STATE/paused" ] || [ -e /data/adb/.config/encore_pixel_cp41/pause ]; }
 foreground_package() {
   dumpsys activity activities 2>/dev/null |
     "$TOYBOX" sed -n 's/.*topResumedActivity=.* u[0-9][0-9]* \([^/ ]*\)\/.*/\1/p' |
@@ -33,6 +33,16 @@ find_game() {
 for i in $("$TOYBOX" seq 1 180); do [ "$(getprop sys.boot_completed)" = 1 ] && break; "$TOYBOX" sleep 1; done
 [ "$(getprop sys.boot_completed)" = 1 ] || exit 0
 "$TOYBOX" sleep 15
+GUARDIAN_PID=
+SCAN_PID=
+cleanup() {
+  trap - EXIT INT TERM
+  [ -n "$SCAN_PID" ] && kill "$SCAN_PID" 2>/dev/null
+  [ -n "$GUARDIAN_PID" ] && kill -TERM "$GUARDIAN_PID" 2>/dev/null
+  "$MODDIR/bin/guardian" --restore "$STATE" >> "$STATE/recovery.log" 2>&1
+}
+trap cleanup EXIT INT TERM
+
 while ! stopped; do
   pid=$(find_game)
   case "$pid" in ''|*[!0-9]*) "$TOYBOX" sleep 2; continue;; esac
@@ -54,6 +64,8 @@ while ! stopped; do
   result=$?
   kill "$SCAN_PID" 2>/dev/null
   wait "$SCAN_PID" 2>/dev/null
+  SCAN_PID=
+  GUARDIAN_PID=
   "$MODDIR/bin/guardian" --restore "$STATE" >> "$STATE/recovery.log" 2>&1
   [ "$result" -eq 0 ] || echo "guardian_exit=$result" >> "$STATE/recovery.log"
   [ "$result" -eq 17 ] && break
