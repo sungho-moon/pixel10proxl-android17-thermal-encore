@@ -8,7 +8,13 @@ for i in $(seq 1 120); do
  sleep 1
 done
 [ "$(getprop sys.boot_completed)" = 1 ] || { echo 'STARTUP_FAILED boot timeout' > "$C/status"; exit 1; }
-sleep 25
+# Poll for frequency interface readiness instead of fixed delay.
+_ready=0
+for _try in $(seq 1 50); do
+  "$MODPATH/bin/pixel-control" probe >/dev/null 2>&1 && { _ready=1; break; }
+  sleep 0.5
+done
+[ "$_ready" = 1 ] || sleep 5
 [ -f "$MODPATH/disable" ] && exit 0
 [ -f "$MODPATH/remove" ] && exit 0
 [ -f "$MODPATH/update" ] && exit 0

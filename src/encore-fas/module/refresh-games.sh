@@ -75,7 +75,7 @@ add_game() {
 }
 
 mkdir -p "$C"
-[ -f "$LIST" ] || printf '{}\n' > "$LIST"
+[ -s "$LIST" ] || printf '{}\n' > "$LIST"
 valid_list "$LIST" || { log 'invalid list; refresh aborted'; exit 1; }
 migrate_targets || { log 'preset migration failed; refresh aborted'; exit 1; }
 
