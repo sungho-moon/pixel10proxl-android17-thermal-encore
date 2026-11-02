@@ -9,7 +9,7 @@
   "binder_resolver_apk_sha256": "beb99604cf31649102ebc9174e35250087f44296dfca1622846e5c5cefc8c20c",
   "binaries": {
     "encored": "174e00ca15bffd150673177bbc8a56dc709ea3e4874b58b7c02e1266bdaf37d9",
-    "pixel-control": "0da243a7470d4852587d9e196683575fc5093cefb88430637ebb14a4ad9d7404",
+    "pixel-control": "a0ffba99acc40020d0171b96669126e16501bf9842fb9ab062f16c86a3138464",
     "guardian": "fc09f45c69822352d8b1d339d9cbb7054640ceaa2ea9c86f06881df513325435",
     "thermal-profile-builder": "3fe71d73d76ef4d8fca80fcca9b671b7b32d418ccf4316017a76ea418e50c45b",
     "pixel-fas-rs-bridge": "3e488eff88702dc3c198c16a093b0abf5c2beb53357aad8c2b96ca4d2372fdb2"
