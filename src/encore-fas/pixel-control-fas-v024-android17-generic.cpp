@@ -339,14 +339,38 @@ public:
         while (table >> value) choices.push_back(value);
         return pixel_quantize_floor(std::move(choices), requested, ceiling);
     }
+    int derived_boost(const std::map<int, long>* upstream) const {
+        if (!upstream || upstream->empty()) return 0;
+        int max_level = 0;
+        for (const auto& n : nodes) {
+            if (n.path.find("/cpu/cpufreq/policy") == std::string::npos) continue;
+            auto at = n.path.find("/policy") + 7;
+            int policy = std::atoi(n.path.c_str() + at);
+            auto request = upstream->find(policy);
+            if (request == upstream->end()) continue;
+            long req = request->second;
+            if (req > n.full && n.boost > n.full) {
+                long step = (n.boost - n.full) / 3;
+                if (step <= 0) step = 1;
+                int node_level = 0;
+                if (req >= n.boost) node_level = 3;
+                else if (req >= n.full + 2 * step) node_level = 2;
+                else if (req >= n.full + step) node_level = 1;
+                max_level = std::max(max_level, node_level);
+            }
+        }
+        return max_level;
+    }
     bool apply(bool lite, int boost_level = 0, const std::map<int, long>* upstream = nullptr, int thermal_cap = 3) {
+        int computed_boost = !lite ? derived_boost(upstream) : 0;
+        int effective_boost = std::min(std::max(boost_level, computed_boost), thermal_cap);
         for (auto& n : nodes) {
             if (n.blocked) continue;
             long cur = number(n.path), ceiling = number(n.maximum);
             if (cur < 0 || ceiling < 0) { restore(); return false; }
             if (n.active && cur != n.last) { n.active = false; n.blocked = true; save(); log("YIELD external writer " + n.path); continue; }
             if (!n.active) n.original = cur;
-            long floor = lite ? n.lite : staged_floor(n, upstream ? 0 : boost_level);
+            long floor = lite ? n.lite : staged_floor(n, effective_boost);
             if (!lite && upstream && n.path.find("/cpu/cpufreq/policy") != std::string::npos) {
                 auto at = n.path.find("/policy") + 7;
                 int policy = std::atoi(n.path.c_str() + at);
@@ -684,27 +708,56 @@ int main(int argc, char** argv) {
     if (brain < 0) return 7;
     atomicfile(cfg + "/brain.pid", std::to_string(brain) + "\n");
     bool hot = false; int thermal_cap_state = 3; std::string previous;
+    Scene sc;
+    uint64_t cached_game_birth = 0;
+    int tick_count = 0;
+    bool in_game = false;
     while (!stopping && getppid() == parent && access((cfg + "/pause").c_str(), F_OK) != 0 && (observe || access((mod + "/disable").c_str(), F_OK) != 0) && access((mod + "/remove").c_str(), F_OK) != 0 && access((mod + "/update").c_str(), F_OK) != 0) {
         int status; if (waitpid(brain, &status, WNOHANG) == brain) { log("Brain exited; restoring"); brain = -1; break; }
-        Scene sc = scene();
-        std::ostringstream ss; ss << monotime() << ' ' << sc.awake << ' ' << sc.saver << ' ' << sc.package << ' ' << sc.pid << ' ' << sc.uid << '\n';
-        if (!atomicfile(cfg + "/scene", ss.str())) break;
+        // Fast-path game process validation:
+        // When in game, check /proc/$pid/stat (<0.1ms) every tick.
+        // Run full dumpsys activity/power check every 10 ticks (~2.0s)
+        // or immediately if the game process terminates or changes.
+        bool need_full_scene = !in_game || sc.pid <= 0 || tick_count >= 10;
+        if (!need_full_scene && sc.pid > 0) {
+            uint64_t current_birth = process_birth(sc.pid);
+            if (current_birth == 0 || current_birth != cached_game_birth) {
+                need_full_scene = true;
+            }
+        }
+        if (need_full_scene) {
+            sc = scene();
+            cached_game_birth = sc.pid > 0 ? process_birth(sc.pid) : 0;
+            tick_count = 0;
+            std::ostringstream ss; ss << monotime() << ' ' << sc.awake << ' ' << sc.saver << ' ' << sc.package << ' ' << sc.pid << ' ' << sc.uid << '\n';
+            if (!atomicfile(cfg + "/scene", ss.str())) break;
+        } else {
+            ++tick_count;
+        }
         int mode = 0, lite = 0, pid = 0; unsigned uid = 0; std::string pkg;
         std::istringstream request(readstr(cfg + "/request")); request >> mode >> lite >> pkg >> pid >> uid;
         long temp = number("/sys/class/power_supply/battery/temp"), capacity = number("/sys/class/power_supply/battery/capacity");
-        if (temp >= 430) hot = true; else if (temp >= 100 && temp <= 410) hot = false;
+        // Soft thermal damping: 42.0C - 44.5C operates in GAME_LITE to prevent
+        // stock governor frequency spikes from reaching the 45.0C hardware cliff.
+        if (temp >= 445) hot = true; else if (temp >= 100 && temp <= 415) hot = false;
         long heartbeat = number(cfg + "/heartbeat"), now = monotime();
         bool game = mode == 1 && now >= heartbeat && now - heartbeat <= 5 && sc.awake && !sc.saver && pid > 0 && pid == sc.pid && pkg == sc.package && uid == static_cast<unsigned>(sc.uid) && capacity >= 15 && temp >= 100 && temp <= 600 && !hot;
+        in_game = game;
         bool reduced = lite || temp >= 420;
         bool fas_eligible = !observe && game && !reduced && temp < 420 && capacity >= 20
             && access((cfg + "/disable-fas").c_str(), F_OK) != 0;
         int frame_level = frame_observer.sample(sc.pid, fas_eligible, sc.package, requests.cpu_boost_span_khz());
         thermal_cap_state = smooth_thermal_cap(thermal_cap_state, temp);
         int thermal_cap = thermal_cap_state;
-        int frame_boost = std::min(frame_level, thermal_cap);
+        int derived_boost = requests.derived_boost(&frame_observer.cpu_requests());
+        int frame_boost = std::min(std::max(frame_level, derived_boost), thermal_cap);
         std::string state = observe ? "OBSERVE" : "RESTORED";
         if (game) state = observe ? (reduced ? "OBSERVE_LITE" : "OBSERVE_GAME") : (reduced ? "GAME_LITE" : "GAME");
-        std::ostringstream report; report << state << " package=" << sc.package << " request=" << mode << " temp=" << temp << " capacity=" << capacity << " pid=" << pid << " FAS_LEVEL=" << frame_boost << '\n';
+        std::ostringstream report; report << state << " package=" << sc.package << " request=" << mode << " temp=" << temp << " capacity=" << capacity << " pid=" << pid << " FAS_LEVEL=" << frame_boost;
+        if (frame_observer.target_fps() > 0) {
+            report << " target=" << frame_observer.target_fps() << " fps=" << (frame_observer.milli_fps() / 1000.0);
+        }
+        report << '\n';
         atomicfile(cfg + "/status", report.str());
         if (state + sc.package != previous) { log(report.str()); previous = state + sc.package; }
         if (!observe) {
@@ -714,7 +767,13 @@ int main(int argc, char** argv) {
             bool frame_ok = high_fps ? frame_policy.apply() : frame_policy.restore();
             if (!frequency_ok || !frame_ok) { log("Controller write/restore failure; stopping"); break; }
         }
-        for (int i = 0; i < 20 && !stopping; ++i) usleep(100000);
+        if (game) {
+            // 200ms fast tick in game mode (aligned with fas-rs bridge snapshot rate)
+            for (int i = 0; i < 2 && !stopping; ++i) usleep(100000);
+        } else {
+            // 2.0s standard tick in non-game / idle mode (0 extra idle power)
+            for (int i = 0; i < 20 && !stopping; ++i) usleep(100000);
+        }
     }
     if (brain > 0) {
         kill(brain, SIGTERM);

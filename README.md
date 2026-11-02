@@ -20,6 +20,11 @@
 `experiment/fas-rs-backend` 提供 `0.8.5-fasrs-preview4`：集成固定版本的上游 fas-rs 4.9.1 与 eBPF（frame-analyzer）帧采集管道，加入自动目标切换滞回（3 FPS 滞回带与 2 秒稳定确认）并保留帧缓冲。
 
 - **实机运行表现**：已在 Pixel 10 Pro XL（Android 17 SDK 37）实机刷入并完成真实对局（和平精英 / PUBG Mobile）验证。`pixel-fas-rs-bridge` 正常通过 eBPF 采帧并与主控制器握手反馈，FAS 调频平稳生效，大核可自适应拉满至 3.17 GHz，机身表面预测温度稳定在 35.8°C ~ 36.5°C 正常区间。
+- **双速率动态轮询（Dual-rate Polling）**：游戏运行态循环休眠自适应压缩至 200ms（与 fas-rs 桥接器的 200ms 发射频率对齐），卡顿与掉帧调频响应延迟缩短 10 倍；日常待机保持 2.0 秒低频巡检，待机功耗 0 增加。
+- **轻量级进程存活探针（Fast-path Validation）**：游戏运行期间优先通过 `/proc/$pid/stat` 校验进程 starttime 存活状态（<0.1ms），常规轮询省去 90% 的 dumpsys 开销；对局退出或崩溃在 200ms 内瞬间感知并恢复原厂频率。
+- **CPU-GPU-DSU 协同梯级联动**：彻底修复原先 fas-rs 接管时非 CPU 节点强制归零的问题；根据 CPU 调频负载联动计算 GPU/DSU 提升阶梯，允许 GPU 自适应爬升至 691 MHz / 806 MHz，DSU 爬升至 1.73 GHz，消除高负载下的图形与内存总线瓶颈。
+- **42.0°C ~ 44.5°C 软性温控削峰平滑**：在 42°C 以上柔性进入 `GAME_LITE` 能效控温模式，避免退出调度后原厂 governor 剧烈冲频触发 45.0°C 硬件强制限频断崖。
+- **实时帧率看板状态**：`$C/status` 实时同步输出目标帧率 `target=` 与 eBPF 渲染帧率 `fps=`，提供全链路可观测性。
 - **构建说明与源码**：参见 `src/fas-rs-bridge/README.md`。
 
 ## 最新更新与工程修复

@@ -1,4 +1,19 @@
 {
+  "com.activision.callofduty.shooter": [
+    60,
+    90,
+    120
+  ],
+  "com.dts.freefireth": [
+    60,
+    90,
+    120
+  ],
+  "com.epicgames.fortnite": [
+    60,
+    90,
+    120
+  ],
   "com.hypergryph.arknights": [
     30,
     60
@@ -7,6 +22,14 @@
     24,
     30,
     45,
+    60
+  ],
+  "com.HoYoverse.Nap": [
+    30,
+    60
+  ],
+  "com.miHoYo.nap": [
+    30,
     60
   ],
   "com.miHoYo.Yuanshen": [
@@ -31,6 +54,11 @@
     30,
     60
   ],
+  "com.pubg.imobile": [
+    60,
+    90,
+    120
+  ],
   "com.pwrd.hotta.laohu": [
     25,
     30,
@@ -38,8 +66,18 @@
     60,
     90
   ],
+  "com.riotgames.league.wildrift": [
+    60,
+    90,
+    120
+  ],
   "com.shangyoo.neon": [
     60
+  ],
+  "com.tencent.ig": [
+    60,
+    90,
+    120
   ],
   "com.tencent.tmgp.pubgmhd": [
     60,

@@ -4,8 +4,9 @@ Experimental upstream fas-rs bridge; Android 17 isolated frame capture passes.
 Full controller feedback and long-match performance remain unverified.
 Preview2 fixes hook-symbol resolution and thread discovery during janked startup.
 Preview3 fixes CPU-time parsing for thread names with spaces or parentheses.
-Preview4 adds target hysteresis and preserves frame history across automatic
-target changes. Rust tests pass; preview4 has not yet been installed on-device.
+Preview4 adds target hysteresis, 200ms dual-rate fast-path loop, GPU/DSU
+coordinated boost, and soft thermal damping. Real-device validated on
+Pixel 10 Pro XL. Rust and C++ unit tests pass.
 Old frame observer/adviser and guardian loop are disabled. Auto uses upstream
 per-game candidates; explicit targets remain advanced overrides. The Pixel
 writer retains thermal limits and restoration. Later text describes the prior
