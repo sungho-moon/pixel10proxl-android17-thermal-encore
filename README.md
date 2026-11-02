@@ -17,12 +17,19 @@
 
 ## 本地实验分支
 
-`experiment/fas-rs-backend` 提供 `0.8.5-fasrs-preview4`：使用固定版本的上游 fas-rs 与 eBPF 帧采集，加入自动目标切换滞回并保留帧缓冲。尚未刷入实机验证，不代表性能改善或正式版。说明和来源见 `src/fas-rs-bridge/README.md`。
+`experiment/fas-rs-backend` 提供 `0.8.5-fasrs-preview4`：集成固定版本的上游 fas-rs 4.9.1 与 eBPF（frame-analyzer）帧采集管道，加入自动目标切换滞回（3 FPS 滞回带与 2 秒稳定确认）并保留帧缓冲。
 
-## 最新更新
+- **实机运行表现**：已在 Pixel 10 Pro XL（Android 17 SDK 37）实机刷入并完成真实对局（和平精英 / PUBG Mobile）验证。`pixel-fas-rs-bridge` 正常通过 eBPF 采帧并与主控制器握手反馈，FAS 调频平稳生效，大核可自适应拉满至 3.17 GHz，机身表面预测温度稳定在 35.8°C ~ 36.5°C 正常区间。
+- **构建说明与源码**：参见 `src/fas-rs-bridge/README.md`。
 
-当前构建包含：
+## 最新更新与工程修复
 
+当前构建包含以下关键优化与架构加固：
+
+- **开机延迟动态优化**：移除历史版本固定的 25 秒写死等待，改为对频率节点接口的高频动态探测（`pixel-control probe`），系统就绪即刻启动，缩短开机等待 20+ 秒。
+- **线程后端生命周期同步**：修复 WebUI 或动作按钮暂停时线程端未同步的问题，增加 `$C/pause` 监听；引入 `trap cleanup` 机制，确保任何被调控的线程在进程退出时 100% 恢复默认 uclamp 属性。
+- **温控隔离状态透明化**：温控触发 fail-closed 防御性隔离时实时记录详细原因并写入 `thermal-quarantined`，同时在 WebUI / `ui-state.sh` 中增加 `thermal_status` 节点，直观展示温控运行健康度。
+- **配置防损坏容错**：优化游戏列表更新机制，防止异常中断产生的 0 字节空文件导致校验崩溃。
 - `0.8.4-thread-elf`：在 0.8.3 的基础上修复 Thermal OTA 重发现、候选配置歧义、游戏包名迁移转义和异常温度保护；以 Android NDK r30 重建原生组件，并通过 Pixel 10 Pro XL Android 17 实机验证。
 - `0.8.2-thread-elf`：线程帧采样器改为从当前 `libgui.so` 动态解析入口和文件偏移，修复系统更新后持续 `samples=0`；解析失败时停用线程后端。源码、构建脚本和 ELF 回归测试位于 `work/guardian-build/`。
 - 通用兼容性构建 `0.8.1-generic`：温控和调度合并为一个模块；安装提示中英双语。
